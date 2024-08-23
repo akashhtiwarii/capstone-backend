@@ -1,0 +1,68 @@
+package com.capstone.users_service.entityTests;
+
+import com.capstone.users_service.Enum.Role;
+import com.capstone.users_service.entity.User;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
+public class UserTest {
+    private User user1;
+    private User user2;
+
+    @BeforeEach
+    public void setUp() {
+        user1 = new User(1L, "John Doe", "john.doe@example.com", "password123", "1234567890", "123 Main St", Role.USER);
+        user2 = new User(1L, "John Doe", "john.doe@example.com", "password123", "1234567890", "123 Main St", Role.USER);
+    }
+
+    @Test
+    public void testEquals() {
+        assertEquals(user1,user2);
+        assertEquals(user1,user1);
+        user1.setUserId(2L);
+        assertNotEquals(user1,user2);
+    }
+
+    @Test
+    public void testHashCode() {
+        assertEquals(user1.hashCode(), user2.hashCode());
+        user2.setUserId(2L);
+        assertNotEquals(user1.hashCode(), user2.hashCode());
+    }
+
+    @Test
+    public void testGettersAndSetters() {
+
+        assertEquals(1L, user1.getUserId());
+        assertEquals("John Doe", user1.getName());
+        assertEquals("john.doe@example.com", user1.getEmail());
+        assertEquals("password123", user1.getPassword());
+        assertEquals("1234567890", user1.getPhone());
+        assertEquals("123 Main St", user1.getAddress());
+        assertEquals(Role.USER, user1.getRole());
+
+        user1.setUserId(2L);
+        assertEquals(2L, user1.getUserId());
+
+        user1.setName("Jane Doe");
+        assertEquals("Jane Doe", user1.getName());
+
+        user1.setEmail("jane.doe@example.com");
+        assertEquals("jane.doe@example.com", user1.getEmail());
+
+        user1.setPassword("newpassword");
+        assertEquals("newpassword", user1.getPassword());
+
+        user1.setPhone("0987654321");
+        assertEquals("0987654321", user1.getPhone());
+
+        user1.setAddress("456 Elm St");
+        assertEquals("456 Elm St", user1.getAddress());
+
+        user1.setRole(Role.OWNER);
+        assertEquals(Role.OWNER, user1.getRole());
+    }
+}
