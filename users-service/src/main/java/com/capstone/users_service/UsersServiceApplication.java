@@ -3,6 +3,9 @@ package com.capstone.users_service;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * Application Entrypoint.
+ */
 @SpringBootApplication
 public class UsersServiceApplication {
      /**

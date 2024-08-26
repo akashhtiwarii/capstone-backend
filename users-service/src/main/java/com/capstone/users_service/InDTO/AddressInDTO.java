@@ -4,9 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.*;
 
+import static com.capstone.users_service.utils.Constants.*;
+
+/**
+ * AddressInDTO for adding new address.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,7 +28,8 @@ public class AddressInDTO {
     /**
      * pincode of the user whose address is to be added.
      */
-    @NotBlank(message = "Pincode cannot be empty")
+    @Min(value = MIN_PINCODE_VALUE, message = "Pincode must be a 6-digit number")
+    @Max(value = MAX_PINCODE_VALUE, message = "Pincode must be a 6-digit number")
     private long pincode;
     /**
      * city of the user whose address is to be added.

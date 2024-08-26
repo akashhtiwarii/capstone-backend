@@ -17,6 +17,9 @@ import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
+/**
+ * User Entity mapping with users table.
+ */
 @Entity
 @Table(name = "users")
 @Data

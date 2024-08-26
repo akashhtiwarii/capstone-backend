@@ -4,17 +4,18 @@ import com.capstone.users_service.Enum.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.Objects;
-
 import static com.capstone.users_service.utils.Constants.MIN_PASSWORD_LENGTH;
 import static com.capstone.users_service.utils.Constants.PHONE_NUMBER_LENGTH;
 
+/**
+ * UserInDTO for adding new user.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,17 +30,18 @@ public class UserInDTO {
      */
     @NotBlank(message = "Password is mandatory")
     @Size(min = MIN_PASSWORD_LENGTH, message = "Password should be minimum 8 characters")
-    @Pattern(
-            regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).{8,}$",
-            message = "Password must contain at least one digit, one lowercase letter,"
-                    + " one uppercase letter, and one special character"
-    )
+//    @Pattern(
+//            regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).{8,}$",
+//            message = "Password must contain at least one digit, one lowercase letter,"
+//                    + " one uppercase letter, and one special character"
+//    )
     private String password;
 
     /**
      * email for linking email field from User Entity.
      */
     @Email(message = "Valid Email not found")
+    @NotBlank(message = "Email is mandatory")
     private String email;
     /**
      * phone for linking phone field from User Entity.

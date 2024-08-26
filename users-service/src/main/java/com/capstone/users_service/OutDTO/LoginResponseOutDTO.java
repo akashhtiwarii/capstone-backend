@@ -5,10 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * LoginResponseOutDTO to giver user details after login.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginResponseDTO {
+public class LoginResponseOutDTO {
     /**
      * userId of logged-in user.
      */

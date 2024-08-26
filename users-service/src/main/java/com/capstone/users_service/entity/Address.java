@@ -12,6 +12,10 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Objects;
 
+
+/**
+ * Address Entity mapping with address table.
+ */
 @Entity
 @Table(name = "address")
 @Data

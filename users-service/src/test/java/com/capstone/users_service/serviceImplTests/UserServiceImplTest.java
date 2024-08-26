@@ -1,9 +1,9 @@
 package com.capstone.users_service.serviceImplTests;
 
 import com.capstone.users_service.Enum.Role;
-import com.capstone.users_service.InDTO.LoginRequestDTO;
+import com.capstone.users_service.InDTO.LoginRequestInDTO;
 import com.capstone.users_service.InDTO.UserInDTO;
-import com.capstone.users_service.OutDTO.LoginResponseDTO;
+import com.capstone.users_service.OutDTO.LoginResponseOutDTO;
 import com.capstone.users_service.entity.User;
 import com.capstone.users_service.exceptions.EmailAlreadyExistsException;
 import com.capstone.users_service.repository.UserRepository;
@@ -61,32 +61,32 @@ public class UserServiceImplTest {
 
     @Test
     public void testLoginUser_Success() {
-        LoginRequestDTO loginRequestDTO = new LoginRequestDTO("john.doe@example.com", "password123");
+        LoginRequestInDTO loginRequestInDTO = new LoginRequestInDTO("john.doe@example.com", "password123");
         User user = new User(1L, "John Doe", "john.doe@example.com", "password123", "1234567890", "123 Main St", Role.USER);
 
-        when(userRepository.findByEmailAndPassword(loginRequestDTO.getEmail(), loginRequestDTO.getPassword())).thenReturn(user);
+        when(userRepository.findByEmailAndPassword(loginRequestInDTO.getEmail(), loginRequestInDTO.getPassword())).thenReturn(user);
 
-        ResponseEntity<LoginResponseDTO> response = userServiceImpl.loginUser(loginRequestDTO);
+        ResponseEntity<LoginResponseOutDTO> response = userServiceImpl.loginUser(loginRequestInDTO);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Login Successful", response.getBody().getMessage());
         assertEquals(user.getEmail(), response.getBody().getEmail());
         assertEquals(user.getName(), response.getBody().getName());
 
-        verify(userRepository, times(1)).findByEmailAndPassword(loginRequestDTO.getEmail(), loginRequestDTO.getPassword());
+        verify(userRepository, times(1)).findByEmailAndPassword(loginRequestInDTO.getEmail(), loginRequestInDTO.getPassword());
     }
 
     @Test
     public void testLoginUser_InvalidCredentials() {
-        LoginRequestDTO loginRequestDTO = new LoginRequestDTO("john.doe@example.com", "wrongpassword");
+        LoginRequestInDTO loginRequestInDTO = new LoginRequestInDTO("john.doe@example.com", "wrongpassword");
 
-        when(userRepository.findByEmailAndPassword(loginRequestDTO.getEmail(), loginRequestDTO.getPassword())).thenReturn(null);
+        when(userRepository.findByEmailAndPassword(loginRequestInDTO.getEmail(), loginRequestInDTO.getPassword())).thenReturn(null);
 
-        ResponseEntity<LoginResponseDTO> response = userServiceImpl.loginUser(loginRequestDTO);
+        ResponseEntity<LoginResponseOutDTO> response = userServiceImpl.loginUser(loginRequestInDTO);
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         assertEquals("Invalid Credentials", response.getBody().getMessage());
 
-        verify(userRepository, times(1)).findByEmailAndPassword(loginRequestDTO.getEmail(), loginRequestDTO.getPassword());
+        verify(userRepository, times(1)).findByEmailAndPassword(loginRequestInDTO.getEmail(), loginRequestInDTO.getPassword());
     }
 }

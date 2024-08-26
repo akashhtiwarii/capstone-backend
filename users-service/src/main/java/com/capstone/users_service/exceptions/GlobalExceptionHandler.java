@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Global exception handler.
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 

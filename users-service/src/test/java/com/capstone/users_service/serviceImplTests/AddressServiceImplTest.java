@@ -1,7 +1,7 @@
 package com.capstone.users_service.serviceImplTests;
 
 import com.capstone.users_service.InDTO.AddressInDTO;
-import com.capstone.users_service.InDTO.AddressRequestDTO;
+import com.capstone.users_service.InDTO.AddressRequestInDTO;
 import com.capstone.users_service.OutDTO.AddressOutDTO;
 import com.capstone.users_service.entity.Address;
 import com.capstone.users_service.entity.User;
@@ -16,7 +16,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -40,21 +39,21 @@ class AddressServiceImplTest {
 
     @Test
     void testFindUserAddresses() {
-        AddressRequestDTO addressRequestDTO = new AddressRequestDTO("john.doe@example.com");
+        AddressRequestInDTO addressRequestInDTO = new AddressRequestInDTO("john.doe@example.com");
         User user = new User();
         user.setUserId(1L);
         user.setAddress("123 Main St");
 
-        when(userRepository.findByEmail(addressRequestDTO.getEmail())).thenReturn(user);
+        when(userRepository.findByEmail(addressRequestInDTO.getEmail())).thenReturn(user);
         when(addressRepository.findById(user.getUserId())).thenReturn(Collections.singletonList(new Address()));
 
-        AddressOutDTO result = addressServiceImpl.findUserAddresses(addressRequestDTO);
+        AddressOutDTO result = addressServiceImpl.findUserAddresses(addressRequestInDTO);
 
         assertNotNull(result);
         assertEquals("123 Main St", result.getCurrentAddress());
         assertFalse(result.getAddresses().isEmpty());
 
-        verify(userRepository, times(1)).findByEmail(addressRequestDTO.getEmail());
+        verify(userRepository, times(1)).findByEmail(addressRequestInDTO.getEmail());
         verify(addressRepository, times(1)).findById(user.getUserId());
     }
 
