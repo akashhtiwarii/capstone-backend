@@ -20,7 +20,6 @@ public class UserConverters {
         user.setEmail(userInDTO.getEmail());
         user.setRole(userInDTO.getRole());
         user.setPhone(userInDTO.getPhone());
-        user.setAddress(userInDTO.getAddress());
         return user;
     }
 
@@ -35,8 +34,9 @@ public class UserConverters {
                 user.getEmail(),
                 user.getName(),
                 user.getPhone(),
-                user.getAddress(),
                 user.getRole(),
                 "Login Successful");
     }
+
+
 }

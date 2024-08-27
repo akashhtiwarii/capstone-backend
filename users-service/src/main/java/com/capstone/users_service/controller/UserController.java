@@ -4,8 +4,8 @@ import com.capstone.users_service.InDTO.AddressInDTO;
 import com.capstone.users_service.InDTO.AddressRequestInDTO;
 import com.capstone.users_service.InDTO.LoginRequestInDTO;
 import com.capstone.users_service.InDTO.UserInDTO;
-import com.capstone.users_service.OutDTO.AddressOutDTO;
 import com.capstone.users_service.OutDTO.LoginResponseOutDTO;
+import com.capstone.users_service.entity.Address;
 import com.capstone.users_service.service.AddressService;
 import com.capstone.users_service.service.UserService;
 import org.apache.logging.log4j.LogManager;
@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+
+import java.util.List;
 
 import static com.capstone.users_service.utils.Constants.USER_ADDRESS_ENDPOINT;
 import static com.capstone.users_service.utils.Constants.USER_ADD_ADDRESS_ENDPOINT;
@@ -100,12 +102,12 @@ public class UserController {
      * @return address with a specific Id
      */
     @PostMapping(USER_ADDRESS_ENDPOINT)
-    public AddressOutDTO getAddressesById(@RequestBody AddressRequestInDTO addressRequestInDTO) {
+    public List<Address> getAddressesById(@RequestBody AddressRequestInDTO addressRequestInDTO) {
         logger.info("Fetching addresses for email ID: {}", addressRequestInDTO.getEmail());
         try {
-            AddressOutDTO addressOutDTO = addressService.findUserAddresses(addressRequestInDTO);
+            List<Address> addresses = addressService.findUserAddresses(addressRequestInDTO);
             logger.info("Addresses fetched successfully for email ID: {}", addressRequestInDTO.getEmail());
-            return addressOutDTO;
+            return addresses;
         } catch (Exception e) {
             logger.error("Error occurred while fetching addresses for email ID: {}", addressRequestInDTO.getEmail(), e);
             throw e;

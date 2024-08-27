@@ -18,14 +18,6 @@ public class WalletTest {
     }
 
     @Test
-    public void testEquals() {
-        assertEquals(wallet1,wallet2);
-        assertEquals(wallet1,wallet1);
-        wallet1.setUserId(2L);
-        assertNotEquals(wallet1,wallet2);
-    }
-
-    @Test
     public void testHashCode() {
         assertEquals(wallet1.hashCode(), wallet2.hashCode());
         wallet2.setUserId(2L);

@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
+
 /**
  * LoginResponseOutDTO to giver user details after login.
  */
@@ -28,10 +30,7 @@ public class LoginResponseOutDTO {
      * phone of logged-in user.
      */
     private String phone;
-    /**
-     * address of logged-in user.
-     */
-    private String address;
+
     /**
      * role of logged-in user.
      */
@@ -40,4 +39,32 @@ public class LoginResponseOutDTO {
      * Authentication status message.
      */
     private String message;
+
+    /**
+     * Override equals method.
+     * @param o
+     * @return
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        LoginResponseOutDTO that = (LoginResponseOutDTO) o;
+        return userId == that.userId && Objects.equals(email, that.email)
+                && Objects.equals(name, that.name) && Objects.equals(phone, that.phone)
+                && role == that.role && Objects.equals(message, that.message);
+    }
+
+    /**
+     * Override hashcode method.
+     * @return
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, email, name, phone, role, message);
+    }
 }

@@ -23,6 +23,10 @@ public class UserInDTO {
     /**
      * name for linking name field from User Entity.
      */
+    @Pattern(
+            regexp = "^[a-zA-Z\\s'-]{2,50}$",
+            message = "Enter a valid Name"
+    )
     @NotBlank(message = "Name is mandatory")
     private String name;
     /**
@@ -30,11 +34,6 @@ public class UserInDTO {
      */
     @NotBlank(message = "Password is mandatory")
     @Size(min = MIN_PASSWORD_LENGTH, message = "Password should be minimum 8 characters")
-//    @Pattern(
-//            regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).{8,}$",
-//            message = "Password must contain at least one digit, one lowercase letter,"
-//                    + " one uppercase letter, and one special character"
-//    )
     private String password;
 
     /**
@@ -52,11 +51,6 @@ public class UserInDTO {
             message = "Phone number should be valid"
     )
     private String phone;
-    /**
-     * address for linking address field from User Entity.
-     */
-    @NotBlank(message = "Address is mandatory")
-    private String address;
     /**
      * role for linking role field from User Entity.
      */
@@ -79,7 +73,7 @@ public class UserInDTO {
         UserInDTO that = (UserInDTO) o;
         return Objects.equals(name, that.name) && Objects.equals(password, that.password)
                 && Objects.equals(email, that.email) && Objects.equals(phone, that.phone)
-                && Objects.equals(address, that.address) && role == that.role;
+                && role == that.role;
     }
 
     /**
@@ -88,6 +82,6 @@ public class UserInDTO {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(name, password, email, phone, address, role);
+        return Objects.hash(name, password, email, phone, role);
     }
 }

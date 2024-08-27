@@ -5,88 +5,134 @@ import com.capstone.users_service.InDTO.LoginRequestInDTO;
 import com.capstone.users_service.InDTO.UserInDTO;
 import com.capstone.users_service.OutDTO.LoginResponseOutDTO;
 import com.capstone.users_service.entity.User;
+import com.capstone.users_service.entity.Wallet;
 import com.capstone.users_service.exceptions.EmailAlreadyExistsException;
 import com.capstone.users_service.repository.UserRepository;
+import com.capstone.users_service.repository.WalletRepository;
 import com.capstone.users_service.serviceImpl.UserServiceImpl;
+import com.capstone.users_service.converters.UserConverters;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.util.Optional;
+
+import static com.capstone.users_service.utils.Constants.EMAIL_ALREADY_IN_USE;
+import static com.capstone.users_service.utils.Constants.INITIAL_WALLET_AMOUNT;
+import static com.capstone.users_service.utils.Constants.INVALID_CREDENTIALS;
+import static com.capstone.users_service.utils.Constants.OWNER_SIGNUP_MESSAGE;
+import static com.capstone.users_service.utils.Constants.USER_SIGNUP_MESSAGE;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 public class UserServiceImplTest {
 
-    @InjectMocks
-    private UserServiceImpl userServiceImpl;
-
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private WalletRepository walletRepository;
+
+    @InjectMocks
+    private UserServiceImpl userServiceImpl;
+
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    public void testSave_Success() {
-        UserInDTO userInDTO = new UserInDTO("John Doe", "john.doe@example.com", "password123", "1234567890", "123 Main St", Role.USER);
-        User user = new User(1L, "John Doe", "john.doe@example.com", "password123", "1234567890", "123 Main St", Role.USER);
+    public void testSave_UserExists_ThrowsEmailAlreadyExistsException() {
+        UserInDTO userInDTO = new UserInDTO();
+        userInDTO.setEmail("test@example.com");
+        when(userRepository.existsByEmail(anyString())).thenReturn(true);
 
-        when(userRepository.existsByEmail(userInDTO.getEmail())).thenReturn(false);
-        when(userRepository.save(any(User.class))).thenReturn(user);
-
-        ResponseEntity<String> response = userServiceImpl.save(userInDTO);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Account Added Successfully", response.getBody());
-
-        verify(userRepository, times(1)).existsByEmail(userInDTO.getEmail());
-        verify(userRepository, times(1)).save(any(User.class));
+        EmailAlreadyExistsException exception = assertThrows(
+                EmailAlreadyExistsException.class,
+                () -> userServiceImpl.save(userInDTO)
+        );
+        assertEquals(EMAIL_ALREADY_IN_USE, exception.getMessage());
+        verify(userRepository, times(1)).existsByEmail(anyString());
     }
 
     @Test
-    public void testSave_EmailAlreadyExists() {
-        UserInDTO userInDTO = new UserInDTO("John Doe", "john.doe@example.com", "password123", "1234567890", "123 Main St", Role.USER);
-        when(userRepository.existsByEmail(userInDTO.getEmail())).thenReturn(true);
-        assertThrows(EmailAlreadyExistsException.class, () -> userServiceImpl.save(userInDTO));
-        verify(userRepository, times(1)).existsByEmail(userInDTO.getEmail());
-        verify(userRepository, never()).save(any(User.class));
+    public void testSave_NewUser_SuccessUserRole() {
+        UserInDTO userInDTO = new UserInDTO();
+        userInDTO.setEmail("test@example.com");
+        userInDTO.setRole(Role.USER);
+
+        User user = new User();
+        user.setUserId(1L);
+        user.setEmail("test@example.com");
+
+        when(userRepository.existsByEmail(anyString())).thenReturn(false);
+        when(userRepository.save(any(User.class))).thenReturn(user);
+        when(userRepository.findByEmail(anyString())).thenReturn(user);
+
+        String result = userServiceImpl.save(userInDTO);
+
+        assertEquals(USER_SIGNUP_MESSAGE, result);
+        verify(userRepository, times(1)).existsByEmail(anyString());
+        verify(userRepository, times(1)).save(any(User.class));
+        verify(walletRepository, times(1)).save(any(Wallet.class));
+    }
+
+    @Test
+    public void testSave_NewUser_SuccessOwnerRole() {
+        UserInDTO userInDTO = new UserInDTO();
+        userInDTO.setEmail("owner@example.com");
+        userInDTO.setRole(Role.OWNER);
+
+        User user = new User();
+        user.setUserId(1L);
+        user.setEmail("owner@example.com");
+
+        when(userRepository.existsByEmail(anyString())).thenReturn(false);
+        when(userRepository.save(any(User.class))).thenReturn(user);
+
+        String result = userServiceImpl.save(userInDTO);
+
+        assertEquals(OWNER_SIGNUP_MESSAGE, result);
+        verify(userRepository, times(1)).existsByEmail(anyString());
+        verify(userRepository, times(1)).save(any(User.class));
+        verify(walletRepository, never()).save(any(Wallet.class));
     }
 
     @Test
     public void testLoginUser_Success() {
-        LoginRequestInDTO loginRequestInDTO = new LoginRequestInDTO("john.doe@example.com", "password123");
-        User user = new User(1L, "John Doe", "john.doe@example.com", "password123", "1234567890", "123 Main St", Role.USER);
+        LoginRequestInDTO loginRequestInDTO = new LoginRequestInDTO();
+        loginRequestInDTO.setEmail("test@example.com");
+        loginRequestInDTO.setPassword("password");
 
-        when(userRepository.findByEmailAndPassword(loginRequestInDTO.getEmail(), loginRequestInDTO.getPassword())).thenReturn(user);
+        User user = new User();
+        user.setEmail("test@example.com");
+        user.setPassword("password");
 
-        ResponseEntity<LoginResponseOutDTO> response = userServiceImpl.loginUser(loginRequestInDTO);
+        when(userRepository.findByEmailAndPassword(anyString(), anyString())).thenReturn(user);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Login Successful", response.getBody().getMessage());
-        assertEquals(user.getEmail(), response.getBody().getEmail());
-        assertEquals(user.getName(), response.getBody().getName());
+        LoginResponseOutDTO result = userServiceImpl.loginUser(loginRequestInDTO);
 
-        verify(userRepository, times(1)).findByEmailAndPassword(loginRequestInDTO.getEmail(), loginRequestInDTO.getPassword());
+        assertNotNull(result);
+        assertEquals("test@example.com", result.getEmail());
+        verify(userRepository, times(1)).findByEmailAndPassword(anyString(), anyString());
     }
 
     @Test
-    public void testLoginUser_InvalidCredentials() {
-        LoginRequestInDTO loginRequestInDTO = new LoginRequestInDTO("john.doe@example.com", "wrongpassword");
+    public void testLoginUser_Failure_InvalidCredentials() {
+        LoginRequestInDTO loginRequestInDTO = new LoginRequestInDTO();
+        loginRequestInDTO.setEmail("wrong@example.com");
+        loginRequestInDTO.setPassword("wrongpassword");
 
-        when(userRepository.findByEmailAndPassword(loginRequestInDTO.getEmail(), loginRequestInDTO.getPassword())).thenReturn(null);
+        when(userRepository.findByEmailAndPassword(anyString(), anyString())).thenReturn(null);
 
-        ResponseEntity<LoginResponseOutDTO> response = userServiceImpl.loginUser(loginRequestInDTO);
+        LoginResponseOutDTO result = userServiceImpl.loginUser(loginRequestInDTO);
 
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        assertEquals("Invalid Credentials", response.getBody().getMessage());
-
-        verify(userRepository, times(1)).findByEmailAndPassword(loginRequestInDTO.getEmail(), loginRequestInDTO.getPassword());
+        assertNotNull(result);
+        assertEquals(INVALID_CREDENTIALS, result.getMessage());
+        verify(userRepository, times(1)).findByEmailAndPassword(anyString(), anyString());
     }
 }
+

@@ -11,135 +11,131 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class UserInDTOTest {
 
     private Validator validator;
+    private UserInDTO userInDTO;
 
     @BeforeEach
     void setUp() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
+
+        userInDTO = new UserInDTO();
+        userInDTO.setName("Akash Tiwari");
+        userInDTO.setPassword("Password1!");
+        userInDTO.setEmail("akash@gmail.com");
+        userInDTO.setPhone("1234567890");
+        userInDTO.setRole(Role.USER);
     }
 
     @Test
-    void validUserInDTO() {
-        UserInDTO userInDTO = new UserInDTO(
-                "John Doe",
-                "Password@123",
-                "john.doe@example.com",
-                "1234567890",
-                "123 Elm Street",
-                Role.USER
-        );
-
+    void testValidUserInDTO() {
         Set<ConstraintViolation<UserInDTO>> violations = validator.validate(userInDTO);
-
         assertTrue(violations.isEmpty());
     }
 
     @Test
-    void whenNameIsBlank_thenOneViolation() {
-        UserInDTO userInDTO = new UserInDTO(
-                "",
-                "Password@123",
-                "john.doe@example.com",
-                "1234567890",
-                "123 Elm Street",
-                Role.USER
-        );
-
+    void testInvalidName() {
+        userInDTO.setName("J@hn!");
         Set<ConstraintViolation<UserInDTO>> violations = validator.validate(userInDTO);
+        assertFalse(violations.isEmpty());
 
-        assertEquals(1, violations.size());
-        assertEquals("Name is mandatory", violations.iterator().next().getMessage());
+        ConstraintViolation<UserInDTO> violation = violations.iterator().next();
+        assertEquals("Enter a valid Name", violation.getMessage());
     }
 
     @Test
-    void invalidPasswordUserInDTO() {
-        UserInDTO userInDTO = new UserInDTO(
-                "John Doe",
-                "short",
-                "john.doe@example.com",
-                "1234567890",
-                "123 Elm Street",
-                Role.USER
-        );
-
+    void testBlankName() {
+        userInDTO.setName("");
         Set<ConstraintViolation<UserInDTO>> violations = validator.validate(userInDTO);
+        assertFalse(violations.isEmpty());
 
-        assertEquals(2, violations.size());
-        assertEquals("Password must contain at least one digit, one lowercase letter, one uppercase letter, and one special character", violations.iterator().next().getMessage());
+        ConstraintViolation<UserInDTO> violation = violations.iterator().next();
+        assertEquals("Enter a valid Name", violation.getMessage());
     }
 
     @Test
-    void invalidEmailUserInDTO() {
-        UserInDTO userInDTO = new UserInDTO(
-                "John Doe",
-                "Password@123",
-                "invalid-email",
-                "1234567890",
-                "123 Elm Street",
-                Role.USER
-        );
-
+    void testInvalidPassword() {
+        userInDTO.setPassword("pass");
         Set<ConstraintViolation<UserInDTO>> violations = validator.validate(userInDTO);
+        assertFalse(violations.isEmpty());
 
-        assertEquals(1, violations.size());
-        assertEquals("Valid Email not found", violations.iterator().next().getMessage());
+        ConstraintViolation<UserInDTO> violation = violations.iterator().next();
+        assertEquals("Password should be minimum 8 characters", violation.getMessage());
     }
 
     @Test
-    void invalidPhoneUserInDTO() {
-        UserInDTO userInDTO = new UserInDTO(
-                "John Doe",
-                "Password@123",
-                "john.doe@example.com",
-                "12345",  // Invalid phone number
-                "123 Elm Street",
-                Role.USER
-        );
-
+    void testBlankPassword() {
+        userInDTO.setPassword("");
         Set<ConstraintViolation<UserInDTO>> violations = validator.validate(userInDTO);
+        assertFalse(violations.isEmpty());
 
-        assertEquals(1, violations.size());
-        assertEquals("Phone number should be valid", violations.iterator().next().getMessage());
+        ConstraintViolation<UserInDTO> violation = violations.iterator().next();
+        assertEquals("Password should be minimum 8 characters", violation.getMessage());
+    }
+
+    @Test
+    void testInvalidEmail() {
+        userInDTO.setEmail("invalid-email");
+        Set<ConstraintViolation<UserInDTO>> violations = validator.validate(userInDTO);
+        assertFalse(violations.isEmpty());
+
+        ConstraintViolation<UserInDTO> violation = violations.iterator().next();
+        assertEquals("Valid Email not found", violation.getMessage());
+    }
+
+    @Test
+    void testBlankEmail() {
+        userInDTO.setEmail("");
+        Set<ConstraintViolation<UserInDTO>> violations = validator.validate(userInDTO);
+        assertFalse(violations.isEmpty());
+
+        ConstraintViolation<UserInDTO> violation = violations.iterator().next();
+        assertEquals("Email is mandatory", violation.getMessage());
+    }
+
+    @Test
+    void testInvalidPhoneNumber() {
+        userInDTO.setPhone("123");
+        Set<ConstraintViolation<UserInDTO>> violations = validator.validate(userInDTO);
+        assertFalse(violations.isEmpty());
+
+        ConstraintViolation<UserInDTO> violation = violations.iterator().next();
+        assertEquals("Phone number should be valid", violation.getMessage());
+    }
+
+    @Test
+    void testBlankPhoneNumber() {
+        userInDTO.setPhone("");
+        Set<ConstraintViolation<UserInDTO>> violations = validator.validate(userInDTO);
+        assertFalse(violations.isEmpty());
+
+        ConstraintViolation<UserInDTO> violation = violations.iterator().next();
+        assertEquals("Phone number should be valid", violation.getMessage());
+    }
+
+    @Test
+    void testNullRole() {
+        userInDTO.setRole(null);
+        Set<ConstraintViolation<UserInDTO>> violations = validator.validate(userInDTO);
+        assertFalse(violations.isEmpty());
+
+        ConstraintViolation<UserInDTO> violation = violations.iterator().next();
+        assertEquals("Role is mandatory", violation.getMessage());
     }
 
     @Test
     void testEqualsAndHashCode() {
-        UserInDTO user1 = new UserInDTO(
-                "John Doe",
-                "Password@123",
-                "john.doe@example.com",
-                "1234567890",
-                "123 Elm Street",
-                Role.USER
-        );
+        UserInDTO userInDTO2 = new UserInDTO("Akash Tiwari", "Password1!", "akash@gmail.com", "1234567890", Role.USER);
 
-        UserInDTO user2 = new UserInDTO(
-                "John Doe",
-                "Password@123",
-                "john.doe@example.com",
-                "1234567890",
-                "123 Elm Street",
-                Role.USER
-        );
+        assertEquals(userInDTO, userInDTO2);
+        assertEquals(userInDTO.hashCode(), userInDTO2.hashCode());
 
-        UserInDTO user3 = new UserInDTO(
-                "Jane Doe",
-                "Password@123",
-                "jane.doe@example.com",
-                "0987654321",
-                "456 Oak Street",
-                Role.OWNER
-        );
-
-        assertEquals(user1, user2);
-        assertEquals(user1.hashCode(), user2.hashCode());
-        assertTrue(!user1.equals(user3));
-        assertTrue(user1.hashCode() != user3.hashCode());
+        userInDTO2.setEmail("different@example.com");
+        assertNotEquals(userInDTO, userInDTO2);
+        assertNotEquals(userInDTO.hashCode(), userInDTO2.hashCode());
     }
 }

@@ -10,8 +10,7 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class AddressRequestInDTOTest {
 
@@ -40,5 +39,24 @@ class AddressRequestInDTOTest {
 
         assertEquals(1, violations.size());
         assertEquals("No valid email found", violations.iterator().next().getMessage());
+    }
+
+    @Test
+    void testGettersAndSetters() {
+        AddressRequestInDTO addressRequestInDTO = new AddressRequestInDTO();
+        addressRequestInDTO.setEmail("john.doe@example.com");
+        assertEquals("john.doe@example.com", addressRequestInDTO.getEmail());
+    }
+
+    @Test
+    void testEqualsAndHashCode() {
+        AddressRequestInDTO addressRequest1 = new AddressRequestInDTO("john.doe@example.com");
+        AddressRequestInDTO addressRequest2 = new AddressRequestInDTO("john.doe@example.com");
+        AddressRequestInDTO addressRequest3 = new AddressRequestInDTO("jane.doe@example.com");
+        assertEquals(addressRequest1, addressRequest2);
+        assertNotEquals(addressRequest1, addressRequest3);
+        assertNotEquals(addressRequest2, addressRequest3);
+        assertEquals(addressRequest1.hashCode(), addressRequest2.hashCode());
+        assertNotEquals(addressRequest1.hashCode(), addressRequest3.hashCode());
     }
 }

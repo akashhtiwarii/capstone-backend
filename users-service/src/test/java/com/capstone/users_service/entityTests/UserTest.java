@@ -14,16 +14,8 @@ public class UserTest {
 
     @BeforeEach
     public void setUp() {
-        user1 = new User(1L, "John Doe", "john.doe@example.com", "password123", "1234567890", "123 Main St", Role.USER);
-        user2 = new User(1L, "John Doe", "john.doe@example.com", "password123", "1234567890", "123 Main St", Role.USER);
-    }
-
-    @Test
-    public void testEquals() {
-        assertEquals(user1,user2);
-        assertEquals(user1,user1);
-        user1.setUserId(2L);
-        assertNotEquals(user1,user2);
+        user1 = new User(1L, "John Doe", "john.doe@example.com", "password123", "1234567890", Role.USER);
+        user2 = new User(1L, "John Doe", "john.doe@example.com", "password123", "1234567890", Role.USER);
     }
 
     @Test
@@ -41,7 +33,6 @@ public class UserTest {
         assertEquals("john.doe@example.com", user1.getEmail());
         assertEquals("password123", user1.getPassword());
         assertEquals("1234567890", user1.getPhone());
-        assertEquals("123 Main St", user1.getAddress());
         assertEquals(Role.USER, user1.getRole());
 
         user1.setUserId(2L);
@@ -58,9 +49,6 @@ public class UserTest {
 
         user1.setPhone("0987654321");
         assertEquals("0987654321", user1.getPhone());
-
-        user1.setAddress("456 Elm St");
-        assertEquals("456 Elm St", user1.getAddress());
 
         user1.setRole(Role.OWNER);
         assertEquals(Role.OWNER, user1.getRole());

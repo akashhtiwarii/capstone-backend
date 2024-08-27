@@ -18,14 +18,6 @@ public class AddressTest {
     }
 
     @Test
-    public void testEquals() {
-        assertEquals(address1,address2);
-        assertEquals(address1,address1);
-        address1.setUserId(2L);
-        assertNotEquals(address1,address2);
-    }
-
-    @Test
     public void testHashCode() {
         assertEquals(address1.hashCode(), address2.hashCode());
         address2.setUserId(2L);

@@ -60,12 +60,6 @@ public class User {
     private String phone;
 
     /**
-     address for connecting address field in database using ORM.
-     */
-    @Column(name = "address")
-    private String address;
-
-    /**
      role for connecting role field in database using ORM.
      */
     @Enumerated(EnumType.STRING)
@@ -88,7 +82,7 @@ public class User {
         User user = (User) o;
         return userId == user.userId && Objects.equals(name, user.name)
                 && Objects.equals(email, user.email) && Objects.equals(password, user.password)
-                && Objects.equals(phone, user.phone) && Objects.equals(address, user.address) && role == user.role;
+                && Objects.equals(phone, user.phone) && role == user.role;
     }
 
     /**
@@ -97,6 +91,6 @@ public class User {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(userId, name, email, password, phone, address, role);
+        return Objects.hash(userId, name, email, password, phone, role);
     }
 }

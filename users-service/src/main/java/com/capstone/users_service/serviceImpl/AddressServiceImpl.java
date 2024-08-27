@@ -2,7 +2,6 @@ package com.capstone.users_service.serviceImpl;
 
 import com.capstone.users_service.InDTO.AddressInDTO;
 import com.capstone.users_service.InDTO.AddressRequestInDTO;
-import com.capstone.users_service.OutDTO.AddressOutDTO;
 import com.capstone.users_service.entity.Address;
 import com.capstone.users_service.entity.User;
 import com.capstone.users_service.repository.AddressRepository;
@@ -10,6 +9,8 @@ import com.capstone.users_service.repository.UserRepository;
 import com.capstone.users_service.service.AddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * AddressServiceImpl for implementing methods of AddressService.
@@ -30,16 +31,15 @@ public class AddressServiceImpl implements AddressService {
 
     /**
      * Get list of addresses added by user.
+     *
      * @param addressRequestInDTO request body
      * @return list of addresses of a user
      */
     @Override
-    public AddressOutDTO findUserAddresses(AddressRequestInDTO addressRequestInDTO) {
+    public List<Address> findUserAddresses(AddressRequestInDTO addressRequestInDTO) {
         User user = userRepository.findByEmail(addressRequestInDTO.getEmail());
-        AddressOutDTO addressOutDTO = new AddressOutDTO();
-        addressOutDTO.setAddresses(addressRepository.findById(user.getUserId()));
-        addressOutDTO.setCurrentAddress(user.getAddress());
-        return addressOutDTO;
+        List<Address> addresses = addressRepository.findByUserId(user.getUserId());
+        return addresses;
     }
 
     /**
