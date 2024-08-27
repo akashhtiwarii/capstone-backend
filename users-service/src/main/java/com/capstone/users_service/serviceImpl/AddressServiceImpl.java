@@ -39,6 +39,9 @@ public class AddressServiceImpl implements AddressService {
     public List<Address> findUserAddresses(AddressRequestInDTO addressRequestInDTO) {
         User user = userRepository.findByEmail(addressRequestInDTO.getEmail());
         List<Address> addresses = addressRepository.findByUserId(user.getUserId());
+        if (addresses == null || addresses.isEmpty()) {
+            throw new RuntimeException("No addresses found for user with email: " + addressRequestInDTO.getEmail());
+        }
         return addresses;
     }
 
@@ -60,7 +63,7 @@ public class AddressServiceImpl implements AddressService {
             addressRepository.save(address);
             return "Address added successfully";
         } catch (Exception e) {
-            throw new RuntimeException("An unexpected error occured: " + e.getMessage());
+            throw new RuntimeException("An unexpected error occurred: " + e.getMessage());
         }
     }
 }

@@ -4,8 +4,7 @@ import com.capstone.users_service.entity.Address;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AddressTest {
     private Address address1;
@@ -52,5 +51,23 @@ public class AddressTest {
         address1.setState("Madhya Pradesh");
         assertEquals("Madhya Pradesh", address1.getState());
 
+    }
+
+    @Test
+    public void testEquals() {
+        Address address1 = new Address(1L, 1001L, "123 Main St", 123456, "Springfield", "IL");
+        Address address2 = new Address(1L, 1001L, "123 Main St", 123456, "Springfield", "IL");
+        Address address3 = new Address(2L, 1001L, "123 Main St", 123456, "Springfield", "IL");
+        Address address4 = new Address(1L, 1002L, "123 Main St", 123456, "Springfield", "IL");
+        Address address5 = new Address(1L, 1001L, "456 Elm St", 123456, "Springfield", "IL");
+        Address address6 = new Address(1L, 1001L, "123 Main St", 654321, "Springfield", "IL");
+        Address address7 = new Address(1L, 1001L, "123 Main St", 123456, "Shelbyville", "IL");
+        assertTrue(address1.equals(address1));
+        assertFalse(address1.equals(address3));
+        assertFalse(address1.equals(address4));
+        assertFalse(address1.equals(address5));
+        assertFalse(address1.equals(address6));
+        assertFalse(address1.equals(address7));
+        assertTrue(address1.equals(address2));
     }
 }

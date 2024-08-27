@@ -4,8 +4,7 @@ import com.capstone.users_service.entity.Wallet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class WalletTest {
     private Wallet wallet1;
@@ -36,6 +35,20 @@ public class WalletTest {
         assertEquals(2L, wallet1.getUserId());
         wallet1.setAmount(2000.0);
         assertEquals(2000.0, wallet1.getAmount());
+    }
+
+    @Test
+    public void testEquals() {
+        Wallet wallet1 = new Wallet(1L, 1001L, 250.75);
+        Wallet wallet2 = new Wallet(1L, 1001L, 250.75);
+        Wallet wallet3 = new Wallet(2L, 1001L, 250.75);
+        Wallet wallet4 = new Wallet(1L, 1002L, 250.75);
+        Wallet wallet5 = new Wallet(1L, 1001L, 300.00);
+        assertTrue(wallet1.equals(wallet1));
+        assertFalse(wallet1.equals(wallet3));
+        assertFalse(wallet1.equals(wallet4));
+        assertFalse(wallet1.equals(wallet5));
+        assertTrue(wallet1.equals(wallet2));
     }
 
 }

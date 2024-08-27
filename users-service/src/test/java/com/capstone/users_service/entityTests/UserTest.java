@@ -5,8 +5,7 @@ import com.capstone.users_service.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class UserTest {
     private User user1;
@@ -52,5 +51,17 @@ public class UserTest {
 
         user1.setRole(Role.OWNER);
         assertEquals(Role.OWNER, user1.getRole());
+    }
+
+    @Test
+    public void testEquals() {
+        User user1 = new User(1L, "John Doe", "john@example.com", "password123", "1234567890", Role.USER);
+        User user2 = new User(1L, "John Doe", "john@example.com", "password123", "1234567890", Role.USER);
+        User user3 = new User(2L, "John Doe", "john@example.com", "password123", "1234567890", Role.USER);
+        User user4 = new User(1L, "Jane Doe", "john@example.com", "password123", "1234567890", Role.USER);
+        assertTrue(user1.equals(user1));
+        assertFalse(user1.equals(user3));
+        assertFalse(user1.equals(user4));
+        assertTrue(user1.equals(user2));
     }
 }

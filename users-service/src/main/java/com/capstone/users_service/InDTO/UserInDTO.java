@@ -25,9 +25,9 @@ public class UserInDTO {
      */
     @Pattern(
             regexp = "^[a-zA-Z\\s'-]{2,50}$",
-            message = "Enter a valid Name"
+            message = "A valid name is mandatory"
     )
-    @NotBlank(message = "Name is mandatory")
+    @NotBlank(message = "A valid name is mandatory")
     private String name;
     /**
      * password for linking password field from User Entity.

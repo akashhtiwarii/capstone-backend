@@ -132,11 +132,9 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
-				<version>3.24.0</version> <!-- or use version from pluginManagement -->
+				<version>3.24.0</version>
 				<configuration>
-					<!-- failOnViolation is actually true by default, but can be disabled -->
 					<failOnViolation>true</failOnViolation>
-					<!-- printFailingErrors is pretty useful -->
 					<printFailingErrors>true</printFailingErrors>
 				</configuration>
 				<executions>
@@ -171,6 +169,8 @@
 				<configuration>
 					<effort>Max</effort>
 					<threshold>High</threshold>
+					<xmlOutput>true</xmlOutput>
+					<htmlOutput>true</htmlOutput>
 				</configuration>
 				<executions>
 					<execution>

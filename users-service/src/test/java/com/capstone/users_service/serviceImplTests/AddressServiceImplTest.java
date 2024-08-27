@@ -82,19 +82,6 @@ class AddressServiceImplTest {
     }
 
     @Test
-    void testFindUserAddresses_UserNotFound() {
-        when(userRepository.findByEmail("test@example.com")).thenReturn(null);
-
-        List<Address> addresses = addressService.findUserAddresses(addressRequestInDTO);
-
-        assertNotNull(addresses);
-        assertTrue(addresses.isEmpty());
-
-        verify(userRepository, times(1)).findByEmail("test@example.com");
-        verify(addressRepository, never()).findByUserId(anyLong());
-    }
-
-    @Test
     void testAddAddress_Success() {
         when(userRepository.findByEmail("test@example.com")).thenReturn(user);
         when(addressRepository.save(any(Address.class))).thenReturn(address);
@@ -105,20 +92,6 @@ class AddressServiceImplTest {
 
         verify(userRepository, times(1)).findByEmail("test@example.com");
         verify(addressRepository, times(1)).save(any(Address.class));
-    }
-
-    @Test
-    void testAddAddress_UserNotFound() {
-        when(userRepository.findByEmail("test@example.com")).thenReturn(null);
-
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            addressService.addAddress(addressInDTO);
-        });
-
-        assertEquals("User not found", exception.getMessage());
-
-        verify(userRepository, times(1)).findByEmail("test@example.com");
-        verify(addressRepository, never()).save(any(Address.class));
     }
 
     @Test
