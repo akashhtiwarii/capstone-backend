@@ -32,7 +32,7 @@ public class UserInDTO {
     /**
      * password for linking password field from User Entity.
      */
-    @NotBlank(message = "Password is mandatory")
+    @NotBlank(message = "Password should be minimum 8 characters")
     @Size(min = MIN_PASSWORD_LENGTH, message = "Password should be minimum 8 characters")
     private String password;
 
@@ -40,14 +40,18 @@ public class UserInDTO {
      * email for linking email field from User Entity.
      */
     @Email(message = "Valid Email not found")
-    @NotBlank(message = "Email is mandatory")
+    @NotBlank(message = "Valid Email not found")
+    @Pattern(
+            regexp = "^[\\w.%+-]+@gmail\\.com$",
+            message = "Valid Email not found"
+    )
     private String email;
     /**
      * phone for linking phone field from User Entity.
      */
     @NotBlank(message = "Phone number is mandatory")
     @Pattern(
-            regexp = "^\\d{" + PHONE_NUMBER_LENGTH + "}$",
+            regexp = "^[9876]\\d{" + (PHONE_NUMBER_LENGTH - 1) + "}$",
             message = "Phone number should be valid"
     )
     private String phone;

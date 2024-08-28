@@ -27,7 +27,7 @@ class UserInDTOTest {
         userInDTO.setName("Akash Tiwari");
         userInDTO.setPassword("Password1!");
         userInDTO.setEmail("akash@gmail.com");
-        userInDTO.setPhone("1234567890");
+        userInDTO.setPhone("9234567890");
         userInDTO.setRole(Role.USER);
     }
 
@@ -94,7 +94,7 @@ class UserInDTOTest {
         assertFalse(violations.isEmpty());
 
         ConstraintViolation<UserInDTO> violation = violations.iterator().next();
-        assertEquals("Email is mandatory", violation.getMessage());
+        assertEquals("Valid Email not found", violation.getMessage());
     }
 
     @Test
@@ -119,7 +119,7 @@ class UserInDTOTest {
 
     @Test
     void testEqualsAndHashCode() {
-        UserInDTO userInDTO2 = new UserInDTO("Akash Tiwari", "Password1!", "akash@gmail.com", "1234567890", Role.USER);
+        UserInDTO userInDTO2 = new UserInDTO("Akash Tiwari", "Password1!", "akash@gmail.com", "9234567890", Role.USER);
 
         assertEquals(userInDTO, userInDTO2);
         assertEquals(userInDTO.hashCode(), userInDTO2.hashCode());
