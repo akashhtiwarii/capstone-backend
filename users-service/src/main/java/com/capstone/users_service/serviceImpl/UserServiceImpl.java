@@ -13,12 +13,7 @@ import com.capstone.users_service.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.capstone.users_service.converters.UserConverters;
-import static com.capstone.users_service.utils.Constants.EMAIL_ALREADY_IN_USE;
-import static com.capstone.users_service.utils.Constants.INITIAL_WALLET_AMOUNT;
-import static com.capstone.users_service.utils.Constants.INVALID_CREDENTIALS;
-import static com.capstone.users_service.utils.Constants.OWNER_SIGNUP_MESSAGE;
-import static com.capstone.users_service.utils.Constants.UNEXPECTED_ERROR;
-import static com.capstone.users_service.utils.Constants.USER_SIGNUP_MESSAGE;
+import com.capstone.users_service.utils.Constants;
 
 /**
  * UserServiceImpl for implementing methods of UserService.
@@ -46,7 +41,7 @@ public class UserServiceImpl implements UserService {
     public String save(UserInDTO userInDTO) {
         User user = UserConverters.registerUserInDTOToUserEntity(userInDTO);
             if (userRepository.existsByEmail(user.getEmail())) {
-                throw new EmailAlreadyExistsException(EMAIL_ALREADY_IN_USE);
+                throw new EmailAlreadyExistsException(Constants.EMAIL_ALREADY_IN_USE);
             }
             try {
                 userRepository.save(user);
@@ -54,13 +49,13 @@ public class UserServiceImpl implements UserService {
                     User addedUser = userRepository.findByEmail(userInDTO.getEmail());
                     Wallet wallet = new Wallet();
                     wallet.setUserId(addedUser.getUserId());
-                    wallet.setAmount(INITIAL_WALLET_AMOUNT);
+                    wallet.setAmount(Constants.INITIAL_WALLET_AMOUNT);
                     walletRepository.save(wallet);
-                    return USER_SIGNUP_MESSAGE;
+                    return Constants.USER_SIGNUP_MESSAGE;
                 }
-                return OWNER_SIGNUP_MESSAGE;
+                return Constants.OWNER_SIGNUP_MESSAGE;
             } catch (Exception e) {
-            throw new RuntimeException(UNEXPECTED_ERROR + e.getMessage());
+            throw new RuntimeException(Constants.UNEXPECTED_ERROR + e.getMessage());
         }
     }
     /**
@@ -78,7 +73,7 @@ public class UserServiceImpl implements UserService {
             return UserConverters.userEntityToLoginResponseOutDTO(user);
         } else {
             LoginResponseOutDTO loginResponseOutDTO = new LoginResponseOutDTO();
-            loginResponseOutDTO.setMessage(INVALID_CREDENTIALS);
+            loginResponseOutDTO.setMessage(Constants.INVALID_CREDENTIALS);
             return loginResponseOutDTO;
         }
     }

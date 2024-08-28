@@ -41,9 +41,9 @@ class AddressServiceImplTest {
     }
 
     @Test
-    void testFindUserAddresses_UserNotFound() {
+    void testFindUserAddressesUserNotFound() {
         AddressRequestInDTO addressRequestInDTO = new AddressRequestInDTO();
-        addressRequestInDTO.setEmail("nonexistent@example.com");
+        addressRequestInDTO.setEmail("nonexistent@gmail.com");
 
         when(userRepository.findByEmail(anyString())).thenReturn(null);
 
@@ -53,9 +53,9 @@ class AddressServiceImplTest {
     }
 
     @Test
-    void testFindUserAddresses_AddressNotFound() {
+    void testFindUserAddressesAddressNotFound() {
         AddressRequestInDTO addressRequestInDTO = new AddressRequestInDTO();
-        addressRequestInDTO.setEmail("test@example.com");
+        addressRequestInDTO.setEmail("test@gmail.com");
 
         User user = new User();
         user.setUserId(1);
@@ -69,9 +69,9 @@ class AddressServiceImplTest {
     }
 
     @Test
-    void testFindUserAddresses_Success() {
+    void testFindUserAddressesSuccess() {
         AddressRequestInDTO addressRequestInDTO = new AddressRequestInDTO();
-        addressRequestInDTO.setEmail("test@example.com");
+        addressRequestInDTO.setEmail("test@gmail.com");
 
         User user = new User();
         user.setUserId(1);
@@ -88,9 +88,9 @@ class AddressServiceImplTest {
     }
 
     @Test
-    void testAddAddress_UserNotFound() {
+    void testAddAddressUserNotFound() {
         AddressInDTO addressInDTO = new AddressInDTO();
-        addressInDTO.setEmail("nonexistent@example.com");
+        addressInDTO.setEmail("nonexistent@gmail.com");
 
         when(userRepository.findByEmail(anyString())).thenReturn(null);
 
@@ -100,10 +100,10 @@ class AddressServiceImplTest {
     }
 
     @Test
-    void testAddAddress_Success() {
+    void testAddAddressSuccess() {
         AddressInDTO addressInDTO = new AddressInDTO();
-        addressInDTO.setEmail("test@example.com");
-        addressInDTO.setAddress("123 Main St");
+        addressInDTO.setEmail("test@gmail.com");
+        addressInDTO.setAddress("ABC Address");
         addressInDTO.setPincode(12345L);
         addressInDTO.setCity("Test City");
         addressInDTO.setState("Test State");
@@ -119,10 +119,10 @@ class AddressServiceImplTest {
     }
 
     @Test
-    void testAddAddress_Exception() {
+    void testAddAddressException() {
         AddressInDTO addressInDTO = new AddressInDTO();
-        addressInDTO.setEmail("test@example.com");
-        addressInDTO.setAddress("123 Main St");
+        addressInDTO.setEmail("test@gmail.com");
+        addressInDTO.setAddress("ABC Address");
         addressInDTO.setPincode(12345L);
         addressInDTO.setCity("Test City");
         addressInDTO.setState("Test State");

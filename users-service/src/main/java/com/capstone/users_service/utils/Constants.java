@@ -37,9 +37,17 @@ public class Constants {
      */
     public static final String USER_ADDRESS_ENDPOINT = "/address";
     /**
+     * Add Restaurant Endpoint.
+     */
+    public static final String USER_ADD_RESTAURANT_ENDPOINT = "/restaurant/add";
+    /**
      * User Endpoint To Add New Address.
      */
     public static final String USER_ADD_ADDRESS_ENDPOINT = "/address/add";
+    /**
+     * Get All Restaurants Endpoint.
+     */
+    public static final String USER_GET_ALL_RESTAURANTS_ENDPOINT = "/restaurants";
     /**
      * Initial Wallet Amount.
      */

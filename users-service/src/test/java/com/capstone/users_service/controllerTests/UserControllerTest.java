@@ -41,9 +41,9 @@ class UserControllerTest {
     }
 
     @Test
-    void testRegisterUser_Success() {
+    void testRegisterUserSuccess() {
         UserInDTO userInDTO = new UserInDTO();
-        userInDTO.setEmail("test@example.com");
+        userInDTO.setEmail("test@gmail.com");
 
         when(userService.save(any(UserInDTO.class))).thenReturn("User registered successfully");
 
@@ -54,13 +54,13 @@ class UserControllerTest {
     }
 
     @Test
-    void testLoginUser_Success() {
+    void testLoginUserSuccess() {
         LoginRequestInDTO loginRequestInDTO = new LoginRequestInDTO();
-        loginRequestInDTO.setEmail("test@example.com");
+        loginRequestInDTO.setEmail("test@gmail.com");
 
         LoginResponseOutDTO loginResponseOutDTO = new LoginResponseOutDTO();
         loginResponseOutDTO.setUserId(1);
-        loginResponseOutDTO.setEmail("test@example.com");
+        loginResponseOutDTO.setEmail("test@gmail.com");
 
         when(userService.loginUser(any(LoginRequestInDTO.class))).thenReturn(loginResponseOutDTO);
 
@@ -68,13 +68,13 @@ class UserControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(1, response.getBody().getUserId());
-        assertEquals("test@example.com", response.getBody().getEmail());
+        assertEquals("test@gmail.com", response.getBody().getEmail());
     }
 
     @Test
-    void testLoginUser_Unauthorized() {
+    void testLoginUserUnauthorized() {
         LoginRequestInDTO loginRequestInDTO = new LoginRequestInDTO();
-        loginRequestInDTO.setEmail("unauthorized@example.com");
+        loginRequestInDTO.setEmail("unauthorized@gmail.com");
 
         LoginResponseOutDTO loginResponseOutDTO = new LoginResponseOutDTO();
         loginResponseOutDTO.setUserId(0);
@@ -91,7 +91,7 @@ class UserControllerTest {
     @Test
     void testGetAddressesById() {
         AddressRequestInDTO addressRequestInDTO = new AddressRequestInDTO();
-        addressRequestInDTO.setEmail("test@example.com");
+        addressRequestInDTO.setEmail("test@gmail.com");
 
         List<Address> addresses = new ArrayList<>();
         addresses.add(new Address());
@@ -104,9 +104,9 @@ class UserControllerTest {
     }
 
     @Test
-    void testAddAddress_Success() {
+    void testAddAddressSuccess() {
         AddressInDTO addressInDTO = new AddressInDTO();
-        addressInDTO.setEmail("test@example.com");
+        addressInDTO.setEmail("test@gmail.com");
 
         when(addressService.addAddress(any(AddressInDTO.class))).thenReturn("Address added successfully");
 

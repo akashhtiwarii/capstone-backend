@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class UserNotFoundExceptionTest {
 
     @Test
-    void testUserNotFoundException_Message() {
+    void testUserNotFoundExceptionMessage() {
         String errorMessage = "User not found";
         UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> {
             throw new UserNotFoundException(errorMessage);
@@ -19,10 +19,8 @@ class UserNotFoundExceptionTest {
     }
 
     @Test
-    void testUserNotFoundException_Inheritance() {
+    void testUserNotFoundExceptionInheritance() {
         UserNotFoundException exception = new UserNotFoundException("Test message");
-
-        // Ensure that UserNotFoundException is a subclass of RuntimeException
         assertEquals(RuntimeException.class, exception.getClass().getSuperclass());
     }
 }

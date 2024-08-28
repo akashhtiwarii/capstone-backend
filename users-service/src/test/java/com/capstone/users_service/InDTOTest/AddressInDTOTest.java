@@ -25,11 +25,11 @@ class AddressInDTOTest {
     @Test
     void validAddressInDTO() {
         AddressInDTO addressInDTO = new AddressInDTO(
-                "test@example.com",
+                "test@gmail.com",
                 "Saket Colony, Durg",
                 123456,
                 "Bhilai",
-                "NY"
+                "CG"
         );
 
         Set<ConstraintViolation<AddressInDTO>> violations = validator.validate(addressInDTO);
@@ -44,7 +44,7 @@ class AddressInDTOTest {
                 "Saket Colony, Durg",
                 123456,
                 "Bhilai",
-                "NY"
+                "CG"
         );
 
         Set<ConstraintViolation<AddressInDTO>> violations = validator.validate(addressInDTO);
@@ -56,11 +56,11 @@ class AddressInDTOTest {
     @Test
     void blackFieldAddressInDTO() {
         AddressInDTO addressInDTO = new AddressInDTO(
-                "test@example.com",
+                "test@gmail.com",
                 "",
                 123456,
                 "Bhilai",
-                "NY"
+                "CG"
         );
 
         Set<ConstraintViolation<AddressInDTO>> violations = validator.validate(addressInDTO);
@@ -72,42 +72,42 @@ class AddressInDTOTest {
     @Test
     void testGettersAndSetters() {
         AddressInDTO addressInDTO = new AddressInDTO();
-        addressInDTO.setEmail("john.doe@example.com");
+        addressInDTO.setEmail("john.doe@gmail.com");
         addressInDTO.setAddress("Saket Colony, Durg");
         addressInDTO.setPincode(123456);
         addressInDTO.setCity("Durg");
-        addressInDTO.setState("IL");
+        addressInDTO.setState("CG");
 
-        assertEquals("john.doe@example.com", addressInDTO.getEmail());
+        assertEquals("john.doe@gmail.com", addressInDTO.getEmail());
         assertEquals("Saket Colony, Durg", addressInDTO.getAddress());
         assertEquals(123456, addressInDTO.getPincode());
         assertEquals("Durg", addressInDTO.getCity());
-        assertEquals("IL", addressInDTO.getState());
+        assertEquals("CG", addressInDTO.getState());
     }
 
     @Test
     void testEqualsAndHashCode() {
 
         AddressInDTO address1 = new AddressInDTO(
-                "john.doe@example.com",
+                "john.doe@gmail.com",
                 "Saket Colony, Durg",
                 123456,
                 "Durg",
-                "IL"
+                "CG"
         );
         AddressInDTO address2 = new AddressInDTO(
-                "john.doe@example.com",
+                "john.doe@gmail.com",
                 "Saket Colony, Durg",
                 123456,
                 "Durg",
-                "IL"
+                "CG"
         );
         AddressInDTO address3 = new AddressInDTO(
-                "jane.doe@example.com",
+                "jane.doe@gmail.com",
                 "Supela, Bhilai",
                 654321,
                 "Durg",
-                "IL"
+                "CG"
         );
 
         assertEquals(address1, address2);

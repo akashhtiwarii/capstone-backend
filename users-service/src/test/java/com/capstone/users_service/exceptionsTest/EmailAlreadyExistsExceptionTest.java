@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class EmailAlreadyExistsExceptionTest {
 
     @Test
-    void testEmailAlreadyExistsException_Message() {
+    void testEmailAlreadyExistsExceptionMessage() {
         String errorMessage = "Email already exists in the database";
         EmailAlreadyExistsException exception = assertThrows(EmailAlreadyExistsException.class, () -> {
             throw new EmailAlreadyExistsException(errorMessage);
@@ -19,10 +19,8 @@ class EmailAlreadyExistsExceptionTest {
     }
 
     @Test
-    void testEmailAlreadyExistsException_Inheritance() {
+    void testEmailAlreadyExistsExceptionInheritance() {
         EmailAlreadyExistsException exception = new EmailAlreadyExistsException("Test message");
-
-        // Ensure that EmailAlreadyExistsException is a subclass of RuntimeException
         assertEquals(RuntimeException.class, exception.getClass().getSuperclass());
     }
 }

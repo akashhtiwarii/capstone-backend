@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class AddressNotFoundExceptionTest {
 
     @Test
-    void testAddressNotFoundException_Message() {
+    void testAddressNotFoundExceptionMessage() {
         String errorMessage = "No addresses found for user";
         AddressNotFoundException exception = assertThrows(AddressNotFoundException.class, () -> {
             throw new AddressNotFoundException(errorMessage);
@@ -18,7 +18,7 @@ class AddressNotFoundExceptionTest {
     }
 
     @Test
-    void testAddressNotFoundException_Inheritance() {
+    void testAddressNotFoundExceptionInheritance() {
         AddressNotFoundException exception = new AddressNotFoundException("Test message");
         assertEquals(RuntimeException.class, exception.getClass().getSuperclass());
     }

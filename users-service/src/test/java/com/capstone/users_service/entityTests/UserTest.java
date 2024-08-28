@@ -13,8 +13,8 @@ public class UserTest {
 
     @BeforeEach
     public void setUp() {
-        user1 = new User(1L, "John Doe", "john.doe@example.com", "password123", "1234567890", Role.USER);
-        user2 = new User(1L, "John Doe", "john.doe@example.com", "password123", "1234567890", Role.USER);
+        user1 = new User(1L, "John Doe", "john.doe@gmail.com", "password123", "9234567890", Role.USER);
+        user2 = new User(1L, "John Doe", "john.doe@gmail.com", "password123", "9234567890", Role.USER);
     }
 
     @Test
@@ -29,9 +29,9 @@ public class UserTest {
 
         assertEquals(1L, user1.getUserId());
         assertEquals("John Doe", user1.getName());
-        assertEquals("john.doe@example.com", user1.getEmail());
+        assertEquals("john.doe@gmail.com", user1.getEmail());
         assertEquals("password123", user1.getPassword());
-        assertEquals("1234567890", user1.getPhone());
+        assertEquals("9234567890", user1.getPhone());
         assertEquals(Role.USER, user1.getRole());
 
         user1.setUserId(2L);
@@ -40,14 +40,14 @@ public class UserTest {
         user1.setName("Jane Doe");
         assertEquals("Jane Doe", user1.getName());
 
-        user1.setEmail("jane.doe@example.com");
-        assertEquals("jane.doe@example.com", user1.getEmail());
+        user1.setEmail("jane.doe@gmail.com");
+        assertEquals("jane.doe@gmail.com", user1.getEmail());
 
         user1.setPassword("newpassword");
         assertEquals("newpassword", user1.getPassword());
 
-        user1.setPhone("0987654321");
-        assertEquals("0987654321", user1.getPhone());
+        user1.setPhone("9987654321");
+        assertEquals("9987654321", user1.getPhone());
 
         user1.setRole(Role.OWNER);
         assertEquals(Role.OWNER, user1.getRole());
@@ -55,10 +55,10 @@ public class UserTest {
 
     @Test
     public void testEquals() {
-        User user1 = new User(1L, "John Doe", "john@example.com", "password123", "1234567890", Role.USER);
-        User user2 = new User(1L, "John Doe", "john@example.com", "password123", "1234567890", Role.USER);
-        User user3 = new User(2L, "John Doe", "john@example.com", "password123", "1234567890", Role.USER);
-        User user4 = new User(1L, "Jane Doe", "john@example.com", "password123", "1234567890", Role.USER);
+        User user1 = new User(1L, "John Doe", "john@gmail.com", "password123", "9234567890", Role.USER);
+        User user2 = new User(1L, "John Doe", "john@gmail.com", "password123", "9234567890", Role.USER);
+        User user3 = new User(2L, "John Doe", "john@gmail.com", "password123", "9234567890", Role.USER);
+        User user4 = new User(1L, "Jane Doe", "john@gmail.com", "password123", "9234567890", Role.USER);
         assertTrue(user1.equals(user1));
         assertFalse(user1.equals(user3));
         assertFalse(user1.equals(user4));

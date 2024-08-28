@@ -49,7 +49,7 @@ public class UserInDTO {
     /**
      * phone for linking phone field from User Entity.
      */
-    @NotBlank(message = "Phone number is mandatory")
+    @NotBlank(message = "Phone number should be valid")
     @Pattern(
             regexp = "^[9876]\\d{" + (PHONE_NUMBER_LENGTH - 1) + "}$",
             message = "Phone number should be valid"
@@ -59,6 +59,7 @@ public class UserInDTO {
      * role for linking role field from User Entity.
      */
     @NotNull(message = "Role is mandatory")
+    @Pattern(regexp = "USER|OWNER", message = "Role must be either USER or OWNER")
     private Role role;
 
     /**

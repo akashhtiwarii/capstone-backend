@@ -16,6 +16,27 @@ import java.util.Map;
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    /**
+     * Handle Restaurants Not Found Exception.
+     * @param ex Restaurants not found exception
+     * @return Error with a message
+     */
+    @ExceptionHandler(RestaurantsNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<String> handleRestaurantsNotFoundException(RestaurantsNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     * Handle User Not Valid Exception.
+     * @param ex User not valid exception
+     * @return Error with a message
+     */
+    @ExceptionHandler(UserNotValidException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseEntity<String> handleUserNotValidException(UserNotValidException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
 
     /**
      * Handle User Not Found Exception.

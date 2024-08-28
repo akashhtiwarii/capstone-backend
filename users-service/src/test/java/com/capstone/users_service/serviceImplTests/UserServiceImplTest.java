@@ -10,17 +10,13 @@ import com.capstone.users_service.exceptions.EmailAlreadyExistsException;
 import com.capstone.users_service.repository.UserRepository;
 import com.capstone.users_service.repository.WalletRepository;
 import com.capstone.users_service.serviceImpl.UserServiceImpl;
-import com.capstone.users_service.converters.UserConverters;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Optional;
-
 import static com.capstone.users_service.utils.Constants.EMAIL_ALREADY_IN_USE;
-import static com.capstone.users_service.utils.Constants.INITIAL_WALLET_AMOUNT;
 import static com.capstone.users_service.utils.Constants.INVALID_CREDENTIALS;
 import static com.capstone.users_service.utils.Constants.OWNER_SIGNUP_MESSAGE;
 import static com.capstone.users_service.utils.Constants.USER_SIGNUP_MESSAGE;
@@ -45,9 +41,9 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void testSave_UserExists_ThrowsEmailAlreadyExistsException() {
+    public void testSaveUserExistsThrowsEmailAlreadyExistsException() {
         UserInDTO userInDTO = new UserInDTO();
-        userInDTO.setEmail("test@example.com");
+        userInDTO.setEmail("test@gmail.com");
         when(userRepository.existsByEmail(anyString())).thenReturn(true);
 
         EmailAlreadyExistsException exception = assertThrows(
@@ -59,14 +55,14 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void testSave_NewUser_SuccessUserRole() {
+    public void testSaveNewUserSuccessUserRole() {
         UserInDTO userInDTO = new UserInDTO();
-        userInDTO.setEmail("test@example.com");
+        userInDTO.setEmail("test@gmail.com");
         userInDTO.setRole(Role.USER);
 
         User user = new User();
         user.setUserId(1L);
-        user.setEmail("test@example.com");
+        user.setEmail("test@gmail.com");
 
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(userRepository.save(any(User.class))).thenReturn(user);
@@ -81,14 +77,14 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void testSave_NewUser_SuccessOwnerRole() {
+    public void testSaveNewUserSuccessOwnerRole() {
         UserInDTO userInDTO = new UserInDTO();
-        userInDTO.setEmail("owner@example.com");
+        userInDTO.setEmail("owner@gmail.com");
         userInDTO.setRole(Role.OWNER);
 
         User user = new User();
         user.setUserId(1L);
-        user.setEmail("owner@example.com");
+        user.setEmail("owner@gmail.com");
 
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(userRepository.save(any(User.class))).thenReturn(user);
@@ -102,13 +98,13 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void testLoginUser_Success() {
+    public void testLoginUserSuccess() {
         LoginRequestInDTO loginRequestInDTO = new LoginRequestInDTO();
-        loginRequestInDTO.setEmail("test@example.com");
+        loginRequestInDTO.setEmail("test@gmail.com");
         loginRequestInDTO.setPassword("password");
 
         User user = new User();
-        user.setEmail("test@example.com");
+        user.setEmail("test@gmail.com");
         user.setPassword("password");
 
         when(userRepository.findByEmailAndPassword(anyString(), anyString())).thenReturn(user);
@@ -116,12 +112,12 @@ public class UserServiceImplTest {
         LoginResponseOutDTO result = userServiceImpl.loginUser(loginRequestInDTO);
 
         assertNotNull(result);
-        assertEquals("test@example.com", result.getEmail());
+        assertEquals("test@gmail.com", result.getEmail());
         verify(userRepository, times(1)).findByEmailAndPassword(anyString(), anyString());
     }
 
     @Test
-    public void testLoginUser_Failure_InvalidCredentials() {
+    public void testLoginUserFailureInvalidCredentials() {
         LoginRequestInDTO loginRequestInDTO = new LoginRequestInDTO();
         loginRequestInDTO.setEmail("wrong@example.com");
         loginRequestInDTO.setPassword("wrongpassword");

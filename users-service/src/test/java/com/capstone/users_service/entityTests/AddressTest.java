@@ -55,13 +55,13 @@ public class AddressTest {
 
     @Test
     public void testEquals() {
-        Address address1 = new Address(1L, 1001L, "123 Main St", 123456, "Springfield", "IL");
-        Address address2 = new Address(1L, 1001L, "123 Main St", 123456, "Springfield", "IL");
-        Address address3 = new Address(2L, 1001L, "123 Main St", 123456, "Springfield", "IL");
-        Address address4 = new Address(1L, 1002L, "123 Main St", 123456, "Springfield", "IL");
-        Address address5 = new Address(1L, 1001L, "456 Elm St", 123456, "Springfield", "IL");
-        Address address6 = new Address(1L, 1001L, "123 Main St", 654321, "Springfield", "IL");
-        Address address7 = new Address(1L, 1001L, "123 Main St", 123456, "Shelbyville", "IL");
+        Address address1 = new Address(1L, 1001L, "ABC Street", 123456, "ABC CITY", "CG");
+        Address address2 = new Address(1L, 1001L, "ABC Street", 123456, "ABC CITY", "CG");
+        Address address3 = new Address(2L, 1001L, "ABC Street", 123456, "ABC CITY", "CG");
+        Address address4 = new Address(1L, 1002L, "ABC Street", 123456, "ABC CITY", "CG");
+        Address address5 = new Address(1L, 1001L, "456 Elm St", 123456, "ABC CITY", "CG");
+        Address address6 = new Address(1L, 1001L, "ABC Street", 654321, "ABC CITY", "CG");
+        Address address7 = new Address(1L, 1001L, "ABC Street", 123456, "XYZ City", "CG");
         assertTrue(address1.equals(address1));
         assertFalse(address1.equals(address3));
         assertFalse(address1.equals(address4));
