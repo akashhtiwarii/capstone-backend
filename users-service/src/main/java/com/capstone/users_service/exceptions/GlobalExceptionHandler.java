@@ -18,6 +18,27 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     /**
+     * Handle User Not Found Exception.
+     * @param ex User not found exception
+     * @return Error with a message
+     */
+    @ExceptionHandler(UserNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     * Handle Address not found exception.
+     * @param ex
+     * @return Error with a message
+     */
+    @ExceptionHandler(AddressNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<String> handleAddressNotFoundException(AddressNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+    /**
      * Handle EmailAlreadyExists Exception.
      * @param ex Email already in database exception object
      * @return Error message with an error code.

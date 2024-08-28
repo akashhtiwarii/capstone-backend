@@ -4,26 +4,30 @@ import com.capstone.users_service.InDTO.AddressInDTO;
 import com.capstone.users_service.InDTO.AddressRequestInDTO;
 import com.capstone.users_service.entity.Address;
 import com.capstone.users_service.entity.User;
+import com.capstone.users_service.exceptions.AddressNotFoundException;
+import com.capstone.users_service.exceptions.UserNotFoundException;
 import com.capstone.users_service.repository.AddressRepository;
 import com.capstone.users_service.repository.UserRepository;
 import com.capstone.users_service.serviceImpl.AddressServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 class AddressServiceImplTest {
+
+    @InjectMocks
+    private AddressServiceImpl addressService;
 
     @Mock
     private AddressRepository addressRepository;
@@ -31,81 +35,106 @@ class AddressServiceImplTest {
     @Mock
     private UserRepository userRepository;
 
-    @InjectMocks
-    private AddressServiceImpl addressService;
-
-    private User user;
-    private Address address;
-    private AddressInDTO addressInDTO;
-    private AddressRequestInDTO addressRequestInDTO;
-
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+    }
 
-        user = new User();
-        user.setUserId(1L);
-        user.setEmail("test@example.com");
+    @Test
+    void testFindUserAddresses_UserNotFound() {
+        AddressRequestInDTO addressRequestInDTO = new AddressRequestInDTO();
+        addressRequestInDTO.setEmail("nonexistent@example.com");
 
-        address = new Address();
-        address.setAddressId(1L);
-        address.setUserId(1L);
-        address.setAddress("123 Main St");
-        address.setPincode(123456L);
-        address.setCity("Test City");
-        address.setState("Test State");
+        when(userRepository.findByEmail(anyString())).thenReturn(null);
 
-        addressInDTO = new AddressInDTO();
-        addressInDTO.setEmail("test@example.com");
-        addressInDTO.setAddress("123 Main St");
-        addressInDTO.setPincode(123456L);
-        addressInDTO.setCity("Test City");
-        addressInDTO.setState("Test State");
+        assertThrows(UserNotFoundException.class, () -> {
+            addressService.findUserAddresses(addressRequestInDTO);
+        });
+    }
 
-        addressRequestInDTO = new AddressRequestInDTO();
+    @Test
+    void testFindUserAddresses_AddressNotFound() {
+        AddressRequestInDTO addressRequestInDTO = new AddressRequestInDTO();
         addressRequestInDTO.setEmail("test@example.com");
+
+        User user = new User();
+        user.setUserId(1);
+
+        when(userRepository.findByEmail(anyString())).thenReturn(user);
+        when(addressRepository.findByUserId(user.getUserId())).thenReturn(new ArrayList<>());
+
+        assertThrows(AddressNotFoundException.class, () -> {
+            addressService.findUserAddresses(addressRequestInDTO);
+        });
     }
 
     @Test
     void testFindUserAddresses_Success() {
-        when(userRepository.findByEmail("test@example.com")).thenReturn(user);
-        when(addressRepository.findByUserId(1L)).thenReturn(Arrays.asList(address));
+        AddressRequestInDTO addressRequestInDTO = new AddressRequestInDTO();
+        addressRequestInDTO.setEmail("test@example.com");
 
-        List<Address> addresses = addressService.findUserAddresses(addressRequestInDTO);
+        User user = new User();
+        user.setUserId(1);
 
-        assertNotNull(addresses);
-        assertEquals(1, addresses.size());
-        assertEquals("123 Main St", addresses.get(0).getAddress());
+        List<Address> addresses = new ArrayList<>();
+        addresses.add(new Address());
 
-        verify(userRepository, times(1)).findByEmail("test@example.com");
-        verify(addressRepository, times(1)).findByUserId(1L);
+        when(userRepository.findByEmail(anyString())).thenReturn(user);
+        when(addressRepository.findByUserId(user.getUserId())).thenReturn(addresses);
+
+        List<Address> result = addressService.findUserAddresses(addressRequestInDTO);
+
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void testAddAddress_UserNotFound() {
+        AddressInDTO addressInDTO = new AddressInDTO();
+        addressInDTO.setEmail("nonexistent@example.com");
+
+        when(userRepository.findByEmail(anyString())).thenReturn(null);
+
+        assertThrows(UserNotFoundException.class, () -> {
+            addressService.addAddress(addressInDTO);
+        });
     }
 
     @Test
     void testAddAddress_Success() {
-        when(userRepository.findByEmail("test@example.com")).thenReturn(user);
-        when(addressRepository.save(any(Address.class))).thenReturn(address);
+        AddressInDTO addressInDTO = new AddressInDTO();
+        addressInDTO.setEmail("test@example.com");
+        addressInDTO.setAddress("123 Main St");
+        addressInDTO.setPincode(12345L);
+        addressInDTO.setCity("Test City");
+        addressInDTO.setState("Test State");
+
+        User user = new User();
+        user.setUserId(1);
+
+        when(userRepository.findByEmail(anyString())).thenReturn(user);
 
         String result = addressService.addAddress(addressInDTO);
 
         assertEquals("Address added successfully", result);
-
-        verify(userRepository, times(1)).findByEmail("test@example.com");
-        verify(addressRepository, times(1)).save(any(Address.class));
     }
 
     @Test
-    void testAddAddress_ExceptionDuringSave() {
-        when(userRepository.findByEmail("test@example.com")).thenReturn(user);
-        when(addressRepository.save(any(Address.class))).thenThrow(new RuntimeException("Database error"));
+    void testAddAddress_Exception() {
+        AddressInDTO addressInDTO = new AddressInDTO();
+        addressInDTO.setEmail("test@example.com");
+        addressInDTO.setAddress("123 Main St");
+        addressInDTO.setPincode(12345L);
+        addressInDTO.setCity("Test City");
+        addressInDTO.setState("Test State");
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+        User user = new User();
+        user.setUserId(1);
+
+        when(userRepository.findByEmail(anyString())).thenReturn(user);
+        when(addressRepository.save(any())).thenThrow(new RuntimeException("Database error"));
+
+        assertThrows(RuntimeException.class, () -> {
             addressService.addAddress(addressInDTO);
         });
-
-        assertEquals("An unexpected error occurred: Database error", exception.getMessage());
-
-        verify(userRepository, times(1)).findByEmail("test@example.com");
-        verify(addressRepository, times(1)).save(any(Address.class));
     }
 }

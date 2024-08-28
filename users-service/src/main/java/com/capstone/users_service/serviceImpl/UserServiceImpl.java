@@ -13,8 +13,6 @@ import com.capstone.users_service.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.capstone.users_service.converters.UserConverters;
-import java.util.Base64;
-
 import static com.capstone.users_service.utils.Constants.EMAIL_ALREADY_IN_USE;
 import static com.capstone.users_service.utils.Constants.INITIAL_WALLET_AMOUNT;
 import static com.capstone.users_service.utils.Constants.INVALID_CREDENTIALS;
@@ -33,11 +31,6 @@ public class UserServiceImpl implements UserService {
      */
     @Autowired
     private UserRepository userRepository;
-
-    private String decrypt(String encryptedPassword) {
-        byte[] decodedBytes = Base64.getDecoder().decode(encryptedPassword);
-        return new String(decodedBytes);
-    }
 
     /**
      * walletRepository for accessing wallet table using Jpd methods.

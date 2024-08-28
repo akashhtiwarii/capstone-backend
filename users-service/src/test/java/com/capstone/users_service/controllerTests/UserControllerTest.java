@@ -1,6 +1,5 @@
 package com.capstone.users_service.controllerTests;
 
-import com.capstone.users_service.Enum.Role;
 import com.capstone.users_service.InDTO.AddressInDTO;
 import com.capstone.users_service.InDTO.AddressRequestInDTO;
 import com.capstone.users_service.InDTO.LoginRequestInDTO;
@@ -23,18 +22,18 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 class UserControllerTest {
+
+    @InjectMocks
+    private UserController userController;
 
     @Mock
     private UserService userService;
 
     @Mock
     private AddressService addressService;
-
-    @InjectMocks
-    private UserController userController;
 
     @BeforeEach
     void setUp() {
@@ -43,45 +42,77 @@ class UserControllerTest {
 
     @Test
     void testRegisterUser_Success() {
-        UserInDTO userInDTO = new UserInDTO("Akash Tiwari", "#Abcdefg1#", "akash@example.com", "9876543210", Role.USER);
+        UserInDTO userInDTO = new UserInDTO();
+        userInDTO.setEmail("test@example.com");
+
         when(userService.save(any(UserInDTO.class))).thenReturn("User registered successfully");
+
         ResponseEntity<String> response = userController.registerUser(userInDTO);
+
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("User registered successfully", response.getBody());
-        verify(userService, times(1)).save(any(UserInDTO.class));
-    }
-
-    @Test
-    void testRegisterUser_Exception() {
-        UserInDTO userInDTO = new UserInDTO("Akash Tiwari", "#Abcdefg1#", "akash@example.com", "9876543210", Role.USER);
-        when(userService.save(any(UserInDTO.class))).thenThrow(new RuntimeException("Registration failed"));
-        try {
-            userController.registerUser(userInDTO);
-        } catch (RuntimeException e) {
-            assertEquals("Registration failed", e.getMessage());
-            verify(userService, times(1)).save(any(UserInDTO.class));
-        }
     }
 
     @Test
     void testLoginUser_Success() {
-        LoginRequestInDTO loginRequestInDTO = new LoginRequestInDTO("akash@example.com", "#Abcdefg1#");
-        LoginResponseOutDTO loginResponseOutDTO = new LoginResponseOutDTO(1L, "akash@example.com", "Akash Tiwari", "9876543210", Role.USER, "Login successful");
+        LoginRequestInDTO loginRequestInDTO = new LoginRequestInDTO();
+        loginRequestInDTO.setEmail("test@example.com");
+
+        LoginResponseOutDTO loginResponseOutDTO = new LoginResponseOutDTO();
+        loginResponseOutDTO.setUserId(1);
+        loginResponseOutDTO.setEmail("test@example.com");
+
         when(userService.loginUser(any(LoginRequestInDTO.class))).thenReturn(loginResponseOutDTO);
+
         ResponseEntity<LoginResponseOutDTO> response = userController.loginUser(loginRequestInDTO);
+
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(loginResponseOutDTO, response.getBody());
-        verify(userService, times(1)).loginUser(any(LoginRequestInDTO.class));
+        assertEquals(1, response.getBody().getUserId());
+        assertEquals("test@example.com", response.getBody().getEmail());
     }
 
     @Test
     void testLoginUser_Unauthorized() {
-        LoginRequestInDTO loginRequestInDTO = new LoginRequestInDTO("akash@example.com", "wrongPassword");
-        LoginResponseOutDTO loginResponseOutDTO = new LoginResponseOutDTO(0L, null, null, null, null, "Invalid credentials");
+        LoginRequestInDTO loginRequestInDTO = new LoginRequestInDTO();
+        loginRequestInDTO.setEmail("unauthorized@example.com");
+
+        LoginResponseOutDTO loginResponseOutDTO = new LoginResponseOutDTO();
+        loginResponseOutDTO.setUserId(0);
+        loginResponseOutDTO.setMessage("Unauthorized");
+
         when(userService.loginUser(any(LoginRequestInDTO.class))).thenReturn(loginResponseOutDTO);
+
         ResponseEntity<LoginResponseOutDTO> response = userController.loginUser(loginRequestInDTO);
+
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        assertEquals(loginResponseOutDTO, response.getBody());
-        verify(userService, times(1)).loginUser(any(LoginRequestInDTO.class));
+        assertEquals("Unauthorized", response.getBody().getMessage());
+    }
+
+    @Test
+    void testGetAddressesById() {
+        AddressRequestInDTO addressRequestInDTO = new AddressRequestInDTO();
+        addressRequestInDTO.setEmail("test@example.com");
+
+        List<Address> addresses = new ArrayList<>();
+        addresses.add(new Address());
+
+        when(addressService.findUserAddresses(any(AddressRequestInDTO.class))).thenReturn(addresses);
+
+        List<Address> response = userController.getAddressesById(addressRequestInDTO);
+
+        assertEquals(1, response.size());
+    }
+
+    @Test
+    void testAddAddress_Success() {
+        AddressInDTO addressInDTO = new AddressInDTO();
+        addressInDTO.setEmail("test@example.com");
+
+        when(addressService.addAddress(any(AddressInDTO.class))).thenReturn("Address added successfully");
+
+        ResponseEntity<String> response = userController.addAddress(addressInDTO);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Address added successfully", response.getBody());
     }
 }

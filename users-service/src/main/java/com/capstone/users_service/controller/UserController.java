@@ -62,15 +62,9 @@ public class UserController {
     @PostMapping(USER_REGISTER_ENDPOINT)
     public ResponseEntity<String> registerUser(@Valid @RequestBody UserInDTO userInDTO) {
         logger.info("Registering new user: {}", userInDTO.getEmail());
-        try {
-            String message = userService.save(userInDTO);
-            ResponseEntity<String> response = ResponseEntity.status(HttpStatus.OK).body(message);
-            logger.info("User registered successfully: {}", userInDTO.getEmail());
-            return response;
-        } catch (Exception e) {
-            logger.error("Error occurred while registering user: {}", userInDTO.getEmail(), e);
-            throw e;
-        }
+        String message = userService.save(userInDTO);
+        logger.info("User registered successfully: {}", userInDTO.getEmail());
+        return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 
     /**
@@ -81,18 +75,13 @@ public class UserController {
     @PostMapping(USER_LOGIN_ENDPOINT)
     public ResponseEntity<LoginResponseOutDTO> loginUser(@Valid @RequestBody LoginRequestInDTO loginRequestInDTO) {
         logger.info("User login attempt: {}", loginRequestInDTO.getEmail());
-        try {
-            LoginResponseOutDTO response = userService.loginUser(loginRequestInDTO);
-            if (response.getUserId() == 0) {
-                logger.info("User Unauthorized: {}", response.getMessage());
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-            } else {
-                logger.info("User logged in successfully: {}", loginRequestInDTO.getEmail());
-             return ResponseEntity.status(HttpStatus.OK).body(response);
-            }
-        } catch (Exception e) {
-            logger.error("Error occurred while logging in user: {}", loginRequestInDTO.getEmail(), e);
-            throw e;
+        LoginResponseOutDTO response = userService.loginUser(loginRequestInDTO);
+        if (response.getUserId() == 0) {
+            logger.info("User Unauthorized: {}", response.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        } else {
+            logger.info("User logged in successfully: {}", loginRequestInDTO.getEmail());
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         }
     }
 
@@ -104,14 +93,9 @@ public class UserController {
     @PostMapping(USER_ADDRESS_ENDPOINT)
     public List<Address> getAddressesById(@RequestBody AddressRequestInDTO addressRequestInDTO) {
         logger.info("Fetching addresses for email ID: {}", addressRequestInDTO.getEmail());
-        try {
-            List<Address> addresses = addressService.findUserAddresses(addressRequestInDTO);
-            logger.info("Addresses fetched successfully for email ID: {}", addressRequestInDTO.getEmail());
-            return addresses;
-        } catch (Exception e) {
-            logger.error("Error occurred while fetching addresses for email ID: {}", addressRequestInDTO.getEmail(), e);
-            throw e;
-        }
+        List<Address> addresses = addressService.findUserAddresses(addressRequestInDTO);
+        logger.info("Addresses fetched successfully for email ID: {}", addressRequestInDTO.getEmail());
+        return addresses;
     }
 
     /**
@@ -122,14 +106,8 @@ public class UserController {
     @PostMapping(USER_ADD_ADDRESS_ENDPOINT)
     public ResponseEntity<String> addAddress(@Valid @RequestBody AddressInDTO addressInDTO) {
         logger.info("Adding new address for email ID: {}", addressInDTO.getEmail());
-        try {
-            String message = addressService.addAddress(addressInDTO);
-            ResponseEntity<String> response = ResponseEntity.status(HttpStatus.OK).body(message);
-            logger.info("Address added successfully for email ID: {}", addressInDTO.getEmail());
-            return response;
-        } catch (Exception e) {
-            logger.error("Error occurred while adding address for email ID: {}", addressInDTO.getEmail(), e);
-            throw e;
-        }
+        String message = addressService.addAddress(addressInDTO);
+        logger.info("Address added successfully for email ID: {}", addressInDTO.getEmail());
+        return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 }
