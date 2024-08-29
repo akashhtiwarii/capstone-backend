@@ -41,21 +41,21 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void testSaveUserExistsThrowsEmailAlreadyExistsException() {
+    public void testAddRestaurantUserExistsThrowsEmailAlreadyExistsException() {
         UserInDTO userInDTO = new UserInDTO();
         userInDTO.setEmail("test@gmail.com");
         when(userRepository.existsByEmail(anyString())).thenReturn(true);
 
         EmailAlreadyExistsException exception = assertThrows(
                 EmailAlreadyExistsException.class,
-                () -> userServiceImpl.save(userInDTO)
+                () -> userServiceImpl.addRestaurant(userInDTO)
         );
         assertEquals(EMAIL_ALREADY_IN_USE, exception.getMessage());
         verify(userRepository, times(1)).existsByEmail(anyString());
     }
 
     @Test
-    public void testSaveNewUserSuccessUserRole() {
+    public void testAddRestaurantNewUserSuccessUserRole() {
         UserInDTO userInDTO = new UserInDTO();
         userInDTO.setEmail("test@gmail.com");
         userInDTO.setRole(Role.USER);
@@ -68,7 +68,7 @@ public class UserServiceImplTest {
         when(userRepository.save(any(User.class))).thenReturn(user);
         when(userRepository.findByEmail(anyString())).thenReturn(user);
 
-        String result = userServiceImpl.save(userInDTO);
+        String result = userServiceImpl.addRestaurant(userInDTO);
 
         assertEquals(USER_SIGNUP_MESSAGE, result);
         verify(userRepository, times(1)).existsByEmail(anyString());
@@ -77,7 +77,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void testSaveNewUserSuccessOwnerRole() {
+    public void testAddRestaurantNewUserSuccessOwnerRole() {
         UserInDTO userInDTO = new UserInDTO();
         userInDTO.setEmail("owner@gmail.com");
         userInDTO.setRole(Role.OWNER);
@@ -89,7 +89,7 @@ public class UserServiceImplTest {
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
-        String result = userServiceImpl.save(userInDTO);
+        String result = userServiceImpl.addRestaurant(userInDTO);
 
         assertEquals(OWNER_SIGNUP_MESSAGE, result);
         verify(userRepository, times(1)).existsByEmail(anyString());

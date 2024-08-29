@@ -2,14 +2,10 @@ package com.capstone.users_service.serviceImplTests;
 
 import com.capstone.users_service.Enum.Role;
 import com.capstone.users_service.InDTO.RestaurantInDTO;
-import com.capstone.users_service.entity.Restaurant;
 import com.capstone.users_service.entity.User;
-import com.capstone.users_service.exceptions.RestaurantsNotFoundException;
 import com.capstone.users_service.exceptions.UserNotFoundException;
 import com.capstone.users_service.exceptions.UserNotValidException;
-import com.capstone.users_service.repository.RestaurantRepository;
 import com.capstone.users_service.repository.UserRepository;
-import com.capstone.users_service.serviceImpl.RestaurantServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

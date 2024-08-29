@@ -1,4 +1,4 @@
-package com.capstone.users_service.exceptions;
+package com.capstone.restaurants_service.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,38 +26,26 @@ public class GlobalExceptionHandler {
     private ErrorResponse buildSimpleErrorResponse(Exception ex, HttpStatus status) {
         return new ErrorResponse(status.value(), ex.getMessage());
     }
-    /**
-     * Handle User Not Valid Exception.
-     * @param ex User not valid exception
-     * @return Error with a message
-     */
-    @ExceptionHandler(UserNotValidException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ResponseEntity<ErrorResponse> handleUserNotValidException(UserNotValidException ex) {
-        ErrorResponse errorResponse = buildSimpleErrorResponse(ex, HttpStatus.UNAUTHORIZED);
-        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
-    }
 
     /**
-     * Handle User Not Found Exception.
-     * @param ex User not found exception
-     * @return Error with a message
-     */
-    @ExceptionHandler(UserNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex) {
-        ErrorResponse errorResponse = buildSimpleErrorResponse(ex, HttpStatus.NOT_FOUND);
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
-    }
-
-    /**
-     * Handle Address not found exception.
+     * Handle Category Already Exist Exception.
      * @param ex
      * @return Error with a message
      */
-    @ExceptionHandler(AddressNotFoundException.class)
+    @ExceptionHandler(CategoryAlreadyExistException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<ErrorResponse> handleAddressNotFoundException(AddressNotFoundException ex) {
+    public ResponseEntity<ErrorResponse> handleCategoryAlreadyExistException(CategoryAlreadyExistException ex) {
+        ErrorResponse errorResponse = buildSimpleErrorResponse(ex, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+    /**
+     * Handle Restaurants Not Found Exception.
+     * @param ex Restaurants not found exception
+     * @return Error with a message
+     */
+    @ExceptionHandler(RestaurantsNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<ErrorResponse> handleRestaurantsNotFoundException(RestaurantsNotFoundException ex) {
         ErrorResponse errorResponse = buildSimpleErrorResponse(ex, HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
@@ -72,7 +60,6 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = buildSimpleErrorResponse(ex, HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
-
     /**
      * Handle Runtime Exception.
      * @param ex Runtime exception object
@@ -114,3 +101,4 @@ public class GlobalExceptionHandler {
         return errors;
     }
 }
+

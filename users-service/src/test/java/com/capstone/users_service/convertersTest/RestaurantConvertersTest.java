@@ -1,11 +1,7 @@
 package com.capstone.users_service.convertersTest;
 
 import com.capstone.users_service.InDTO.RestaurantInDTO;
-import com.capstone.users_service.converters.RestaurantConverters;
-import com.capstone.users_service.entity.Restaurant;
 import org.junit.jupiter.api.Test;
-
-import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 

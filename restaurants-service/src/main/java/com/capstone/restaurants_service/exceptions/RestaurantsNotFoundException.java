@@ -1,4 +1,4 @@
-package com.capstone.users_service.exceptions;
+package com.capstone.restaurants_service.exceptions;
 
 /**
  * Restaurant Not Found Exception.

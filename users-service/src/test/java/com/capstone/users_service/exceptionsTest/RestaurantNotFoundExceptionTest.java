@@ -1,7 +1,6 @@
 package com.capstone.users_service.exceptionsTest;
 
 
-import com.capstone.users_service.exceptions.RestaurantsNotFoundException;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

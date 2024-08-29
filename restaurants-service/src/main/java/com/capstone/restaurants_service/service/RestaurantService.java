@@ -1,7 +1,7 @@
-package com.capstone.users_service.service;
+package com.capstone.restaurants_service.service;
 
-import com.capstone.users_service.InDTO.RestaurantInDTO;
-import com.capstone.users_service.entity.Restaurant;
+import com.capstone.restaurants_service.InDTO.RestaurantInDTO;
+import com.capstone.restaurants_service.entity.Restaurant;
 
 import java.util.List;
 
@@ -23,3 +23,4 @@ public interface RestaurantService {
      */
     List<Restaurant> findAll();
 }
+

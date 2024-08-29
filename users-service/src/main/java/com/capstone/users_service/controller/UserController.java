@@ -7,9 +7,7 @@ import com.capstone.users_service.InDTO.RestaurantInDTO;
 import com.capstone.users_service.InDTO.UserInDTO;
 import com.capstone.users_service.OutDTO.LoginResponseOutDTO;
 import com.capstone.users_service.entity.Address;
-import com.capstone.users_service.entity.Restaurant;
 import com.capstone.users_service.service.AddressService;
-import com.capstone.users_service.service.RestaurantService;
 import com.capstone.users_service.service.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,12 +52,6 @@ public class UserController {
     private AddressService addressService;
 
     /**
-     * Restaurant Service for accessing restaurants table operations.
-     */
-    @Autowired
-    private RestaurantService restaurantService;
-
-    /**
      * Registers a new user.
      * @param userInDTO the user to be registered
      * @return a ResponseEntity containing the registration status
@@ -68,7 +59,7 @@ public class UserController {
     @PostMapping(Constants.USER_REGISTER_ENDPOINT)
     public ResponseEntity<String> registerUser(@Valid @RequestBody UserInDTO userInDTO) {
         logger.info("Registering new user: {}", userInDTO.getEmail());
-        String message = userService.save(userInDTO);
+        String message = userService.registerUser(userInDTO);
         logger.info("User registered successfully: {}", userInDTO.getEmail());
         return ResponseEntity.status(HttpStatus.OK).body(message);
     }
@@ -125,20 +116,8 @@ public class UserController {
     @PostMapping(Constants.USER_ADD_RESTAURANT_ENDPOINT)
     public ResponseEntity<String> addRestaurant(@Valid @RequestBody RestaurantInDTO restaurantInDTO) {
         logger.info("Adding new Restaurant : {}", restaurantInDTO.getName());
-        String message = restaurantService.save(restaurantInDTO);
+        ResponseEntity<String> message = userService.addRestaurant(restaurantInDTO);
         logger.info("Added Restaurant : {}", restaurantInDTO.getName());
-        return ResponseEntity.status(HttpStatus.OK).body(message);
-    }
-
-    /**
-     * Get All Restaurants.
-     * @return List of all restaurants
-     */
-    @GetMapping(Constants.USER_GET_ALL_RESTAURANTS_ENDPOINT)
-    public ResponseEntity<List<Restaurant>> getRestaurants() {
-        logger.info("Fetching restaurants...");
-        List<Restaurant> restaurants = restaurantService.findAll();
-        logger.info("Fetched restaurants.");
-        return ResponseEntity.status(HttpStatus.OK).body(restaurants);
+        return message;
     }
 }
