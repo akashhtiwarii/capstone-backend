@@ -1,6 +1,5 @@
 package com.capstone.users_service.convertersTest;
 
-import com.capstone.users_service.InDTO.RestaurantInDTO;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

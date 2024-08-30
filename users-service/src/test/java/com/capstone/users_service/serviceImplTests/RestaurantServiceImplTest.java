@@ -1,7 +1,6 @@
 package com.capstone.users_service.serviceImplTests;
 
 import com.capstone.users_service.Enum.Role;
-import com.capstone.users_service.InDTO.RestaurantInDTO;
 import com.capstone.users_service.entity.User;
 import com.capstone.users_service.exceptions.UserNotFoundException;
 import com.capstone.users_service.exceptions.UserNotValidException;

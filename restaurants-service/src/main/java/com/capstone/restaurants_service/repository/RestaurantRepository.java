@@ -3,6 +3,8 @@ import com.capstone.restaurants_service.entity.Restaurant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * RestaurantRepository to connect with restaurants table.
  */
@@ -21,5 +23,18 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
      * @return Restaurant
      */
     Restaurant findById(long restaurantId);
+
+    /**
+     * Get All Restaurants.
+     * @return Restaurants
+     */
+    List<Restaurant> findAll();
+
+    /**
+     * Get Restaurants by Owner.
+     * @param ownerId
+     * @return Restaurant
+     */
+    Restaurant findByOwnerId(long ownerId);
 }
 

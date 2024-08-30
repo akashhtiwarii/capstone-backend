@@ -2,11 +2,12 @@ package com.capstone.users_service.controller;
 
 import com.capstone.users_service.InDTO.AddressInDTO;
 import com.capstone.users_service.InDTO.AddressRequestInDTO;
+import com.capstone.users_service.InDTO.GetUserInfoInDTO;
 import com.capstone.users_service.InDTO.LoginRequestInDTO;
-import com.capstone.users_service.InDTO.RestaurantInDTO;
 import com.capstone.users_service.InDTO.UserInDTO;
 import com.capstone.users_service.OutDTO.LoginResponseOutDTO;
 import com.capstone.users_service.entity.Address;
+import com.capstone.users_service.entity.User;
 import com.capstone.users_service.service.AddressService;
 import com.capstone.users_service.service.UserService;
 import org.apache.logging.log4j.LogManager;
@@ -14,17 +15,18 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
 import java.util.List;
 
 import com.capstone.users_service.utils.Constants;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Rest Controller for managing user-operations.
@@ -83,6 +85,19 @@ public class UserController {
     }
 
     /**
+     * Get User by Id.
+     * @param getUserInfoInDTO
+     * @return user
+     */
+    @GetMapping("/id")
+    public ResponseEntity<User> getUserById(@RequestBody GetUserInfoInDTO getUserInfoInDTO) {
+        logger.info("Fetching user info..{}", getUserInfoInDTO.getUserId());
+        User user = userService.getById(getUserInfoInDTO);
+        logger.info("Fetched user info..{}", getUserInfoInDTO.getUserId());
+        return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
+
+    /**
      * Get Addresses of a user.
      * @param addressRequestInDTO Request body
      * @return address with a specific Id
@@ -106,18 +121,5 @@ public class UserController {
         String message = addressService.addAddress(addressInDTO);
         logger.info("Address added successfully for email ID: {}", addressInDTO.getEmail());
         return ResponseEntity.status(HttpStatus.OK).body(message);
-    }
-
-    /**
-     * Add new restaurant.
-     * @param restaurantInDTO request parameter
-     * @return a string message
-     */
-    @PostMapping(Constants.USER_ADD_RESTAURANT_ENDPOINT)
-    public ResponseEntity<String> addRestaurant(@Valid @RequestBody RestaurantInDTO restaurantInDTO) {
-        logger.info("Adding new Restaurant : {}", restaurantInDTO.getName());
-        ResponseEntity<String> message = userService.addRestaurant(restaurantInDTO);
-        logger.info("Added Restaurant : {}", restaurantInDTO.getName());
-        return message;
     }
 }

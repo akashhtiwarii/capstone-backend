@@ -3,13 +3,16 @@ package com.capstone.restaurants_service.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -48,7 +51,13 @@ public class FoodItem {
      */
     @Column(name = "price")
     private double price;
-
+    /**
+     * image for pairing with the image field in database using ORM.
+     */
+    @Lob
+    @Column(name = "image")
+    @Type(type = "org.hibernate.type.BinaryType")
+    private byte[] image;
     /**
      * Override equals method for testing.
      * @param o object
@@ -67,7 +76,7 @@ public class FoodItem {
                 && categoryId == foodItem.categoryId
                 && Double.compare(price, foodItem.price) == 0
                 && Objects.equals(name, foodItem.name)
-                && Objects.equals(description, foodItem.description);
+                && Objects.equals(description, foodItem.description) && Objects.deepEquals(image, foodItem.image);
     }
 
     /**
@@ -76,6 +85,6 @@ public class FoodItem {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(foodId, categoryId, name, description, price);
+        return Objects.hash(foodId, categoryId, name, description, price, Arrays.hashCode(image));
     }
 }

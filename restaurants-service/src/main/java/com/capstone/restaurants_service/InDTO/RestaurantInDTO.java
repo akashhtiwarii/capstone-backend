@@ -10,6 +10,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 import static com.capstone.restaurants_service.utils.Constants.PHONE_NUMBER_LENGTH;
 
 /**
@@ -64,5 +67,31 @@ public class RestaurantInDTO {
      * image to link image of Restaurant entity.
      */
     private byte[] image;
+    /**
+     * Override equals method.
+     * @param o
+     * @return boolean
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        RestaurantInDTO that = (RestaurantInDTO) o;
+        return ownerId == that.ownerId && Objects.equals(name, that.name)
+                && Objects.equals(email, that.email) && Objects.equals(phone, that.phone)
+                && Objects.equals(address, that.address) && Objects.deepEquals(image, that.image);
+    }
+    /**
+     * Override hashcode method.
+     * @return Hashed object
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(ownerId, name, email, phone, address, Arrays.hashCode(image));
+    }
 }
 

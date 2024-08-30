@@ -5,74 +5,56 @@ package com.capstone.restaurants_service.utils;
  */
 public class Constants {
     /**
-     * Minimum password length.
-     */
-    public static final int MIN_PASSWORD_LENGTH = 8;
-    /**
-     * Pincode length.
-     */
-    public static final long MIN_PINCODE_VALUE = 100000;
-    /**
-     * Pincode length.
-     */
-    public static final long MAX_PINCODE_VALUE = 999999;
-    /**
      * Phone number length.
      */
     public static final int PHONE_NUMBER_LENGTH = 10;
     /**
-     * User Endpoint.
+     * Restaurant Endpoint.
      */
-    public static final String USER_ENDPOINT = "/user";
-    /**
-     * User Registration Endpoint.
-     */
-    public static final String USER_REGISTER_ENDPOINT = "/register";
-    /**
-     * User Login Endpoint.
-     */
-    public static final String USER_LOGIN_ENDPOINT = "/login";
-    /**
-     * User Addresses Endpoint.
-     */
-    public static final String USER_ADDRESS_ENDPOINT = "/address";
+    public static final String RESTAURANT_ENDPOINT = "/restaurant";
     /**
      * Add Restaurant Endpoint.
      */
-    public static final String USER_ADD_RESTAURANT_ENDPOINT = "/restaurant/add";
-    /**
-     * User Endpoint To Add New Address.
-     */
-    public static final String USER_ADD_ADDRESS_ENDPOINT = "/address/add";
+    public static final String ADD_RESTAURANT_ENDPOINT = "/add";
     /**
      * Get All Restaurants Endpoint.
      */
-    public static final String USER_GET_ALL_RESTAURANTS_ENDPOINT = "/restaurants";
+    public static final String GET_RESTAURANTS = "/all";
     /**
-     * Initial Wallet Amount.
+     * Get Categories Endpoint.
      */
-    public static final Double INITIAL_WALLET_AMOUNT = 1000.0;
+    public static final String GET_CATEGORIES_ENDPOINT = "/categories";
     /**
-     * Invalid Credentials.
+     * Add Category Endpoint.
      */
-    public static final String INVALID_CREDENTIALS = "Invalid Credentials";
+    public static final String ADD_CATEGORIES_ENDPOINT = "/categories/add";
     /**
-     * Owner Signup Message.
+     * Add Food Item Endpoint.
      */
-    public static final String OWNER_SIGNUP_MESSAGE = "Account added successfully!";
+    public static final String ADD_FOOD_ITEM_ENDPOINT = "/food/add";
     /**
-     * User Signup Message.
+     * Delete category Endpoint.
      */
-    public static final String USER_SIGNUP_MESSAGE = "Account Added Successfully!"
-            + " You received 1000 bonus in your wallet.";
+    public static final String DELETE_CATEGORY_ENDPOINT = "/categories/delete";
     /**
-     * Email already in use.
+     * Update category Endpoint.
      */
-    public static final String EMAIL_ALREADY_IN_USE = "Email is already in use";
+    public static final String UPDATE_CATEGORY_ENDPOINT = "/categories/update";
     /**
-     * Unexpected Error.
+     * Update Food Item Endpoint.
      */
-    public static final String UNEXPECTED_ERROR = "An unexpected error occured: ";
-
+    public static final String UPDATE_FOOD_ITEM_ENDPOINT = "/food/update";
+    /**
+     * Delete Food Item Endpoint.
+     */
+    public static final String DELETE_FOOD_ITEM = "/food/delete";
+    /**
+     * Get Food By Restaurant Endpoint.
+     */
+    public static final String GET_FOOD_ITEMS_BY_RESTAURANT = "/restaurantfood";
+    /**
+     * Get Food By Category Endpoint.
+     */
+    public static final String GET_FOOD_ITEMS_BY_CATEGORY = "/categoryfood";
 }
 

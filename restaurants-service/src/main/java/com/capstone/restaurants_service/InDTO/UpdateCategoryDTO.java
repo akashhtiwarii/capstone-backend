@@ -7,43 +7,26 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * Restaurant In DTO to add Restaurant.
+ * DTO TO update Category.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryInDTO {
+public class UpdateCategoryDTO {
     /**
-     * User Id of user.
+     * User ID.
      */
     @NotNull(message = "Valid User ID required")
     @Min(value = 1, message = "Valid User ID required")
     private long userId;
     /**
-     * restaurantId to map with restaurantId field of entity.
+     * Category Name.
      */
-    @NotNull(message = "Valid restaurantId required")
-    @Min(value = 1, message = "Valid restaurantId required")
-    private long restaurantId;
-    /**
-     * name to map with name field of entity.
-     */
-    @NotBlank(message = "Valid name required")
-    @Pattern(
-            regexp = "^[a-zA-Z\\s'-]{2,50}$",
-            message = "Valid name required"
-    )
+    @NotBlank(message = "Valid Category Name Required")
     private String name;
-    /**
-     * Image Bytes.
-     */
-    private byte[] image;
-
     /**
      * Override equals method.
      * @param o
@@ -57,17 +40,15 @@ public class CategoryInDTO {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        CategoryInDTO that = (CategoryInDTO) o;
-        return userId == that.userId && restaurantId == that.restaurantId
-                && Objects.equals(name, that.name) && Objects.deepEquals(image, that.image);
+        UpdateCategoryDTO that = (UpdateCategoryDTO) o;
+        return userId == that.userId && Objects.equals(name, that.name);
     }
-
     /**
      * Override hashcode method.
      * @return Hashed object
      */
     @Override
     public int hashCode() {
-        return Objects.hash(userId, restaurantId, name, Arrays.hashCode(image));
+        return Objects.hash(userId, name);
     }
 }

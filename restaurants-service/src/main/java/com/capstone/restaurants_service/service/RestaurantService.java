@@ -22,5 +22,12 @@ public interface RestaurantService {
      * @return the list of all restaurants
      */
     List<Restaurant> findAll();
+
+    /**
+     * Get Restaurant By Id.
+     * @param restaurantId
+     * @return Restaurant
+     */
+    Restaurant findById(long restaurantId);
 }
 
