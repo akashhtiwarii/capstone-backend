@@ -3,7 +3,7 @@ package com.capstone.restaurants_service.exceptions;
 /**
  * Invalid Category Exception.
  */
-public class InvalidCategoryException extends RuntimeException{
+public class InvalidCategoryException extends RuntimeException {
     /**
      * Category Invalid.
      * @param message
