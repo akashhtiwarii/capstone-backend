@@ -81,7 +81,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(FoodAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponse> handleFoodAlreadyExistsException(FoodAlreadyExistsException ex) {
-        ErrorResponse errorResponse = buildSimpleErrorResponse(ex, HttpStatus.NOT_FOUND);
+        ErrorResponse errorResponse = buildSimpleErrorResponse(ex, HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
     /**
