@@ -23,6 +23,7 @@ import com.capstone.restaurants_service.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -150,15 +151,15 @@ public class FoodItemServiceImpl implements FoodItemService {
      */
     @Override
     public List<FoodItem> getAllFoodItemsOfRestaurant(long restaurantId) {
-        try {
-            List<FoodItem> foodItems = foodItemRepository.getFoodItemsByResturantId(restaurantId);
-            if (foodItems == null) {
-                throw new FoodItemNotFoundException("No Food Items found");
+        List<Category> categories = categoryRepository.findByRestaurantId(restaurantId);
+        List<FoodItem> allFoodItems = new ArrayList<>();
+        for (Category category : categories) {
+            List<FoodItem> foodItems = foodItemRepository.findByCategoryId(category.getCategoryId());
+            if (!foodItems.isEmpty()) {
+                allFoodItems.addAll(foodItems);
             }
-            return foodItems;
-        } catch (Exception e) {
-            throw new RuntimeException("An unexpected error occurred: " + e.getMessage());
         }
+        return allFoodItems;
     }
 
     /**

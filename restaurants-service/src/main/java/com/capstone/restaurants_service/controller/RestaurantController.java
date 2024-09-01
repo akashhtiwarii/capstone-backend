@@ -5,6 +5,7 @@ import com.capstone.restaurants_service.InDTO.DeleteCategoryInDTO;
 import com.capstone.restaurants_service.InDTO.DeleteFoodItemInDTO;
 import com.capstone.restaurants_service.InDTO.FoodItemInDTO;
 import com.capstone.restaurants_service.InDTO.GetAllCategoriesInDTO;
+import com.capstone.restaurants_service.InDTO.GetOwnerRestaurantsInDTO;
 import com.capstone.restaurants_service.InDTO.RestaurantInDTO;
 import com.capstone.restaurants_service.InDTO.UpdateCategoryDTO;
 import com.capstone.restaurants_service.InDTO.UpdateFoodItemInDTO;
@@ -20,6 +21,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,6 +36,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(Constants.RESTAURANT_ENDPOINT)
+@CrossOrigin
 public class RestaurantController {
     /**
      * Restaurant Service for accessing restaurants table operations.
@@ -78,6 +81,20 @@ public class RestaurantController {
         logger.info("Fetching Restaurant by Id : {}", restaurantId);
         Restaurant restaurant = restaurantService.findById(restaurantId);
         logger.info("Fetched Restaurant by Id : {}", restaurantId);
+        return ResponseEntity.status(HttpStatus.OK).body(restaurant);
+    }
+
+    /**
+     * Get owner Restaurants.
+     * @param getOwnerRestaurantsInDTO
+     * @return owner restaurants
+     */
+    @GetMapping(Constants.GET_OWNER_RESTAURANTS)
+    public ResponseEntity<Restaurant> getOwnerRestaurans(
+            @Valid @RequestBody GetOwnerRestaurantsInDTO getOwnerRestaurantsInDTO) {
+        logger.info("Fetching Restaurants of ownerID : {}", getOwnerRestaurantsInDTO.getOwnerId());
+        Restaurant restaurant = restaurantService.findByOwnerId(getOwnerRestaurantsInDTO);
+        logger.info("Fetching Restaurant of ownerId : {}", getOwnerRestaurantsInDTO.getOwnerId());
         return ResponseEntity.status(HttpStatus.OK).body(restaurant);
     }
 

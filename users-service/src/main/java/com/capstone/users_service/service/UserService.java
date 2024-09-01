@@ -16,6 +16,13 @@ public interface UserService {
      * @return user
      */
     User getById(GetUserInfoInDTO getUserInfoInDTO);
+
+    /**
+     * Get user for feign client.
+     * @param userId
+     * @return user
+     */
+    User getByIdentity(long userId);
     /**
      * Save user to database.
      * @param userInDTO request object

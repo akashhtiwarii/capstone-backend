@@ -2,6 +2,7 @@ package com.capstone.restaurants_service.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -25,6 +26,21 @@ public class GlobalExceptionHandler {
      */
     private ErrorResponse buildSimpleErrorResponse(Exception ex, HttpStatus status) {
         return new ErrorResponse(status.value(), ex.getMessage());
+    }
+
+    /**
+     * Request Body not found.
+     * @param ex
+     * @return Error message and status
+     */
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Map<String, String>> handleHttpMessageNotReadableException(
+            HttpMessageNotReadableException ex) {
+        Map<String, String> response = new HashMap<>();
+        response.put("status", "400");
+        response.put("message", "Invalid Request. Try Again!");
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     /**

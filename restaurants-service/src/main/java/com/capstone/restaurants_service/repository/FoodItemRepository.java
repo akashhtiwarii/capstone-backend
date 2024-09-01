@@ -2,7 +2,6 @@ package com.capstone.restaurants_service.repository;
 
 import com.capstone.restaurants_service.entity.FoodItem;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -33,12 +32,4 @@ public interface FoodItemRepository extends JpaRepository<FoodItem, Long> {
      * @return food items
      */
     List<FoodItem> findByCategoryId(long categoryId);
-
-    /**
-     * Get Food items By Restaurant.
-     * @param restaurantId
-     * @return Food Items
-     */
-    @Query("SELECT fi FROM FoodItem fi JOIN fi.categoryId c WHERE c.restaurantId = :restaurantId")
-    List<FoodItem> getFoodItemsByResturantId(long restaurantId);
 }

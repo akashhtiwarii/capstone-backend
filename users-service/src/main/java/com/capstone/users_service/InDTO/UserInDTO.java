@@ -59,7 +59,7 @@ public class UserInDTO {
      * role for linking role field from User Entity.
      */
     @NotNull(message = "Role is mandatory")
-    @Pattern(regexp = "USER|OWNER", message = "Role must be either USER or OWNER")
+    //@Pattern(regexp = "USER|OWNER", message = "Role must be either USER or OWNER")
     private Role role;
 
     /**

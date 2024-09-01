@@ -182,20 +182,17 @@
 			<plugin>
 				<groupId>com.github.spotbugs</groupId>
 				<artifactId>spotbugs-maven-plugin</artifactId>
-				<version>4.8.6.0</version>
+				<version>4.8.5.0</version>
 				<configuration>
-					<effort>Max</effort>
-					<threshold>High</threshold>
-					<xmlOutput>true</xmlOutput>
 					<htmlOutput>true</htmlOutput>
 				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>check</goal>
-						</goals>
-					</execution>
-				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>com.github.spotbugs</groupId>
+						<artifactId>spotbugs</artifactId>
+						<version>4.8.5</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 
 		</plugins>

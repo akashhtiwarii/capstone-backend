@@ -23,6 +23,7 @@ import java.util.List;
 import com.capstone.users_service.utils.Constants;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -94,6 +95,19 @@ public class UserController {
         logger.info("Fetching user info..{}", getUserInfoInDTO.getUserId());
         User user = userService.getById(getUserInfoInDTO);
         logger.info("Fetched user info..{}", getUserInfoInDTO.getUserId());
+        return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
+
+    /**
+     * Get by ID for feign client.
+     * @param userId
+     * @return user
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserByIdentity(@PathVariable("id") long userId) {
+        logger.info("Fetching user info..{}", userId);
+        User user = userService.getByIdentity(userId);
+        logger.info("Fetched user info..{}", userId);
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 

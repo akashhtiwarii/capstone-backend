@@ -21,6 +21,10 @@ public class Constants {
      */
     public static final String GET_RESTAURANTS = "/all";
     /**
+     * Get Owner Restaurants Endpoint.
+     */
+    public static final String GET_OWNER_RESTAURANTS = "/owner";
+    /**
      * Get Categories Endpoint.
      */
     public static final String GET_CATEGORIES_ENDPOINT = "/categories";

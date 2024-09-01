@@ -1,5 +1,6 @@
 package com.capstone.restaurants_service.service;
 
+import com.capstone.restaurants_service.InDTO.GetOwnerRestaurantsInDTO;
 import com.capstone.restaurants_service.InDTO.RestaurantInDTO;
 import com.capstone.restaurants_service.entity.Restaurant;
 
@@ -22,6 +23,13 @@ public interface RestaurantService {
      * @return the list of all restaurants
      */
     List<Restaurant> findAll();
+
+    /**
+     * Get Restaurant bu ownerId.
+     * @param getOwnerRestaurantsInDTO
+     * @return List of restaurants
+     */
+    Restaurant findByOwnerId(GetOwnerRestaurantsInDTO getOwnerRestaurantsInDTO);
 
     /**
      * Get Restaurant By Id.

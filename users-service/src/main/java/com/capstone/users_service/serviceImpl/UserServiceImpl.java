@@ -59,6 +59,17 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * Get by identity.
+     * @param userId
+     * @return user
+     */
+    @Override
+    public User getByIdentity(long userId) {
+        return userRepository.findById(userId);
+    }
+
+
+    /**
      * Save user to database method implementation.
      * @param userInDTO request object
      * @return message after saving user
