@@ -57,7 +57,7 @@ class FoodItemServiceImplTest {
     }
 
     @Test
-    void addFoodItem_CategoryNotFound_ShouldThrowException() {
+    void addFoodItemCategoryNotFoundShouldThrowException() {
 
         when(categoryRepository.existsById(anyLong())).thenReturn(false);
 
@@ -67,7 +67,7 @@ class FoodItemServiceImplTest {
     }
 
     @Test
-    void addFoodItem_Success_ShouldReturnSuccessMessage() {
+    void addFoodItemSuccessShouldReturnSuccessMessage() {
 
         when(categoryRepository.existsById(anyLong())).thenReturn(true);
         when(foodItemRepository.findByCategoryIdAndName(anyLong(), anyString())).thenReturn(null);
@@ -81,7 +81,7 @@ class FoodItemServiceImplTest {
     }
 
     @Test
-    void deleteFoodItem_UserNotFound_ShouldThrowException() {
+    void deleteFoodItemUserNotFoundShouldThrowException() {
 
         when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.of(Optional.empty()));
 
@@ -91,7 +91,7 @@ class FoodItemServiceImplTest {
     }
 
     @Test
-    void deleteFoodItem_UserNotOwner_ShouldThrowException() {
+    void deleteFoodItemUserNotOwnerShouldThrowException() {
 
         UserOutDTO user = new UserOutDTO();
         user.setRole(Role.USER);
@@ -103,7 +103,7 @@ class FoodItemServiceImplTest {
     }
 
     @Test
-    void deleteFoodItem_FoodItemNotFound_ShouldThrowException() {
+    void deleteFoodItemFoodItemNotFoundShouldThrowException() {
 
         UserOutDTO user = new UserOutDTO();
         user.setRole(Role.OWNER);
@@ -116,7 +116,7 @@ class FoodItemServiceImplTest {
     }
 
     @Test
-    void deleteFoodItem_Success_ShouldReturnSuccessMessage() {
+    void deleteFoodItemSuccessShouldReturnSuccessMessage() {
 
         UserOutDTO user = new UserOutDTO();
         user.setRole(Role.OWNER);
@@ -145,7 +145,7 @@ class FoodItemServiceImplTest {
     }
 
     @Test
-    void updateFoodItem_UserNotFound_ShouldThrowException() {
+    void updateFoodItemUserNotFoundShouldThrowException() {
 
         when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.of(Optional.empty()));
 
@@ -155,7 +155,7 @@ class FoodItemServiceImplTest {
     }
 
     @Test
-    void updateFoodItem_UserNotOwner_ShouldThrowException() {
+    void updateFoodItemUserNotOwnerShouldThrowException() {
 
         UserOutDTO user = new UserOutDTO();
         user.setRole(Role.USER);
@@ -167,7 +167,7 @@ class FoodItemServiceImplTest {
     }
 
     @Test
-    void updateFoodItem_FoodItemNotFound_ShouldThrowException() {
+    void updateFoodItemFoodItemNotFoundShouldThrowException() {
 
         UserOutDTO user = new UserOutDTO();
         user.setRole(Role.OWNER);
@@ -180,7 +180,7 @@ class FoodItemServiceImplTest {
     }
 
     @Test
-    void updateFoodItem_Success_ShouldReturnSuccessMessage() {
+    void updateFoodItemSuccessShouldReturnSuccessMessage() {
 
         UserOutDTO user = new UserOutDTO();
         user.setRole(Role.OWNER);
@@ -209,7 +209,7 @@ class FoodItemServiceImplTest {
     }
 
     @Test
-    void getAllFoodItemsOfRestaurant_RestaurantNotFound_ShouldThrowException() {
+    void getAllFoodItemsOfRestaurantRestaurantNotFoundShouldThrowException() {
 
         when(restaurantRepository.findById(anyLong())).thenReturn(null);
 
@@ -219,7 +219,7 @@ class FoodItemServiceImplTest {
     }
 
     @Test
-    void getAllFoodItemsOfRestaurant_NoCategory_ShouldThrowException() {
+    void getAllFoodItemsOfRestaurantNoCategoryShouldThrowException() {
 
         when(restaurantRepository.findById(anyLong())).thenReturn(new Restaurant());
         when(categoryRepository.findByRestaurantId(anyLong())).thenReturn(new ArrayList<>());
@@ -230,7 +230,7 @@ class FoodItemServiceImplTest {
     }
 
     @Test
-    void getAllFoodItemsOfRestaurant_NoFoodItems_ShouldThrowException() {
+    void getAllFoodItemsOfRestaurantNoFoodItemsShouldThrowException() {
 
         Restaurant restaurant = new Restaurant();
         Category category = new Category();
@@ -248,7 +248,7 @@ class FoodItemServiceImplTest {
     }
 
     @Test
-    void getAllFoodItemsOfRestaurant_Success_ShouldReturnFoodItems() {
+    void getAllFoodItemsOfRestaurantSuccessShouldReturnFoodItems() {
 
         Restaurant restaurant = new Restaurant();
         Category category = new Category();
