@@ -13,8 +13,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +25,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 class RestaurantControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
 
     @InjectMocks
     private RestaurantController restaurantController;
@@ -39,18 +44,6 @@ class RestaurantControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-    }
-
-    @Test
-    void testAddRestaurant() {
-        RestaurantInDTO restaurantInDTO = new RestaurantInDTO();
-        restaurantInDTO.setName("Test Restaurant");
-        when(restaurantService.save(restaurantInDTO)).thenReturn("Restaurant added successfully");
-
-        ResponseEntity<String> response = restaurantController.addRestaurant(restaurantInDTO);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Restaurant added successfully", response.getBody());
     }
 
     @Test

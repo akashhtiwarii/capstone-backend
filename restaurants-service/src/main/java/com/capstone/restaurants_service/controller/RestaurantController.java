@@ -29,7 +29,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -59,17 +61,39 @@ public class RestaurantController {
     private final Logger logger = LogManager.getLogger(RestaurantController.class);
 
     /**
-     * Add new restaurant.
-     * @param restaurantInDTO request parameter
-     * @return a string message
+     * Add Restaurant.
+     * @param ownerId
+     * @param name
+     * @param email
+     * @param phone
+     * @param address
+     * @param image
+     * @return String message
      */
-    @PostMapping(Constants.ADD_RESTAURANT_ENDPOINT)
-    public ResponseEntity<String> addRestaurant(@Valid @RequestBody RestaurantInDTO restaurantInDTO) {
-        logger.info("Adding new Restaurant : {}", restaurantInDTO.getName());
-        String message = restaurantService.save(restaurantInDTO);
-        logger.info("Added Restaurant : {}", restaurantInDTO.getName());
-        return ResponseEntity.status(HttpStatus.OK).body(message);
+    @PostMapping("/add")
+    public String addRestaurant(
+            @RequestParam("ownerId") long ownerId,
+            @RequestParam("name") String name,
+            @RequestParam("email") String email,
+            @RequestParam("phone") String phone,
+            @RequestParam("address") String address,
+            @RequestParam("image") MultipartFile image) {
+        RestaurantInDTO restaurantInDTO = new RestaurantInDTO(ownerId, name, email, phone, address, null);
+        return restaurantService.save(restaurantInDTO, image);
     }
+
+//    /**
+//     * Add new restaurant.
+//     * @param restaurantInDTO request parameter
+//     * @return a string message
+//     */
+//    @PostMapping(Constants.ADD_RESTAURANT_ENDPOINT)
+//    public ResponseEntity<String> addRestaurant(@Valid @RequestBody RestaurantInDTO restaurantInDTO) {
+//        logger.info("Adding new Restaurant : {}", restaurantInDTO.getName());
+//        String message = restaurantService.save(restaurantInDTO);
+//        logger.info("Added Restaurant : {}", restaurantInDTO.getName());
+//        return ResponseEntity.status(HttpStatus.OK).body(message);
+//    }
 
     /**
      * Get Restaurant By ID.
@@ -90,12 +114,12 @@ public class RestaurantController {
      * @return owner restaurants
      */
     @GetMapping(Constants.GET_OWNER_RESTAURANTS)
-    public ResponseEntity<Restaurant> getOwnerRestaurans(
+    public ResponseEntity<List<Restaurant>> getOwnerRestaurans(
             @Valid @RequestBody GetOwnerRestaurantsInDTO getOwnerRestaurantsInDTO) {
         logger.info("Fetching Restaurants of ownerID : {}", getOwnerRestaurantsInDTO.getOwnerId());
-        Restaurant restaurant = restaurantService.findByOwnerId(getOwnerRestaurantsInDTO);
+        List<Restaurant> restaurants = restaurantService.findByOwnerId(getOwnerRestaurantsInDTO);
         logger.info("Fetching Restaurant of ownerId : {}", getOwnerRestaurantsInDTO.getOwnerId());
-        return ResponseEntity.status(HttpStatus.OK).body(restaurant);
+        return ResponseEntity.status(HttpStatus.OK).body(restaurants);
     }
 
     /**

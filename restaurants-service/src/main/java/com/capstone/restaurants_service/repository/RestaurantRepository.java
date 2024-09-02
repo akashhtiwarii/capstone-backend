@@ -35,6 +35,6 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
      * @param ownerId
      * @return Restaurant
      */
-    Restaurant findByOwnerId(long ownerId);
+    List<Restaurant> findByOwnerId(long ownerId);
 }
 

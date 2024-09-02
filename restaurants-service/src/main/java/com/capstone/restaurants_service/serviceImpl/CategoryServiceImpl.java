@@ -94,7 +94,7 @@ public class CategoryServiceImpl implements CategoryService {
         if (user.getRole() != Role.OWNER) {
             throw new UserNotValidException("You cannot update a category");
         }
-        Restaurant restaurant = restaurantRepository.findByOwnerId(user.getUserId());
+        Restaurant restaurant = restaurantRepository.findById(getAllCategoriesInDTO.getRestaurantId());
         if (restaurant == null) {
             throw new RestaurantsNotFoundException("You do not have any restaurants");
         }

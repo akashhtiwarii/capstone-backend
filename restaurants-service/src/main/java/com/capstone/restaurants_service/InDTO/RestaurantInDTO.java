@@ -94,4 +94,3 @@ public class RestaurantInDTO {
         return Objects.hash(ownerId, name, email, phone, address, Arrays.hashCode(image));
     }
 }
-

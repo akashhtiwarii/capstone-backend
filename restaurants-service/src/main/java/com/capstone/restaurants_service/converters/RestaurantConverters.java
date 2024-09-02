@@ -20,9 +20,6 @@ public class RestaurantConverters {
         restaurant.setEmail(restaurantInDTO.getEmail());
         restaurant.setPhone(restaurantInDTO.getPhone());
         restaurant.setAddress(restaurantInDTO.getAddress());
-        if (restaurantInDTO.getImage() != null) {
-            restaurant.setImage(restaurantInDTO.getImage());
-        }
         return restaurant;
     }
 }
