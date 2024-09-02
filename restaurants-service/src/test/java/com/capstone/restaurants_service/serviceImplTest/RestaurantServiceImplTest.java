@@ -7,7 +7,6 @@ import com.capstone.restaurants_service.ENUM.Role;
 import com.capstone.restaurants_service.InDTO.GetOwnerRestaurantsInDTO;
 import com.capstone.restaurants_service.InDTO.RestaurantInDTO;
 import com.capstone.restaurants_service.OutDTO.UserOutDTO;
-import com.capstone.restaurants_service.converters.RestaurantConverters;
 import com.capstone.restaurants_service.entity.Restaurant;
 import com.capstone.restaurants_service.exceptions.EmailAlreadyExistsException;
 import com.capstone.restaurants_service.exceptions.RestaurantsNotFoundException;
@@ -43,7 +42,7 @@ class RestaurantServiceImplTest {
     }
 
     @Test
-    void save_shouldSaveRestaurantSuccessfully() {
+    void saveShouldSaveRestaurantSuccessfully() {
         RestaurantInDTO restaurantInDTO = new RestaurantInDTO();
         restaurantInDTO.setOwnerId(1L);
         restaurantInDTO.setEmail("test@example.com");
@@ -63,7 +62,7 @@ class RestaurantServiceImplTest {
     }
 
     @Test
-    void save_shouldThrowExceptionWhenOwnerNotFound() {
+    void saveShouldThrowExceptionWhenOwnerNotFound() {
         RestaurantInDTO restaurantInDTO = new RestaurantInDTO();
         restaurantInDTO.setOwnerId(1L);
 
@@ -73,7 +72,7 @@ class RestaurantServiceImplTest {
     }
 
     @Test
-    void save_shouldThrowExceptionWhenEmailAlreadyExists() {
+    void saveShouldThrowExceptionWhenEmailAlreadyExists() {
         RestaurantInDTO restaurantInDTO = new RestaurantInDTO();
         restaurantInDTO.setOwnerId(1L);
         restaurantInDTO.setEmail("test@example.com");
@@ -89,13 +88,13 @@ class RestaurantServiceImplTest {
     }
 
     @Test
-    void save_shouldThrowExceptionWhenUserIsNotValid() {
+    void saveShouldThrowExceptionWhenUserIsNotValid() {
         RestaurantInDTO restaurantInDTO = new RestaurantInDTO();
         restaurantInDTO.setOwnerId(1L);
 
         UserOutDTO userOutDTO = new UserOutDTO();
         userOutDTO.setUserId(1L);
-        userOutDTO.setRole(Role.USER);  // User role, not allowed to add restaurant
+        userOutDTO.setRole(Role.USER);
 
         when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(userOutDTO));
 
@@ -103,7 +102,7 @@ class RestaurantServiceImplTest {
     }
 
     @Test
-    void findAll_shouldReturnListOfRestaurants() {
+    void findAllShouldReturnListOfRestaurants() {
         List<Restaurant> restaurants = new ArrayList<>();
         restaurants.add(new Restaurant());
 
@@ -116,14 +115,14 @@ class RestaurantServiceImplTest {
     }
 
     @Test
-    void findAll_shouldThrowExceptionWhenNoRestaurantsFound() {
+    void findAllShouldThrowExceptionWhenNoRestaurantsFound() {
         when(restaurantRepository.findAll()).thenReturn(new ArrayList<>());
 
         assertThrows(RestaurantsNotFoundException.class, () -> restaurantService.findAll());
     }
 
     @Test
-    void findByOwnerId_shouldReturnRestaurant() {
+    void findByOwnerIdShouldReturnRestaurant() {
         GetOwnerRestaurantsInDTO getOwnerRestaurantsInDTO = new GetOwnerRestaurantsInDTO();
         getOwnerRestaurantsInDTO.setOwnerId(1L);
 
@@ -139,7 +138,7 @@ class RestaurantServiceImplTest {
     }
 
     @Test
-    void findByOwnerId_shouldThrowExceptionWhenNoRestaurantFound() {
+    void findByOwnerIdShouldThrowExceptionWhenNoRestaurantFound() {
         GetOwnerRestaurantsInDTO getOwnerRestaurantsInDTO = new GetOwnerRestaurantsInDTO();
         getOwnerRestaurantsInDTO.setOwnerId(1L);
 
@@ -149,7 +148,7 @@ class RestaurantServiceImplTest {
     }
 
     @Test
-    void findById_shouldReturnRestaurant() {
+    void findByIdShouldReturnRestaurant() {
         Restaurant restaurant = new Restaurant();
         restaurant.setRestaurantId(1L);
 
@@ -162,9 +161,8 @@ class RestaurantServiceImplTest {
     }
 
     @Test
-    void findById_shouldThrowExceptionWhenNoRestaurantFound() {
+    void findByIdShouldThrowExceptionWhenNoRestaurantFound() {
         when(restaurantRepository.findById(anyLong())).thenReturn(null);
-
         assertThrows(RestaurantsNotFoundException.class, () -> restaurantService.findById(1L));
     }
 }

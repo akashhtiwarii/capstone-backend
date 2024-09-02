@@ -85,8 +85,8 @@ public class GlobalExceptionHandlerTest {
         CategoryAlreadyExistException ex = new CategoryAlreadyExistException("Category already exists");
         ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleCategoryAlreadyExistException(ex);
 
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals(404, response.getBody().getStatus());
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(400, response.getBody().getStatus());
         assertEquals("Category already exists", response.getBody().getMessage());
     }
 
