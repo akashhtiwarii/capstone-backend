@@ -58,7 +58,7 @@ public class CategoryServiceImpl implements CategoryService {
             throw new UserNotFoundException("User Not Found");
         }
         if (user.getRole() != Role.OWNER) {
-            throw new UserNotValidException("You cannot update a category");
+            throw new UserNotValidException("You cannot Add a category");
         }
         String categoryName = categoryInDTO.getName().toUpperCase();
         Restaurant restaurant = restaurantRepository.findById(categoryInDTO.getRestaurantId());
@@ -94,7 +94,7 @@ public class CategoryServiceImpl implements CategoryService {
         if (user.getRole() != Role.OWNER) {
             throw new UserNotValidException("You cannot update a category");
         }
-        Restaurant restaurant = restaurantRepository.findByOwnerId(getAllCategoriesInDTO.getRestaurantId());
+        Restaurant restaurant = restaurantRepository.findByOwnerId(user.getUserId());
         if (restaurant == null) {
             throw new RestaurantsNotFoundException("You do not have any restaurants");
         }

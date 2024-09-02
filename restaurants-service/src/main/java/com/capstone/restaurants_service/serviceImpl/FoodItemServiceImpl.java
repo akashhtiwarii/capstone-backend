@@ -9,11 +9,7 @@ import com.capstone.restaurants_service.converters.FoodItemConverters;
 import com.capstone.restaurants_service.entity.Category;
 import com.capstone.restaurants_service.entity.FoodItem;
 import com.capstone.restaurants_service.entity.Restaurant;
-import com.capstone.restaurants_service.exceptions.FoodAlreadyExistsException;
-import com.capstone.restaurants_service.exceptions.FoodItemNotFoundException;
-import com.capstone.restaurants_service.exceptions.InvalidCategoryException;
-import com.capstone.restaurants_service.exceptions.UserNotFoundException;
-import com.capstone.restaurants_service.exceptions.UserNotValidException;
+import com.capstone.restaurants_service.exceptions.*;
 import com.capstone.restaurants_service.feignClient.UserClient;
 import com.capstone.restaurants_service.repository.CategoryRepository;
 import com.capstone.restaurants_service.repository.FoodItemRepository;
@@ -59,6 +55,10 @@ public class FoodItemServiceImpl implements FoodItemService {
      */
     public String addFoodItem(FoodItemInDTO foodItemInDTO) {
         String foodItemName = StringUtils.capitalizeFirstLetter(foodItemInDTO.getName());
+        boolean category = categoryRepository.existsById(foodItemInDTO.getCategoryId());
+        if (!category) {
+            throw new CategoryNotFoundException("Category Does Not Exist");
+        }
         FoodItem foodItemAlreadyExists = foodItemRepository.findByCategoryIdAndName(
                 foodItemInDTO.getCategoryId(), foodItemName);
         if (foodItemAlreadyExists != null) {
@@ -136,6 +136,7 @@ public class FoodItemServiceImpl implements FoodItemService {
         foodItem.setCategoryId(updateFoodItemInDTO.getCategoryId());
         foodItem.setName(updateFoodItemInDTO.getName());
         foodItem.setDescription(updateFoodItemInDTO.getDescription());
+        foodItem.setPrice(updateFoodItemInDTO.getPrice());
         try {
             foodItemRepository.save(foodItem);
             return "Food Item Updated Successfully";
@@ -151,13 +152,23 @@ public class FoodItemServiceImpl implements FoodItemService {
      */
     @Override
     public List<FoodItem> getAllFoodItemsOfRestaurant(long restaurantId) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId);
+        if (restaurant == null) {
+            throw new RestaurantsNotFoundException("No Restaurant with this Id");
+        }
         List<Category> categories = categoryRepository.findByRestaurantId(restaurantId);
+        if (categories.isEmpty()) {
+            throw new CategoryNotFoundException("No Category added for this restaurant");
+        }
         List<FoodItem> allFoodItems = new ArrayList<>();
         for (Category category : categories) {
             List<FoodItem> foodItems = foodItemRepository.findByCategoryId(category.getCategoryId());
             if (!foodItems.isEmpty()) {
                 allFoodItems.addAll(foodItems);
             }
+        }
+        if (allFoodItems.isEmpty()) {
+            throw new FoodItemNotFoundException("No Food Items in the menu");
         }
         return allFoodItems;
     }

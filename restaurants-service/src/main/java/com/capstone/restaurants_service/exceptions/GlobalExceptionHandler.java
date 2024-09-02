@@ -1,5 +1,6 @@
 package com.capstone.restaurants_service.exceptions;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -28,6 +29,20 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(status.value(), ex.getMessage());
     }
 
+    /**
+     * Constraint Violation.
+     * @param ex
+     * @return Error message
+     */
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Map<String, String>> handleConstraintViolationException(
+            ConstraintViolationException ex) {
+        Map<String, String> response = new HashMap<>();
+        response.put("status", "400");
+        response.put("message", "Invalid Request. Try Again!");
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
     /**
      * Request Body not found.
      * @param ex
@@ -118,10 +133,10 @@ public class GlobalExceptionHandler {
      * @return Error with a message
      */
     @ExceptionHandler(CategoryAlreadyExistException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponse> handleCategoryAlreadyExistException(CategoryAlreadyExistException ex) {
-        ErrorResponse errorResponse = buildSimpleErrorResponse(ex, HttpStatus.NOT_FOUND);
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+        ErrorResponse errorResponse = buildSimpleErrorResponse(ex, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
     /**
      * Handle Restaurants Not Found Exception.

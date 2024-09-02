@@ -23,6 +23,8 @@ public class FoodItemConverters {
         foodItem.setDescription(
                 foodItemInDTO.getDescription() == null || Objects.equals(foodItemInDTO.getDescription(),
                         "") ? "" : foodItemInDTO.getDescription());
+        foodItem.setPrice(foodItemInDTO.getPrice());
+        foodItem.setImage(foodItemInDTO.getImage());
         return foodItem;
     }
 }
