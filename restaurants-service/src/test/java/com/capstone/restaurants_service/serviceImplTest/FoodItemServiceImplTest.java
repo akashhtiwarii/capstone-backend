@@ -1,18 +1,18 @@
 package com.capstone.restaurants_service.serviceImplTest;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 import com.capstone.restaurants_service.ENUM.Role;
 import com.capstone.restaurants_service.InDTO.DeleteFoodItemInDTO;
 import com.capstone.restaurants_service.InDTO.FoodItemInDTO;
 import com.capstone.restaurants_service.InDTO.UpdateFoodItemInDTO;
 import com.capstone.restaurants_service.OutDTO.UserOutDTO;
-import com.capstone.restaurants_service.converters.FoodItemConverters;
 import com.capstone.restaurants_service.entity.Category;
 import com.capstone.restaurants_service.entity.FoodItem;
 import com.capstone.restaurants_service.entity.Restaurant;
-import com.capstone.restaurants_service.exceptions.*;
+import com.capstone.restaurants_service.exceptions.CategoryNotFoundException;
+import com.capstone.restaurants_service.exceptions.FoodItemNotFoundException;
+import com.capstone.restaurants_service.exceptions.RestaurantsNotFoundException;
+import com.capstone.restaurants_service.exceptions.UserNotFoundException;
+import com.capstone.restaurants_service.exceptions.UserNotValidException;
 import com.capstone.restaurants_service.feignClient.UserClient;
 import com.capstone.restaurants_service.repository.CategoryRepository;
 import com.capstone.restaurants_service.repository.FoodItemRepository;
@@ -29,7 +29,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
+
 class FoodItemServiceImplTest {
+
+    @InjectMocks
+    private FoodItemServiceImpl foodItemServiceImpl;
 
     @Mock
     private FoodItemRepository foodItemRepository;
@@ -43,137 +51,226 @@ class FoodItemServiceImplTest {
     @Mock
     private UserClient userClient;
 
-    @InjectMocks
-    private FoodItemServiceImpl foodItemService;
-
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    void addFoodItem_shouldAddFoodItemSuccessfully() {
-        FoodItemInDTO foodItemInDTO = new FoodItemInDTO();
-        foodItemInDTO.setName("Burger");
-        foodItemInDTO.setCategoryId(1L);
+    void addFoodItemCategoryNotFoundShouldThrowException() {
 
+        when(categoryRepository.existsById(anyLong())).thenReturn(false);
+
+        assertThrows(CategoryNotFoundException.class, () -> {
+            foodItemServiceImpl.addFoodItem(new FoodItemInDTO());
+        });
+    }
+
+    @Test
+    void addFoodItemSuccessShouldReturnSuccessMessage() {
+
+        when(categoryRepository.existsById(anyLong())).thenReturn(true);
         when(foodItemRepository.findByCategoryIdAndName(anyLong(), anyString())).thenReturn(null);
-        when(foodItemRepository.save(any(FoodItem.class))).thenReturn(new FoodItem());
 
-        String result = foodItemService.addFoodItem(foodItemInDTO);
+
+        String result = foodItemServiceImpl.addFoodItem(new FoodItemInDTO());
+
+
         assertEquals("Food Item Added Successfully", result);
-
         verify(foodItemRepository, times(1)).save(any(FoodItem.class));
     }
 
     @Test
-    void addFoodItem_shouldThrowExceptionWhenFoodItemAlreadyExists() {
-        FoodItemInDTO foodItemInDTO = new FoodItemInDTO();
-        foodItemInDTO.setName("Burger");
-        foodItemInDTO.setCategoryId(1L);
+    void deleteFoodItemUserNotFoundShouldThrowException() {
 
-        when(foodItemRepository.findByCategoryIdAndName(anyLong(), anyString())).thenReturn(new FoodItem());
+        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.of(Optional.empty()));
 
-        assertThrows(FoodAlreadyExistsException.class, () -> foodItemService.addFoodItem(foodItemInDTO));
+        assertThrows(UserNotFoundException.class, () -> {
+            foodItemServiceImpl.deleteFoodItem(new DeleteFoodItemInDTO());
+        });
     }
 
     @Test
-    void deleteFoodItem_shouldDeleteFoodItemSuccessfully() {
-        DeleteFoodItemInDTO deleteFoodItemInDTO = new DeleteFoodItemInDTO();
-        deleteFoodItemInDTO.setFoodId(1L);
-        deleteFoodItemInDTO.setUserId(1L);
+    void deleteFoodItemUserNotOwnerShouldThrowException() {
 
-        UserOutDTO userOutDTO = new UserOutDTO();
-        userOutDTO.setUserId(1L);
-        userOutDTO.setRole(Role.OWNER);
+        UserOutDTO user = new UserOutDTO();
+        user.setRole(Role.USER);
+        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(user));
+
+        assertThrows(UserNotValidException.class, () -> {
+            foodItemServiceImpl.deleteFoodItem(new DeleteFoodItemInDTO());
+        });
+    }
+
+    @Test
+    void deleteFoodItemFoodItemNotFoundShouldThrowException() {
+
+        UserOutDTO user = new UserOutDTO();
+        user.setRole(Role.OWNER);
+        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(user));
+        when(foodItemRepository.findById(anyLong())).thenReturn(null);
+
+        assertThrows(FoodItemNotFoundException.class, () -> {
+            foodItemServiceImpl.deleteFoodItem(new DeleteFoodItemInDTO());
+        });
+    }
+
+    @Test
+    void deleteFoodItemSuccessShouldReturnSuccessMessage() {
+
+        UserOutDTO user = new UserOutDTO();
+        user.setRole(Role.OWNER);
+        user.setUserId(1L);
 
         Category category = new Category();
-        category.setCategoryId(1L);
         category.setRestaurantId(1L);
 
         Restaurant restaurant = new Restaurant();
         restaurant.setOwnerId(1L);
 
-        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(userOutDTO));
-        when(foodItemRepository.findById(anyLong())).thenReturn(new FoodItem());
+        FoodItem foodItem = new FoodItem();
+        foodItem.setCategoryId(1L);
+
+        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(user));
+        when(foodItemRepository.findById(anyLong())).thenReturn(foodItem);
         when(categoryRepository.findById(anyLong())).thenReturn(category);
         when(restaurantRepository.findById(anyLong())).thenReturn(restaurant);
 
-        String result = foodItemService.deleteFoodItem(deleteFoodItemInDTO);
-        assertEquals("Deleted Food Item", result);
 
+        String result = foodItemServiceImpl.deleteFoodItem(new DeleteFoodItemInDTO());
+
+
+        assertEquals("Deleted Food Item", result);
         verify(foodItemRepository, times(1)).deleteById(anyLong());
     }
 
     @Test
-    void deleteFoodItem_shouldThrowExceptionWhenUserIsNotFound() {
-        DeleteFoodItemInDTO deleteFoodItemInDTO = new DeleteFoodItemInDTO();
-        deleteFoodItemInDTO.setUserId(1L);
+    void updateFoodItemUserNotFoundShouldThrowException() {
 
-        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(null));
+        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.of(Optional.empty()));
 
-        assertThrows(UserNotFoundException.class, () -> foodItemService.deleteFoodItem(deleteFoodItemInDTO));
+        assertThrows(UserNotFoundException.class, () -> {
+            foodItemServiceImpl.updateFoodItem(1L, new UpdateFoodItemInDTO());
+        });
     }
 
     @Test
-    void updateFoodItem_shouldUpdateFoodItemSuccessfully() {
-        UpdateFoodItemInDTO updateFoodItemInDTO = new UpdateFoodItemInDTO();
-        updateFoodItemInDTO.setUserId(1L);
-        updateFoodItemInDTO.setCategoryId(1L);
-        updateFoodItemInDTO.setName("Updated Burger");
-        updateFoodItemInDTO.setDescription("Updated description");
+    void updateFoodItemUserNotOwnerShouldThrowException() {
 
-        UserOutDTO userOutDTO = new UserOutDTO();
-        userOutDTO.setUserId(1L);
-        userOutDTO.setRole(Role.OWNER);
+        UserOutDTO user = new UserOutDTO();
+        user.setRole(Role.USER);
+        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(user));
+
+        assertThrows(UserNotValidException.class, () -> {
+            foodItemServiceImpl.updateFoodItem(1L, new UpdateFoodItemInDTO());
+        });
+    }
+
+    @Test
+    void updateFoodItemFoodItemNotFoundShouldThrowException() {
+
+        UserOutDTO user = new UserOutDTO();
+        user.setRole(Role.OWNER);
+        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(user));
+        when(foodItemRepository.findById(anyLong())).thenReturn(null);
+
+        assertThrows(FoodItemNotFoundException.class, () -> {
+            foodItemServiceImpl.updateFoodItem(1L, new UpdateFoodItemInDTO());
+        });
+    }
+
+    @Test
+    void updateFoodItemSuccessShouldReturnSuccessMessage() {
+
+        UserOutDTO user = new UserOutDTO();
+        user.setRole(Role.OWNER);
+        user.setUserId(1L);
 
         Category category = new Category();
-        category.setCategoryId(1L);
         category.setRestaurantId(1L);
 
         Restaurant restaurant = new Restaurant();
         restaurant.setOwnerId(1L);
 
-        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(userOutDTO));
-        when(foodItemRepository.findById(anyLong())).thenReturn(new FoodItem());
+        FoodItem foodItem = new FoodItem();
+        foodItem.setCategoryId(1L);
+
+        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(user));
+        when(foodItemRepository.findById(anyLong())).thenReturn(foodItem);
         when(categoryRepository.findById(anyLong())).thenReturn(category);
         when(restaurantRepository.findById(anyLong())).thenReturn(restaurant);
 
-        String result = foodItemService.updateFoodItem(1L, updateFoodItemInDTO);
-        assertEquals("Food Item Updated Successfully", result);
 
+        String result = foodItemServiceImpl.updateFoodItem(1L, new UpdateFoodItemInDTO());
+
+
+        assertEquals("Food Item Updated Successfully", result);
         verify(foodItemRepository, times(1)).save(any(FoodItem.class));
     }
 
     @Test
-    void getAllFoodItemsOfRestaurant_shouldReturnListOfFoodItems() {
-        List<Category> categories = new ArrayList<>();
-        Category category = new Category();
-        category.setCategoryId(1L);
-        categories.add(category);
+    void getAllFoodItemsOfRestaurantRestaurantNotFoundShouldThrowException() {
 
-        List<FoodItem> foodItems = new ArrayList<>();
-        foodItems.add(new FoodItem());
+        when(restaurantRepository.findById(anyLong())).thenReturn(null);
 
-        when(categoryRepository.findByRestaurantId(anyLong())).thenReturn(categories);
-        when(foodItemRepository.findByCategoryId(anyLong())).thenReturn(foodItems);
-
-        List<FoodItem> result = foodItemService.getAllFoodItemsOfRestaurant(1L);
-        assertFalse(result.isEmpty());
-
-        verify(foodItemRepository, times(1)).findByCategoryId(anyLong());
+        assertThrows(RestaurantsNotFoundException.class, () -> {
+            foodItemServiceImpl.getAllFoodItemsOfRestaurant(1L);
+        });
     }
 
     @Test
-    void getFoodItemsByCategory_shouldReturnListOfFoodItems() {
-        List<FoodItem> foodItems = new ArrayList<>();
-        foodItems.add(new FoodItem());
+    void getAllFoodItemsOfRestaurantNoCategoryShouldThrowException() {
 
+        when(restaurantRepository.findById(anyLong())).thenReturn(new Restaurant());
+        when(categoryRepository.findByRestaurantId(anyLong())).thenReturn(new ArrayList<>());
+
+        assertThrows(CategoryNotFoundException.class, () -> {
+            foodItemServiceImpl.getAllFoodItemsOfRestaurant(1L);
+        });
+    }
+
+    @Test
+    void getAllFoodItemsOfRestaurantNoFoodItemsShouldThrowException() {
+
+        Restaurant restaurant = new Restaurant();
+        Category category = new Category();
+        category.setCategoryId(1L);
+        List<Category> categories = new ArrayList<>();
+        categories.add(category);
+
+        when(restaurantRepository.findById(anyLong())).thenReturn(restaurant);
+        when(categoryRepository.findByRestaurantId(anyLong())).thenReturn(categories);
+        when(foodItemRepository.findByCategoryId(anyLong())).thenReturn(new ArrayList<>());
+
+        assertThrows(FoodItemNotFoundException.class, () -> {
+            foodItemServiceImpl.getAllFoodItemsOfRestaurant(1L);
+        });
+    }
+
+    @Test
+    void getAllFoodItemsOfRestaurantSuccessShouldReturnFoodItems() {
+
+        Restaurant restaurant = new Restaurant();
+        Category category = new Category();
+        category.setCategoryId(1L);
+        List<Category> categories = new ArrayList<>();
+        categories.add(category);
+
+        List<FoodItem> foodItems = new ArrayList<>();
+        FoodItem foodItem = new FoodItem();
+        foodItem.setName("Pizza");
+        foodItems.add(foodItem);
+
+        when(restaurantRepository.findById(anyLong())).thenReturn(restaurant);
+        when(categoryRepository.findByRestaurantId(anyLong())).thenReturn(categories);
         when(foodItemRepository.findByCategoryId(anyLong())).thenReturn(foodItems);
 
-        List<FoodItem> result = foodItemService.getFoodItemsByCategory(1L);
-        assertFalse(result.isEmpty());
 
-        verify(foodItemRepository, times(1)).findByCategoryId(anyLong());
+        List<FoodItem> result = foodItemServiceImpl.getAllFoodItemsOfRestaurant(1L);
+
+
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+        assertEquals("Pizza", result.get(0).getName());
     }
 }

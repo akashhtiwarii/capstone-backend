@@ -44,7 +44,7 @@ public class StringUtilsTest {
     @Test
     void testCapitalizeFirstLetterLeadingAndTrailingWhitespace() {
         String input = "   hello world   ";
-        String result = StringUtils.capitalizeFirstLetter(input.trim()); // Trim whitespace before capitalizing
+        String result = StringUtils.capitalizeFirstLetter(input.trim());
         assertEquals("Hello world", result);
     }
 }
