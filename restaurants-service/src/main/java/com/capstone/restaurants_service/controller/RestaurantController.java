@@ -7,6 +7,7 @@ import com.capstone.restaurants_service.InDTO.FoodItemInDTO;
 import com.capstone.restaurants_service.InDTO.GetAllCategoriesInDTO;
 import com.capstone.restaurants_service.InDTO.GetOwnerRestaurantsInDTO;
 import com.capstone.restaurants_service.InDTO.RestaurantInDTO;
+import com.capstone.restaurants_service.InDTO.RestaurantWithImageInDTO;
 import com.capstone.restaurants_service.InDTO.UpdateCategoryDTO;
 import com.capstone.restaurants_service.InDTO.UpdateFoodItemInDTO;
 import com.capstone.restaurants_service.entity.Category;
@@ -24,12 +25,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -59,17 +62,34 @@ public class RestaurantController {
     private final Logger logger = LogManager.getLogger(RestaurantController.class);
 
     /**
-     * Add new restaurant.
-     * @param restaurantInDTO request parameter
-     * @return a string message
+     * Add Restaurant.
+     * @param restaurantWithImageInDTO
+     * @return String message
      */
-    @PostMapping(Constants.ADD_RESTAURANT_ENDPOINT)
-    public ResponseEntity<String> addRestaurant(@Valid @RequestBody RestaurantInDTO restaurantInDTO) {
-        logger.info("Adding new Restaurant : {}", restaurantInDTO.getName());
-        String message = restaurantService.save(restaurantInDTO);
-        logger.info("Added Restaurant : {}", restaurantInDTO.getName());
+    @PostMapping("/add")
+    public ResponseEntity<String> addRestaurant(@Valid @ModelAttribute RestaurantWithImageInDTO restaurantWithImageInDTO) {
+        logger.info("Adding Restaurant : {}", restaurantWithImageInDTO.getRestaurant().getName());
+        RestaurantInDTO restaurant = restaurantWithImageInDTO.getRestaurant();
+        logger.info("Restaurant Details Fetched");
+        MultipartFile image = restaurantWithImageInDTO.getImage();
+        logger.info("Image Fetched");
+        String message = restaurantService.save(restaurant, image);
+        logger.info("Restaurant Added");
         return ResponseEntity.status(HttpStatus.OK).body(message);
     }
+
+//    /**
+//     * Add new restaurant.
+//     * @param restaurantInDTO request parameter
+//     * @return a string message
+//     */
+//    @PostMapping(Constants.ADD_RESTAURANT_ENDPOINT)
+//    public ResponseEntity<String> addRestaurant(@Valid @RequestBody RestaurantInDTO restaurantInDTO) {
+//        logger.info("Adding new Restaurant : {}", restaurantInDTO.getName());
+//        String message = restaurantService.save(restaurantInDTO);
+//        logger.info("Added Restaurant : {}", restaurantInDTO.getName());
+//        return ResponseEntity.status(HttpStatus.OK).body(message);
+//    }
 
     /**
      * Get Restaurant By ID.
@@ -89,13 +109,13 @@ public class RestaurantController {
      * @param getOwnerRestaurantsInDTO
      * @return owner restaurants
      */
-    @GetMapping(Constants.GET_OWNER_RESTAURANTS)
-    public ResponseEntity<Restaurant> getOwnerRestaurans(
+    @PostMapping(Constants.GET_OWNER_RESTAURANTS)
+    public ResponseEntity<List<Restaurant>> getOwnerRestaurants(
             @Valid @RequestBody GetOwnerRestaurantsInDTO getOwnerRestaurantsInDTO) {
         logger.info("Fetching Restaurants of ownerID : {}", getOwnerRestaurantsInDTO.getOwnerId());
-        Restaurant restaurant = restaurantService.findByOwnerId(getOwnerRestaurantsInDTO);
+        List<Restaurant> restaurants = restaurantService.findByOwnerId(getOwnerRestaurantsInDTO);
         logger.info("Fetching Restaurant of ownerId : {}", getOwnerRestaurantsInDTO.getOwnerId());
-        return ResponseEntity.status(HttpStatus.OK).body(restaurant);
+        return ResponseEntity.status(HttpStatus.OK).body(restaurants);
     }
 
     /**

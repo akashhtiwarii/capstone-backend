@@ -15,6 +15,9 @@ import com.capstone.restaurants_service.repository.RestaurantRepository;
 import com.capstone.restaurants_service.service.RestaurantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
+
 import java.util.List;
 
 /**
@@ -34,13 +37,15 @@ public class RestaurantServiceImpl implements RestaurantService {
      */
     @Autowired
     private UserClient userClient;
+
     /**
-     * Add a new Restaurant.
-     * @param restaurantInDTO request object
-     * @return message after saving restaurant to database
+     * Add restaurant.
+     * @param restaurantInDTO
+     * @param image
+     * @return String message
      */
     @Override
-    public String save(RestaurantInDTO restaurantInDTO) {
+    public String save(RestaurantInDTO restaurantInDTO, MultipartFile image) {
         UserOutDTO user = userClient.getUserById(restaurantInDTO.getOwnerId()).getBody();
         if (user == null) {
             throw new UserNotFoundException("Owner not in database");
@@ -52,14 +57,21 @@ public class RestaurantServiceImpl implements RestaurantService {
         if (restaurantAlreadyExists != null) {
             throw new EmailAlreadyExistsException("Email ID already Exists");
         }
+
         Restaurant restaurant = RestaurantConverters.restaurantInDTOTORestaurant(restaurantInDTO);
         try {
+            if (image != null && !image.isEmpty()) {
+                restaurant.setImage(image.getBytes());
+            }
             restaurantRepository.save(restaurant);
             return "Restaurant added successfully";
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload image: " + e.getMessage());
         } catch (Exception e) {
             throw new RuntimeException("An unexpected error occurred: " + e.getMessage());
         }
     }
+
 
     /**
      * Get all restaurants.
@@ -69,7 +81,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     public List<Restaurant> findAll() {
         List<Restaurant> restaurants = restaurantRepository.findAll();
         if (restaurants.isEmpty()) {
-        throw new RestaurantsNotFoundException("No Restaurants in the database");
+            throw new RestaurantsNotFoundException("No Restaurants in the database");
         }
         return restaurants;
     }
@@ -80,9 +92,9 @@ public class RestaurantServiceImpl implements RestaurantService {
      * @return restaurants list
      */
     @Override
-    public Restaurant findByOwnerId(GetOwnerRestaurantsInDTO getOwnerRestaurantsInDTO) {
-        Restaurant restaurant = restaurantRepository.findByOwnerId(getOwnerRestaurantsInDTO.getOwnerId());
-        if (restaurant == null) {
+    public List<Restaurant> findByOwnerId(GetOwnerRestaurantsInDTO getOwnerRestaurantsInDTO) {
+        List<Restaurant> restaurant = restaurantRepository.findByOwnerId(getOwnerRestaurantsInDTO.getOwnerId());
+        if (restaurant.isEmpty()) {
             throw new RestaurantsNotFoundException("No Restaurants Present");
         }
         return restaurant;
@@ -102,4 +114,3 @@ public class RestaurantServiceImpl implements RestaurantService {
         return restaurant;
     }
 }
-

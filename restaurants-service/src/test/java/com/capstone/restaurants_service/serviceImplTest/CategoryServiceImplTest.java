@@ -119,7 +119,7 @@ public class CategoryServiceImplTest {
         Restaurant restaurant = new Restaurant(1L, 1L, "Restaurant", "email@example.com", "1234567890", "Address", new byte[]{});
         Category category = new Category();
         when(userClient.getUserById(1L)).thenReturn(ResponseEntity.ok(userOutDTO));
-        when(restaurantRepository.findByOwnerId(1L)).thenReturn(restaurant);
+        when(restaurantRepository.findById(1L)).thenReturn(restaurant);
         when(categoryRepository.findByRestaurantId(1L)).thenReturn(Arrays.asList(category));
 
         List<Category> categories = categoryService.getAllCategoriesOfRestaurant(getAllCategoriesInDTO);
@@ -164,7 +164,7 @@ public class CategoryServiceImplTest {
         Restaurant restaurant = new Restaurant(1L, 1L, "Restaurant", "email@example.com", "1234567890", "Address", new byte[]{});
 
         when(userClient.getUserById(1L)).thenReturn(ResponseEntity.ok(userOutDTO));
-        when(restaurantRepository.findByOwnerId(1L)).thenReturn(restaurant);
+        when(restaurantRepository.findById(1L)).thenReturn(restaurant);
         when(categoryRepository.findByRestaurantId(1L)).thenReturn(Collections.emptyList());
 
         assertThrows(CategoryNotFoundException.class, () -> categoryService.getAllCategoriesOfRestaurant(getAllCategoriesInDTO));
