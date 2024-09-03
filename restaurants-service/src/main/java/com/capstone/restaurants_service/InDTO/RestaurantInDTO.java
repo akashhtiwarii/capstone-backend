@@ -10,7 +10,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 import static com.capstone.restaurants_service.utils.Constants.PHONE_NUMBER_LENGTH;
@@ -62,11 +61,6 @@ public class RestaurantInDTO {
      */
     @NotBlank(message = "Address for restaurant cannot be empty")
     private String address;
-
-    /**
-     * image to link image of Restaurant entity.
-     */
-    private byte[] image;
     /**
      * Override equals method.
      * @param o
@@ -83,7 +77,7 @@ public class RestaurantInDTO {
         RestaurantInDTO that = (RestaurantInDTO) o;
         return ownerId == that.ownerId && Objects.equals(name, that.name)
                 && Objects.equals(email, that.email) && Objects.equals(phone, that.phone)
-                && Objects.equals(address, that.address) && Objects.deepEquals(image, that.image);
+                && Objects.equals(address, that.address);
     }
     /**
      * Override hashcode method.
@@ -91,6 +85,6 @@ public class RestaurantInDTO {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(ownerId, name, email, phone, address, Arrays.hashCode(image));
+        return Objects.hash(ownerId, name, email, phone, address);
     }
 }

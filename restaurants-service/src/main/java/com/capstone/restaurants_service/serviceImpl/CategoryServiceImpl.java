@@ -68,7 +68,10 @@ public class CategoryServiceImpl implements CategoryService {
         if (restaurant.getOwnerId() != categoryInDTO.getUserId()) {
             throw new UserNotValidException("You cannot add a category to this restaurant");
         }
-        Category categoryAlreadyExists = categoryRepository.findByName(categoryName);
+        Category categoryAlreadyExists = categoryRepository.findByNameAndRestaurantId(
+                categoryName,
+                restaurant.getRestaurantId()
+        );
         if (categoryAlreadyExists != null) {
             throw new CategoryAlreadyExistException("Category is already present");
         }
@@ -114,6 +117,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public String updateCategory(long categoryId, UpdateCategoryDTO updateCategoryDTO) {
         UserOutDTO user = userClient.getUserById(updateCategoryDTO.getUserId()).getBody();
+        String categoryToBeAdded = updateCategoryDTO.getName().toUpperCase();
         if (user == null) {
             throw new UserNotFoundException("User Not Found");
         }
@@ -124,11 +128,19 @@ public class CategoryServiceImpl implements CategoryService {
         if (category == null) {
             throw new CategoryNotFoundException("Category Not Found");
         }
-        if (restaurantRepository.findById(category.getRestaurantId()).getOwnerId() != updateCategoryDTO.getUserId()) {
+        Restaurant restaurant = restaurantRepository.findById(category.getRestaurantId());
+        if (restaurant.getOwnerId() != updateCategoryDTO.getUserId()) {
             throw new UserNotValidException("You cannot update this category");
         }
+        Category categoryAlreadyExists = categoryRepository.findByNameAndRestaurantId(
+                categoryToBeAdded,
+                restaurant.getRestaurantId()
+        );
+        if (categoryAlreadyExists != null) {
+            throw new CategoryAlreadyExistException("Category Already Present");
+        }
         try {
-            category.setName(updateCategoryDTO.getName());
+            category.setName(updateCategoryDTO.getName().toUpperCase());
             categoryRepository.save(category);
             return "Category updated successfully";
         } catch (Exception ex) {

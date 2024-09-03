@@ -7,6 +7,7 @@ import com.capstone.restaurants_service.InDTO.FoodItemInDTO;
 import com.capstone.restaurants_service.InDTO.GetAllCategoriesInDTO;
 import com.capstone.restaurants_service.InDTO.GetOwnerRestaurantsInDTO;
 import com.capstone.restaurants_service.InDTO.RestaurantInDTO;
+import com.capstone.restaurants_service.InDTO.RestaurantWithImageInDTO;
 import com.capstone.restaurants_service.InDTO.UpdateCategoryDTO;
 import com.capstone.restaurants_service.InDTO.UpdateFoodItemInDTO;
 import com.capstone.restaurants_service.entity.Category;
@@ -24,12 +25,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -62,24 +63,19 @@ public class RestaurantController {
 
     /**
      * Add Restaurant.
-     * @param ownerId
-     * @param name
-     * @param email
-     * @param phone
-     * @param address
-     * @param image
+     * @param restaurantWithImageInDTO
      * @return String message
      */
     @PostMapping("/add")
-    public String addRestaurant(
-            @RequestParam("ownerId") long ownerId,
-            @RequestParam("name") String name,
-            @RequestParam("email") String email,
-            @RequestParam("phone") String phone,
-            @RequestParam("address") String address,
-            @RequestParam("image") MultipartFile image) {
-        RestaurantInDTO restaurantInDTO = new RestaurantInDTO(ownerId, name, email, phone, address, null);
-        return restaurantService.save(restaurantInDTO, image);
+    public ResponseEntity<String> addRestaurant(@Valid @ModelAttribute RestaurantWithImageInDTO restaurantWithImageInDTO) {
+        logger.info("Adding Restaurant : {}", restaurantWithImageInDTO.getRestaurant().getName());
+        RestaurantInDTO restaurant = restaurantWithImageInDTO.getRestaurant();
+        logger.info("Restaurant Details Fetched");
+        MultipartFile image = restaurantWithImageInDTO.getImage();
+        logger.info("Image Fetched");
+        String message = restaurantService.save(restaurant, image);
+        logger.info("Restaurant Added");
+        return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 
 //    /**
@@ -113,8 +109,8 @@ public class RestaurantController {
      * @param getOwnerRestaurantsInDTO
      * @return owner restaurants
      */
-    @GetMapping(Constants.GET_OWNER_RESTAURANTS)
-    public ResponseEntity<List<Restaurant>> getOwnerRestaurans(
+    @PostMapping(Constants.GET_OWNER_RESTAURANTS)
+    public ResponseEntity<List<Restaurant>> getOwnerRestaurants(
             @Valid @RequestBody GetOwnerRestaurantsInDTO getOwnerRestaurantsInDTO) {
         logger.info("Fetching Restaurants of ownerID : {}", getOwnerRestaurantsInDTO.getOwnerId());
         List<Restaurant> restaurants = restaurantService.findByOwnerId(getOwnerRestaurantsInDTO);

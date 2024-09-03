@@ -26,6 +26,14 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     Category findByName(String name);
 
     /**
+     * Find category by name and restaurant Id.
+     * @param name
+     * @param restaurantId
+     * @return Category
+     */
+    Category findByNameAndRestaurantId(String name, long restaurantId);
+
+    /**
      * Get Category By Id.
      * @param categoryId
      * @return Category
