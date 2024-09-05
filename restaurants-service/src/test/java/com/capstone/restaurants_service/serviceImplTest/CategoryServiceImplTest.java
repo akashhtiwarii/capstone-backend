@@ -1,8 +1,8 @@
 package com.capstone.restaurants_service.serviceImplTest;
 
 import com.capstone.restaurants_service.ENUM.Role;
-import com.capstone.restaurants_service.dto.InDTO.CategoryInDTO;
-import com.capstone.restaurants_service.dto.InDTO.UpdateCategoryDTO;
+import com.capstone.restaurants_service.dto.CategoryInDTO;
+import com.capstone.restaurants_service.dto.UpdateCategoryDTO;
 import com.capstone.restaurants_service.exceptions.*;
 import com.capstone.restaurants_service.feignClient.UserClient;
 import com.capstone.restaurants_service.repository.CategoryRepository;
@@ -10,7 +10,7 @@ import com.capstone.restaurants_service.repository.RestaurantRepository;
 import com.capstone.restaurants_service.entity.Category;
 import com.capstone.restaurants_service.entity.Restaurant;
 import com.capstone.restaurants_service.serviceImpl.CategoryServiceImpl;
-import com.capstone.restaurants_service.dto.OutDTO.UserOutDTO;
+import com.capstone.restaurants_service.dto.UserOutDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

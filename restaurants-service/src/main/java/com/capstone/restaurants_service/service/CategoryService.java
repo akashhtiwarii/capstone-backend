@@ -1,7 +1,7 @@
 package com.capstone.restaurants_service.service;
 
-import com.capstone.restaurants_service.dto.InDTO.CategoryInDTO;
-import com.capstone.restaurants_service.dto.InDTO.UpdateCategoryDTO;
+import com.capstone.restaurants_service.dto.CategoryInDTO;
+import com.capstone.restaurants_service.dto.UpdateCategoryDTO;
 import com.capstone.restaurants_service.entity.Category;
 
 import java.util.List;

@@ -1,9 +1,8 @@
-package com.capstone.restaurants_service.dto.InDTO;
+package com.capstone.restaurants_service.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Min;
@@ -15,24 +14,21 @@ import java.util.Objects;
 
 import static com.capstone.restaurants_service.utils.Constants.PHONE_NUMBER_LENGTH;
 
+/**
+ * Restaurant In DTO to add Restaurant.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateRestaurantInDTO {
+public class RestaurantInDTO {
 
     /**
-     * owner ID to validate owner.
+     * ownerId to link ownerId of Restaurant entity.
      */
-    @NotNull(message = "Valid User ID Required")
-    @Min(value = 1, message = "Valid User ID Required")
-    private long loggedInOwnerId;
+    @NotNull(message = "Valid OwnerID required")
+    @Min(value = 1, message = "Valid OwnerID required")
+    private long ownerId;
 
-    /**
-     * Restaurant ID.
-     */
-    @NotNull(message = "Valid User ID Required")
-    @Min(value = 1, message = "Valid User ID Required")
-    private long restaurantId;
     /**
      * name to link name of Restaurant entity.
      */
@@ -65,16 +61,10 @@ public class UpdateRestaurantInDTO {
      */
     @NotBlank(message = "Address for restaurant cannot be empty")
     private String address;
-
     /**
-     * Image of restaurant.
-     */
-    private MultipartFile image;
-
-    /**
-     * Override Equals.
+     * Override equals method.
      * @param o
-     * @return Boolean
+     * @return boolean
      */
     @Override
     public boolean equals(Object o) {
@@ -84,22 +74,17 @@ public class UpdateRestaurantInDTO {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        UpdateRestaurantInDTO that = (UpdateRestaurantInDTO) o;
-        return loggedInOwnerId == that.loggedInOwnerId
-                && restaurantId == that.restaurantId
-                && Objects.equals(name, that.name)
-                && Objects.equals(email, that.email)
-                && Objects.equals(phone, that.phone)
-                && Objects.equals(address, that.address)
-                && Objects.equals(image, that.image);
+        RestaurantInDTO that = (RestaurantInDTO) o;
+        return ownerId == that.ownerId && Objects.equals(name, that.name)
+                && Objects.equals(email, that.email) && Objects.equals(phone, that.phone)
+                && Objects.equals(address, that.address);
     }
-
     /**
-     * Override Hashcode.
-     * @return Hashed Object
+     * Override hashcode method.
+     * @return Hashed object
      */
     @Override
     public int hashCode() {
-        return Objects.hash(loggedInOwnerId, restaurantId, name, email, phone, address, image);
+        return Objects.hash(ownerId, name, email, phone, address);
     }
 }

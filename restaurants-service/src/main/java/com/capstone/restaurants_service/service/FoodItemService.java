@@ -1,7 +1,7 @@
 package com.capstone.restaurants_service.service;
 
-import com.capstone.restaurants_service.dto.InDTO.FoodItemInDTO;
-import com.capstone.restaurants_service.dto.InDTO.UpdateFoodItemInDTO;
+import com.capstone.restaurants_service.dto.FoodItemInDTO;
+import com.capstone.restaurants_service.dto.UpdateFoodItemInDTO;
 import com.capstone.restaurants_service.entity.FoodItem;
 import org.springframework.web.multipart.MultipartFile;
 

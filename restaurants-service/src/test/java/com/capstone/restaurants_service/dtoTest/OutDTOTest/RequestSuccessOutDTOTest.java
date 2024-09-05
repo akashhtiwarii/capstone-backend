@@ -1,6 +1,6 @@
 package com.capstone.restaurants_service.dtoTest.OutDTOTest;
 
-import com.capstone.restaurants_service.dto.OutDTO.RequestSuccessOutDTO;
+import com.capstone.restaurants_service.dto.RequestSuccessOutDTO;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

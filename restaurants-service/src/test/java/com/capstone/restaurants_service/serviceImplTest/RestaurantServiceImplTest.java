@@ -1,10 +1,10 @@
 package com.capstone.restaurants_service.serviceImplTest;
 
 import com.capstone.restaurants_service.ENUM.Role;
-import com.capstone.restaurants_service.dto.InDTO.GetOwnerRestaurantsInDTO;
-import com.capstone.restaurants_service.dto.InDTO.RestaurantInDTO;
-import com.capstone.restaurants_service.dto.InDTO.UpdateRestaurantInDTO;
-import com.capstone.restaurants_service.dto.OutDTO.UserOutDTO;
+import com.capstone.restaurants_service.dto.GetOwnerRestaurantsInDTO;
+import com.capstone.restaurants_service.dto.RestaurantInDTO;
+import com.capstone.restaurants_service.dto.UpdateRestaurantInDTO;
+import com.capstone.restaurants_service.dto.UserOutDTO;
 import com.capstone.restaurants_service.entity.Restaurant;
 import com.capstone.restaurants_service.exceptions.EmailAlreadyExistsException;
 import com.capstone.restaurants_service.exceptions.RestaurantsNotFoundException;

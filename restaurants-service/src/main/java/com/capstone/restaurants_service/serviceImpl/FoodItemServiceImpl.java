@@ -2,9 +2,9 @@ package com.capstone.restaurants_service.serviceImpl;
 
 import com.capstone.restaurants_service.ENUM.Role;
 import com.capstone.restaurants_service.utils.Constants;
-import com.capstone.restaurants_service.dto.InDTO.FoodItemInDTO;
-import com.capstone.restaurants_service.dto.InDTO.UpdateFoodItemInDTO;
-import com.capstone.restaurants_service.dto.OutDTO.UserOutDTO;
+import com.capstone.restaurants_service.dto.FoodItemInDTO;
+import com.capstone.restaurants_service.dto.UpdateFoodItemInDTO;
+import com.capstone.restaurants_service.dto.UserOutDTO;
 import com.capstone.restaurants_service.converters.FoodItemConverters;
 import com.capstone.restaurants_service.entity.Category;
 import com.capstone.restaurants_service.entity.FoodItem;

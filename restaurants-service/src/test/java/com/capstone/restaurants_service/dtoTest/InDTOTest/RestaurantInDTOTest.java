@@ -1,6 +1,6 @@
 package com.capstone.restaurants_service.dtoTest.InDTOTest;
 
-import com.capstone.restaurants_service.dto.InDTO.RestaurantInDTO;
+import com.capstone.restaurants_service.dto.RestaurantInDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

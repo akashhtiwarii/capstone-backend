@@ -1,6 +1,6 @@
 package com.capstone.restaurants_service.converters;
 
-import com.capstone.restaurants_service.dto.InDTO.RestaurantInDTO;
+import com.capstone.restaurants_service.dto.RestaurantInDTO;
 import com.capstone.restaurants_service.entity.Restaurant;
 
 /**
