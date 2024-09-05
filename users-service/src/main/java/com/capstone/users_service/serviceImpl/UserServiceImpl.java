@@ -1,12 +1,15 @@
 package com.capstone.users_service.serviceImpl;
 
 import com.capstone.users_service.Enum.Role;
+import com.capstone.users_service.InDTO.GetUserInfoInDTO;
 import com.capstone.users_service.InDTO.LoginRequestInDTO;
 import com.capstone.users_service.InDTO.UserInDTO;
 import com.capstone.users_service.OutDTO.LoginResponseOutDTO;
 import com.capstone.users_service.entity.User;
 import com.capstone.users_service.entity.Wallet;
 import com.capstone.users_service.exceptions.EmailAlreadyExistsException;
+import com.capstone.users_service.exceptions.UserNotFoundException;
+import com.capstone.users_service.exceptions.UserNotValidException;
 import com.capstone.users_service.repository.UserRepository;
 import com.capstone.users_service.repository.WalletRepository;
 import com.capstone.users_service.service.UserService;
@@ -32,13 +35,47 @@ public class UserServiceImpl implements UserService {
      */
     @Autowired
     private WalletRepository walletRepository;
+
+    /**
+     * Get User by Id.
+     * @param getUserInfoInDTO
+     * @return User
+     */
+    @Override
+    public User getById(GetUserInfoInDTO getUserInfoInDTO) {
+        try {
+            User user = userRepository.findById(getUserInfoInDTO.getUserId());
+            User loggedInUser = userRepository.findById(getUserInfoInDTO.getLoggedInUserId());
+            if (user == null || loggedInUser == null) {
+                throw new UserNotFoundException("User not Found");
+            }
+            if (user != loggedInUser) {
+                throw new UserNotValidException("You Cannot view this user");
+            }
+            return user;
+        } catch (Exception e) {
+            throw new RuntimeException(Constants.UNEXPECTED_ERROR + e.getMessage());
+        }
+    }
+
+    /**
+     * Get by identity.
+     * @param userId
+     * @return user
+     */
+    @Override
+    public User getByIdentity(long userId) {
+        return userRepository.findById(userId);
+    }
+
+
     /**
      * Save user to database method implementation.
      * @param userInDTO request object
      * @return message after saving user
      */
     @Override
-    public String save(UserInDTO userInDTO) {
+    public String registerUser(UserInDTO userInDTO) {
         User user = UserConverters.registerUserInDTOToUserEntity(userInDTO);
             if (userRepository.existsByEmail(user.getEmail())) {
                 throw new EmailAlreadyExistsException(Constants.EMAIL_ALREADY_IN_USE);

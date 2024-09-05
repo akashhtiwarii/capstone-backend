@@ -1,7 +1,7 @@
-package com.capstone.users_service.converters;
+package com.capstone.restaurants_service.converters;
 
-import com.capstone.users_service.InDTO.RestaurantInDTO;
-import com.capstone.users_service.entity.Restaurant;
+import com.capstone.restaurants_service.dto.RestaurantInDTO;
+import com.capstone.restaurants_service.entity.Restaurant;
 
 /**
  * Restaurant In DTOs to Entity Converters and Vice Versa.
@@ -20,9 +20,7 @@ public class RestaurantConverters {
         restaurant.setEmail(restaurantInDTO.getEmail());
         restaurant.setPhone(restaurantInDTO.getPhone());
         restaurant.setAddress(restaurantInDTO.getAddress());
-        if (restaurantInDTO.getImage() != null) {
-            restaurant.setImage(restaurantInDTO.getImage());
-        }
         return restaurant;
     }
 }
+

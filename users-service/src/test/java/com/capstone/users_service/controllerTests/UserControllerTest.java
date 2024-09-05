@@ -45,7 +45,7 @@ class UserControllerTest {
         UserInDTO userInDTO = new UserInDTO();
         userInDTO.setEmail("test@gmail.com");
 
-        when(userService.save(any(UserInDTO.class))).thenReturn("User registered successfully");
+        when(userService.registerUser(any(UserInDTO.class))).thenReturn("User registered successfully");
 
         ResponseEntity<String> response = userController.registerUser(userInDTO);
 

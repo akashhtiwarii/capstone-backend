@@ -1,4 +1,4 @@
-package com.capstone.users_service.InDTO;
+package com.capstone.restaurants_service.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,8 +10,13 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-import static com.capstone.users_service.utils.Constants.PHONE_NUMBER_LENGTH;
+import java.util.Objects;
 
+import static com.capstone.restaurants_service.utils.Constants.PHONE_NUMBER_LENGTH;
+
+/**
+ * Restaurant In DTO to add Restaurant.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -56,9 +61,30 @@ public class RestaurantInDTO {
      */
     @NotBlank(message = "Address for restaurant cannot be empty")
     private String address;
-
     /**
-     * image to link image of Restaurant entity.
+     * Override equals method.
+     * @param o
+     * @return boolean
      */
-    private byte[] image;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        RestaurantInDTO that = (RestaurantInDTO) o;
+        return ownerId == that.ownerId && Objects.equals(name, that.name)
+                && Objects.equals(email, that.email) && Objects.equals(phone, that.phone)
+                && Objects.equals(address, that.address);
+    }
+    /**
+     * Override hashcode method.
+     * @return Hashed object
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(ownerId, name, email, phone, address);
+    }
 }

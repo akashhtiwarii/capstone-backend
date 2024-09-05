@@ -2,32 +2,32 @@ package com.capstone.users_service.controller;
 
 import com.capstone.users_service.InDTO.AddressInDTO;
 import com.capstone.users_service.InDTO.AddressRequestInDTO;
+import com.capstone.users_service.InDTO.GetUserInfoInDTO;
 import com.capstone.users_service.InDTO.LoginRequestInDTO;
-import com.capstone.users_service.InDTO.RestaurantInDTO;
 import com.capstone.users_service.InDTO.UserInDTO;
 import com.capstone.users_service.OutDTO.LoginResponseOutDTO;
 import com.capstone.users_service.entity.Address;
-import com.capstone.users_service.entity.Restaurant;
+import com.capstone.users_service.entity.User;
 import com.capstone.users_service.service.AddressService;
-import com.capstone.users_service.service.RestaurantService;
 import com.capstone.users_service.service.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
 import java.util.List;
 
 import com.capstone.users_service.utils.Constants;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Rest Controller for managing user-operations.
@@ -55,12 +55,6 @@ public class UserController {
     private AddressService addressService;
 
     /**
-     * Restaurant Service for accessing restaurants table operations.
-     */
-    @Autowired
-    private RestaurantService restaurantService;
-
-    /**
      * Registers a new user.
      * @param userInDTO the user to be registered
      * @return a ResponseEntity containing the registration status
@@ -68,7 +62,7 @@ public class UserController {
     @PostMapping(Constants.USER_REGISTER_ENDPOINT)
     public ResponseEntity<String> registerUser(@Valid @RequestBody UserInDTO userInDTO) {
         logger.info("Registering new user: {}", userInDTO.getEmail());
-        String message = userService.save(userInDTO);
+        String message = userService.registerUser(userInDTO);
         logger.info("User registered successfully: {}", userInDTO.getEmail());
         return ResponseEntity.status(HttpStatus.OK).body(message);
     }
@@ -89,6 +83,32 @@ public class UserController {
             logger.info("User logged in successfully: {}", loginRequestInDTO.getEmail());
             return ResponseEntity.status(HttpStatus.OK).body(response);
         }
+    }
+
+    /**
+     * Get User by Id.
+     * @param getUserInfoInDTO
+     * @return user
+     */
+    @GetMapping("/id")
+    public ResponseEntity<User> getUserById(@RequestBody GetUserInfoInDTO getUserInfoInDTO) {
+        logger.info("Fetching user info..{}", getUserInfoInDTO.getUserId());
+        User user = userService.getById(getUserInfoInDTO);
+        logger.info("Fetched user info..{}", getUserInfoInDTO.getUserId());
+        return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
+
+    /**
+     * Get by ID for feign client.
+     * @param userId
+     * @return user
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserByIdentity(@PathVariable("id") long userId) {
+        logger.info("Fetching user info..{}", userId);
+        User user = userService.getByIdentity(userId);
+        logger.info("Fetched user info..{}", userId);
+        return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
     /**
@@ -115,30 +135,5 @@ public class UserController {
         String message = addressService.addAddress(addressInDTO);
         logger.info("Address added successfully for email ID: {}", addressInDTO.getEmail());
         return ResponseEntity.status(HttpStatus.OK).body(message);
-    }
-
-    /**
-     * Add new restaurant.
-     * @param restaurantInDTO request parameter
-     * @return a string message
-     */
-    @PostMapping(Constants.USER_ADD_RESTAURANT_ENDPOINT)
-    public ResponseEntity<String> addRestaurant(@Valid @RequestBody RestaurantInDTO restaurantInDTO) {
-        logger.info("Adding new Restaurant : {}", restaurantInDTO.getName());
-        String message = restaurantService.save(restaurantInDTO);
-        logger.info("Added Restaurant : {}", restaurantInDTO.getName());
-        return ResponseEntity.status(HttpStatus.OK).body(message);
-    }
-
-    /**
-     * Get All Restaurants.
-     * @return List of all restaurants
-     */
-    @GetMapping(Constants.USER_GET_ALL_RESTAURANTS_ENDPOINT)
-    public ResponseEntity<List<Restaurant>> getRestaurants() {
-        logger.info("Fetching restaurants...");
-        List<Restaurant> restaurants = restaurantService.findAll();
-        logger.info("Fetched restaurants.");
-        return ResponseEntity.status(HttpStatus.OK).body(restaurants);
     }
 }

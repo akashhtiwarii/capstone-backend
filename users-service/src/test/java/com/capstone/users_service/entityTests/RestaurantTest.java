@@ -1,6 +1,5 @@
 package com.capstone.users_service.entityTests;
 
-import com.capstone.users_service.entity.Restaurant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

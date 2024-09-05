@@ -1,4 +1,4 @@
-package com.capstone.users_service.entity;
+package com.capstone.restaurants_service.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
