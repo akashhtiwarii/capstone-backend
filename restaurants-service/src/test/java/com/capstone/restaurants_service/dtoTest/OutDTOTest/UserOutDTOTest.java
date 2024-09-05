@@ -1,7 +1,7 @@
 package com.capstone.restaurants_service.dtoTest.OutDTOTest;
 
 import com.capstone.restaurants_service.ENUM.Role;
-import dto.OutDTO.UserOutDTO;
+import com.capstone.restaurants_service.dto.OutDTO.UserOutDTO;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

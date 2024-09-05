@@ -1,26 +1,23 @@
-package dto.InDTO;
+package com.capstone.restaurants_service.dto.InDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class RestaurantWithImageInDTO {
+@AllArgsConstructor
+public class GetOwnerRestaurantsInDTO {
     /**
-     * Restaurant DTO.
+     * OwnerID.
      */
-    @Valid
-    private RestaurantInDTO restaurant;
-    /**
-     * Image.
-     */
-    private MultipartFile image;
+    @NotNull(message = "A valid Owner ID Required")
+    @Min(value = 1, message = "A valid Owner ID Required")
+    private long ownerId;
 
     /**
      * Override equals.
@@ -35,16 +32,15 @@ public class RestaurantWithImageInDTO {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        RestaurantWithImageInDTO that = (RestaurantWithImageInDTO) o;
-        return Objects.equals(restaurant, that.restaurant) && Objects.equals(image, that.image);
+        GetOwnerRestaurantsInDTO that = (GetOwnerRestaurantsInDTO) o;
+        return ownerId == that.ownerId;
     }
-
     /**
      * Override hashcode.
      * @return hashed object
      */
     @Override
     public int hashCode() {
-        return Objects.hash(restaurant, image);
+        return Objects.hashCode(ownerId);
     }
 }

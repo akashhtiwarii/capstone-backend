@@ -1,9 +1,9 @@
 package com.capstone.restaurants_service.service;
 
-import dto.InDTO.GetOwnerRestaurantsInDTO;
-import dto.InDTO.RestaurantInDTO;
+import com.capstone.restaurants_service.dto.InDTO.GetOwnerRestaurantsInDTO;
+import com.capstone.restaurants_service.dto.InDTO.RestaurantInDTO;
 import com.capstone.restaurants_service.entity.Restaurant;
-import dto.InDTO.UpdateRestaurantInDTO;
+import com.capstone.restaurants_service.dto.InDTO.UpdateRestaurantInDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;

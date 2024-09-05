@@ -1,22 +1,26 @@
-package dto.OutDTO;
+package com.capstone.restaurants_service.dto.InDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.util.Objects;
 
-/**
- * Success Response.
- */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RequestSuccessOutDTO {
+public class RestaurantWithImageInDTO {
     /**
-     * Success Message.
+     * Restaurant DTO.
      */
-    private String message;
+    @Valid
+    private RestaurantInDTO restaurant;
+    /**
+     * Image.
+     */
+    private MultipartFile image;
 
     /**
      * Override equals.
@@ -31,16 +35,16 @@ public class RequestSuccessOutDTO {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        RequestSuccessOutDTO that = (RequestSuccessOutDTO) o;
-        return Objects.equals(message, that.message);
+        RestaurantWithImageInDTO that = (RestaurantWithImageInDTO) o;
+        return Objects.equals(restaurant, that.restaurant) && Objects.equals(image, that.image);
     }
 
     /**
-     * Override Hashcode.
+     * Override hashcode.
      * @return hashed object
      */
     @Override
     public int hashCode() {
-        return Objects.hashCode(message);
+        return Objects.hash(restaurant, image);
     }
 }

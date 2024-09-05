@@ -1,8 +1,9 @@
-package dto.InDTO;
+package com.capstone.restaurants_service.dto.InDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -11,43 +12,54 @@ import javax.validation.constraints.Positive;
 import java.util.Objects;
 
 /**
- * DTO for Adding Food Item.
+ * DTO To Update Food Item.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class FoodItemInDTO {
+public class UpdateFoodItemInDTO {
+
     /**
-     * Logged in Owner Info for validation.
+     * The ID of the user performing the update operation.
      */
-    @NotNull(message = "Valid Owner ID required")
-    @Min(value = 1, message = "Valid Owner ID required")
+    @NotNull(message = "Valid User ID required")
+    @Min(value = 1, message = "Valid User ID required")
     private long loggedInOwnerId;
+
     /**
-     * categoryId to map with categoryId field of entity.
+     * The ID of the category to which the food item belongs.
      */
     @NotNull(message = "Valid Category ID required")
     @Min(value = 1, message = "Valid Category ID required")
     private long categoryId;
+
     /**
-     * name to map with name field of entity.
+     * The name of the food item.
      */
-    @NotBlank(message = "Valid Name required")
+    @NotBlank(message = "Valid Name Required")
     private String name;
+
     /**
-     * description to map with description field of entity.
+     * The description of the food item.
      */
     private String description;
+
     /**
-     * price to map with price field of entity.
+     * The price of the food item.
      */
     @NotNull(message = "Valid Price required")
     @Positive(message = "Valid Price required")
     private double price;
+
     /**
-     * Override equals method.
+     * Food Item Image.
+     */
+    private MultipartFile image;
+
+    /**
+     * Override Equals.
      * @param o
-     * @return boolean
+     * @return Boolean
      */
     @Override
     public boolean equals(Object o) {
@@ -57,20 +69,21 @@ public class FoodItemInDTO {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        FoodItemInDTO that = (FoodItemInDTO) o;
+        UpdateFoodItemInDTO that = (UpdateFoodItemInDTO) o;
         return loggedInOwnerId == that.loggedInOwnerId
                 && categoryId == that.categoryId
                 && Double.compare(price, that.price) == 0
                 && Objects.equals(name, that.name)
-                && Objects.equals(description, that.description);
+                && Objects.equals(description, that.description)
+                && Objects.equals(image, that.image);
     }
 
     /**
-     * Override hashcode method.
+     * Override Hashcode.
      * @return Hashed object
      */
     @Override
     public int hashCode() {
-        return Objects.hash(loggedInOwnerId, categoryId, name, description, price);
+        return Objects.hash(loggedInOwnerId, categoryId, name, description, price, image);
     }
 }

@@ -1,14 +1,14 @@
 package com.capstone.restaurants_service.controllerTest;
 
 import com.capstone.restaurants_service.controller.RestaurantController;
+import com.capstone.restaurants_service.dto.InDTO.*;
 import com.capstone.restaurants_service.entity.Category;
 import com.capstone.restaurants_service.entity.FoodItem;
 import com.capstone.restaurants_service.entity.Restaurant;
 import com.capstone.restaurants_service.service.CategoryService;
 import com.capstone.restaurants_service.service.FoodItemService;
 import com.capstone.restaurants_service.service.RestaurantService;
-import dto.InDTO.*;
-import dto.OutDTO.RequestSuccessOutDTO;
+import com.capstone.restaurants_service.dto.OutDTO.RequestSuccessOutDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

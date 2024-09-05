@@ -2,7 +2,7 @@ package com.capstone.restaurants_service.convertersTest;
 
 import com.capstone.restaurants_service.converters.RestaurantConverters;
 import com.capstone.restaurants_service.entity.Restaurant;
-import dto.InDTO.RestaurantInDTO;
+import com.capstone.restaurants_service.dto.InDTO.RestaurantInDTO;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

@@ -2,7 +2,7 @@ package com.capstone.restaurants_service.dtoTest.InDTOTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import dto.InDTO.GetOwnerRestaurantsInDTO;
+import com.capstone.restaurants_service.dto.InDTO.GetOwnerRestaurantsInDTO;
 import org.junit.jupiter.api.Test;
 
 class GetOwnerRestaurantsInDTOTest {

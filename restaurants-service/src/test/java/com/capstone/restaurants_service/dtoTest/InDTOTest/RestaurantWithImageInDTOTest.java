@@ -1,7 +1,7 @@
 package com.capstone.restaurants_service.dtoTest.InDTOTest;
 
-import dto.InDTO.RestaurantInDTO;
-import dto.InDTO.RestaurantWithImageInDTO;
+import com.capstone.restaurants_service.dto.InDTO.RestaurantInDTO;
+import com.capstone.restaurants_service.dto.InDTO.RestaurantWithImageInDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
 

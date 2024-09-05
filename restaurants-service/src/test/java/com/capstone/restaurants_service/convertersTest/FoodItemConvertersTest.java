@@ -1,6 +1,6 @@
 package com.capstone.restaurants_service.convertersTest;
 
-import dto.InDTO.FoodItemInDTO;
+import com.capstone.restaurants_service.dto.InDTO.FoodItemInDTO;
 import com.capstone.restaurants_service.converters.FoodItemConverters;
 import com.capstone.restaurants_service.entity.FoodItem;
 import com.capstone.restaurants_service.utils.StringUtils;

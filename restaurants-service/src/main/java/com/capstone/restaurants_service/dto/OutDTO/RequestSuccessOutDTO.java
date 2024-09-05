@@ -1,23 +1,22 @@
-package dto.InDTO;
+package com.capstone.restaurants_service.dto.OutDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
+/**
+ * Success Response.
+ */
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class GetOwnerRestaurantsInDTO {
+@NoArgsConstructor
+public class RequestSuccessOutDTO {
     /**
-     * OwnerID.
+     * Success Message.
      */
-    @NotNull(message = "A valid Owner ID Required")
-    @Min(value = 1, message = "A valid Owner ID Required")
-    private long ownerId;
+    private String message;
 
     /**
      * Override equals.
@@ -32,15 +31,16 @@ public class GetOwnerRestaurantsInDTO {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        GetOwnerRestaurantsInDTO that = (GetOwnerRestaurantsInDTO) o;
-        return ownerId == that.ownerId;
+        RequestSuccessOutDTO that = (RequestSuccessOutDTO) o;
+        return Objects.equals(message, that.message);
     }
+
     /**
-     * Override hashcode.
+     * Override Hashcode.
      * @return hashed object
      */
     @Override
     public int hashCode() {
-        return Objects.hashCode(ownerId);
+        return Objects.hashCode(message);
     }
 }

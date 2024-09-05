@@ -1,4 +1,4 @@
-package dto.InDTO;
+package com.capstone.restaurants_service.dto.InDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

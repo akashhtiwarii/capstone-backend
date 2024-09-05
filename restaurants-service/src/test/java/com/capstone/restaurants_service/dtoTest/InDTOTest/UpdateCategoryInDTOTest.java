@@ -1,6 +1,6 @@
 package com.capstone.restaurants_service.dtoTest.InDTOTest;
 
-import dto.InDTO.UpdateCategoryDTO;
+import com.capstone.restaurants_service.dto.InDTO.UpdateCategoryDTO;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

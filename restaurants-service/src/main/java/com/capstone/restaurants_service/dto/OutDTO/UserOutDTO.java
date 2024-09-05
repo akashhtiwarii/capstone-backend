@@ -1,4 +1,4 @@
-package dto.OutDTO;
+package com.capstone.restaurants_service.dto.OutDTO;
 
 import com.capstone.restaurants_service.ENUM.Role;
 import lombok.AllArgsConstructor;

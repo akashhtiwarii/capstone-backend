@@ -85,9 +85,6 @@ public class Constants {
      */
     public static final String YOU_CANNOT_ADD_A_CATEGORY = "You cannot Add a category";
     /**
-     * Restaurant does not exist.
-     */
-    /**
      * Message indicating that a restaurant does not exist.
      */
     public static final String RESTAURANT_DOES_NOT_EXISTS = "Restaurant does not exists";
