@@ -1,4 +1,4 @@
-package com.capstone.restaurants_service.InDTO;
+package dto.InDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,7 +8,6 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
-import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -18,6 +17,12 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FoodItemInDTO {
+    /**
+     * Logged in Owner Info for validation.
+     */
+    @NotNull(message = "Valid Owner ID required")
+    @Min(value = 1, message = "Valid Owner ID required")
+    private long loggedInOwnerId;
     /**
      * categoryId to map with categoryId field of entity.
      */
@@ -40,11 +45,6 @@ public class FoodItemInDTO {
     @Positive(message = "Valid Price required")
     private double price;
     /**
-     * image to map with image field of entity.
-     */
-    private byte[] image;
-
-    /**
      * Override equals method.
      * @param o
      * @return boolean
@@ -58,9 +58,11 @@ public class FoodItemInDTO {
             return false;
         }
         FoodItemInDTO that = (FoodItemInDTO) o;
-        return categoryId == that.categoryId && Double.compare(price, that.price) == 0
-                && Objects.equals(name, that.name) && Objects.equals(description, that.description)
-                && Objects.deepEquals(image, that.image);
+        return loggedInOwnerId == that.loggedInOwnerId
+                && categoryId == that.categoryId
+                && Double.compare(price, that.price) == 0
+                && Objects.equals(name, that.name)
+                && Objects.equals(description, that.description);
     }
 
     /**
@@ -69,6 +71,6 @@ public class FoodItemInDTO {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(categoryId, name, description, price, Arrays.hashCode(image));
+        return Objects.hash(loggedInOwnerId, categoryId, name, description, price);
     }
 }

@@ -1,9 +1,7 @@
 package com.capstone.restaurants_service.service;
 
-import com.capstone.restaurants_service.InDTO.CategoryInDTO;
-import com.capstone.restaurants_service.InDTO.DeleteCategoryInDTO;
-import com.capstone.restaurants_service.InDTO.GetAllCategoriesInDTO;
-import com.capstone.restaurants_service.InDTO.UpdateCategoryDTO;
+import dto.InDTO.CategoryInDTO;
+import dto.InDTO.UpdateCategoryDTO;
 import com.capstone.restaurants_service.entity.Category;
 
 import java.util.List;
@@ -21,10 +19,10 @@ public interface CategoryService {
 
     /**
      * Get All the categories.
-     * @param getAllCategoriesInDTO
+     * @param restaurantId
      * @return list of all categories
      */
-    List<Category> getAllCategoriesOfRestaurant(GetAllCategoriesInDTO getAllCategoriesInDTO);
+    List<Category> getAllCategoriesOfRestaurant(long restaurantId);
     /**
      * Update Category.
      * @param categoryId
@@ -34,8 +32,9 @@ public interface CategoryService {
     String updateCategory(long categoryId, UpdateCategoryDTO updateCategoryDTO);
     /**
      * Delete category.
-     * @param deleteCategoryInDTO
+     * @param userId
+     * @param categoryId
      * @return String message
      */
-    String deleteCategory(DeleteCategoryInDTO deleteCategoryInDTO);
+    String deleteCategory(long userId, long categoryId);
 }

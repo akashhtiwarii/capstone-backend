@@ -1,4 +1,4 @@
-package com.capstone.restaurants_service.OutDTO;
+package dto.OutDTO;
 
 import com.capstone.restaurants_service.ENUM.Role;
 import lombok.AllArgsConstructor;
@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
+/**
+ * Login Response OutDTO.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

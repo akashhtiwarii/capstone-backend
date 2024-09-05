@@ -1,6 +1,6 @@
 package com.capstone.restaurants_service.converters;
 
-import com.capstone.restaurants_service.InDTO.FoodItemInDTO;
+import dto.InDTO.FoodItemInDTO;
 import com.capstone.restaurants_service.entity.FoodItem;
 import com.capstone.restaurants_service.utils.StringUtils;
 
@@ -24,7 +24,6 @@ public class FoodItemConverters {
                 foodItemInDTO.getDescription() == null || Objects.equals(foodItemInDTO.getDescription(),
                         "") ? "" : foodItemInDTO.getDescription());
         foodItem.setPrice(foodItemInDTO.getPrice());
-        foodItem.setImage(foodItemInDTO.getImage());
         return foodItem;
     }
 }

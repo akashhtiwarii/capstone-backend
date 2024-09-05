@@ -1,8 +1,8 @@
-package com.capstone.restaurants_service.InDTOTest;
+package com.capstone.restaurants_service.dtoTest.InDTOTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.capstone.restaurants_service.InDTO.GetOwnerRestaurantsInDTO;
+import dto.InDTO.GetOwnerRestaurantsInDTO;
 import org.junit.jupiter.api.Test;
 
 class GetOwnerRestaurantsInDTOTest {

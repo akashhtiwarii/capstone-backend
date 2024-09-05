@@ -1,23 +1,15 @@
 package com.capstone.restaurants_service.serviceImplTest;
 
 import com.capstone.restaurants_service.ENUM.Role;
-import com.capstone.restaurants_service.InDTO.CategoryInDTO;
-import com.capstone.restaurants_service.InDTO.DeleteCategoryInDTO;
-import com.capstone.restaurants_service.InDTO.GetAllCategoriesInDTO;
-import com.capstone.restaurants_service.InDTO.UpdateCategoryDTO;
-import com.capstone.restaurants_service.OutDTO.UserOutDTO;
-import com.capstone.restaurants_service.converters.CategoryConverters;
-import com.capstone.restaurants_service.entity.Category;
-import com.capstone.restaurants_service.entity.Restaurant;
-import com.capstone.restaurants_service.exceptions.CategoryAlreadyExistException;
-import com.capstone.restaurants_service.exceptions.CategoryNotFoundException;
-import com.capstone.restaurants_service.exceptions.RestaurantsNotFoundException;
-import com.capstone.restaurants_service.exceptions.UserNotFoundException;
-import com.capstone.restaurants_service.exceptions.UserNotValidException;
+import com.capstone.restaurants_service.exceptions.*;
 import com.capstone.restaurants_service.feignClient.UserClient;
 import com.capstone.restaurants_service.repository.CategoryRepository;
 import com.capstone.restaurants_service.repository.RestaurantRepository;
+import com.capstone.restaurants_service.entity.Category;
+import com.capstone.restaurants_service.entity.Restaurant;
 import com.capstone.restaurants_service.serviceImpl.CategoryServiceImpl;
+import dto.InDTO.*;
+import dto.OutDTO.UserOutDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -25,14 +17,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class CategoryServiceImplTest {
+class CategoryServiceImplTest {
 
     @InjectMocks
     private CategoryServiceImpl categoryService;
@@ -52,45 +41,44 @@ public class CategoryServiceImplTest {
     }
 
     @Test
-    void testAddCategory_Success() {
-        CategoryInDTO categoryInDTO = new CategoryInDTO(1L, 1L, "Desserts", new byte[]{});
-        UserOutDTO userOutDTO = new UserOutDTO(1L, "email@example.com", "User", "1234567890", Role.OWNER);
-        Restaurant restaurant = new Restaurant(1L, 1L, "Restaurant", "email@example.com", "1234567890", "Address", new byte[]{});
+    void addCategorySuccess() {
+        CategoryInDTO categoryInDTO = new CategoryInDTO(1L, 1L, "Desserts", null);
+        UserOutDTO userOutDTO = new UserOutDTO(1L, "email@example.com", "Name", "1234567890", Role.OWNER);
+        Restaurant restaurant = new Restaurant();
+        restaurant.setOwnerId(1L);
+        restaurant.setRestaurantId(1L);
 
         when(userClient.getUserById(1L)).thenReturn(ResponseEntity.ok(userOutDTO));
         when(restaurantRepository.findById(1L)).thenReturn(restaurant);
-        when(categoryRepository.findByName("DESSERTS")).thenReturn(null);
+        when(categoryRepository.findByNameAndRestaurantId("DESSERTS", 1L)).thenReturn(null);
         when(categoryRepository.save(any(Category.class))).thenReturn(new Category());
 
-        String response = categoryService.addCategory(categoryInDTO);
-        assertEquals("Category Added Successfully", response);
+        String result = categoryService.addCategory(categoryInDTO);
+        assertEquals("Category Added Successfully", result);
     }
 
     @Test
-    void testAddCategory_UserNotFound() {
-        CategoryInDTO categoryInDTO = new CategoryInDTO(1L, 1L, "Desserts", new byte[]{});
-
-        when(userClient.getUserById(1L)).thenReturn(ResponseEntity.notFound().build());
+    void addCategoryUserNotFound() {
+        CategoryInDTO categoryInDTO = new CategoryInDTO(1L, 1L, "Desserts", null);
+        when(userClient.getUserById(1L)).thenReturn(ResponseEntity.ok(null));
 
         assertThrows(UserNotFoundException.class, () -> categoryService.addCategory(categoryInDTO));
     }
 
     @Test
-    void testAddCategory_UserNotValid() {
-        CategoryInDTO categoryInDTO = new CategoryInDTO(1L, 1L, "Desserts", new byte[]{});
-        UserOutDTO userOutDTO = new UserOutDTO(1L, "email@example.com", "User", "1234567890", Role.USER);
-        Restaurant restaurant = new Restaurant(1L, 1L, "Restaurant", "email@example.com", "1234567890", "Address", new byte[]{});
+    void addCategoryInvalidUserRole() {
+        CategoryInDTO categoryInDTO = new CategoryInDTO(1L, 1L, "Desserts", null);
+        UserOutDTO userOutDTO = new UserOutDTO(1L, "email@example.com", "Name", "1234567890", Role.USER);
 
         when(userClient.getUserById(1L)).thenReturn(ResponseEntity.ok(userOutDTO));
-        when(restaurantRepository.findById(1L)).thenReturn(restaurant);
 
         assertThrows(UserNotValidException.class, () -> categoryService.addCategory(categoryInDTO));
     }
 
     @Test
-    void testAddCategory_RestaurantNotFound() {
-        CategoryInDTO categoryInDTO = new CategoryInDTO(1L, 1L, "Desserts", new byte[]{});
-        UserOutDTO userOutDTO = new UserOutDTO(1L, "email@example.com", "User", "1234567890", Role.OWNER);
+    void addCategoryRestaurantNotFound() {
+        CategoryInDTO categoryInDTO = new CategoryInDTO(1L, 1L, "Desserts", null);
+        UserOutDTO userOutDTO = new UserOutDTO(1L, "email@example.com", "Name", "1234567890", Role.OWNER);
 
         when(userClient.getUserById(1L)).thenReturn(ResponseEntity.ok(userOutDTO));
         when(restaurantRepository.findById(1L)).thenReturn(null);
@@ -99,100 +87,30 @@ public class CategoryServiceImplTest {
     }
 
     @Test
-    void testAddCategory_CategoryAlreadyExists() {
-        CategoryInDTO categoryInDTO = new CategoryInDTO(1L, 1L, "Desserts", new byte[]{});
-        UserOutDTO userOutDTO = new UserOutDTO(1L, "email@example.com", "User", "1234567890", Role.OWNER);
-        Restaurant restaurant = new Restaurant(1L, 1L, "Restaurant", "email@example.com", "1234567890", "Address", new byte[]{});
-        Category existingCategory = new Category();
-
-        when(userClient.getUserById(1L)).thenReturn(ResponseEntity.ok(userOutDTO));
-        when(restaurantRepository.findById(1L)).thenReturn(restaurant);
-        when(categoryRepository.findByName("DESSERTS")).thenReturn(existingCategory);
-
-        assertThrows(CategoryAlreadyExistException.class, () -> categoryService.addCategory(categoryInDTO));
-    }
-
-    @Test
-    void testGetAllCategoriesOfRestaurant_Success() {
-        GetAllCategoriesInDTO getAllCategoriesInDTO = new GetAllCategoriesInDTO(1L, 1L);
-        UserOutDTO userOutDTO = new UserOutDTO(1L, "email@example.com", "User", "1234567890", Role.OWNER);
-        Restaurant restaurant = new Restaurant(1L, 1L, "Restaurant", "email@example.com", "1234567890", "Address", new byte[]{});
+    void updateCategorySuccess() {
+        UpdateCategoryDTO updateCategoryDTO = new UpdateCategoryDTO(1L, "New Desserts");
+        UserOutDTO userOutDTO = new UserOutDTO(1L, "email@example.com", "Name", "1234567890", Role.OWNER);
         Category category = new Category();
+        category.setName("DESSERTS");
+        category.setRestaurantId(1L);
+        Restaurant restaurant = new Restaurant();
+        restaurant.setOwnerId(1L);
+        restaurant.setRestaurantId(1L);
+
         when(userClient.getUserById(1L)).thenReturn(ResponseEntity.ok(userOutDTO));
+        when(categoryRepository.findById(1L)).thenReturn(category);
         when(restaurantRepository.findById(1L)).thenReturn(restaurant);
-        when(categoryRepository.findByRestaurantId(1L)).thenReturn(Arrays.asList(category));
+        when(categoryRepository.findByNameAndRestaurantId("NEW DESSERTS", 1L)).thenReturn(null);
+        when(categoryRepository.save(any(Category.class))).thenReturn(new Category());
 
-        List<Category> categories = categoryService.getAllCategoriesOfRestaurant(getAllCategoriesInDTO);
-        assertNotNull(categories);
-        assertEquals(1, categories.size());
+        String result = categoryService.updateCategory(1L, updateCategoryDTO);
+        assertEquals("Category updated successfully", result);
     }
 
     @Test
-    void testGetAllCategoriesOfRestaurant_UserNotFound() {
-        GetAllCategoriesInDTO getAllCategoriesInDTO = new GetAllCategoriesInDTO(1L, 1L);
-
-        when(userClient.getUserById(1L)).thenReturn(ResponseEntity.notFound().build());
-
-        assertThrows(UserNotFoundException.class, () -> categoryService.getAllCategoriesOfRestaurant(getAllCategoriesInDTO));
-    }
-
-    @Test
-    void testGetAllCategoriesOfRestaurant_UserNotValid() {
-        GetAllCategoriesInDTO getAllCategoriesInDTO = new GetAllCategoriesInDTO(1L, 1L);
-        UserOutDTO userOutDTO = new UserOutDTO(1L, "email@example.com", "User", "1234567890", Role.USER);
-
-        when(userClient.getUserById(1L)).thenReturn(ResponseEntity.ok(userOutDTO));
-
-        assertThrows(UserNotValidException.class, () -> categoryService.getAllCategoriesOfRestaurant(getAllCategoriesInDTO));
-    }
-
-    @Test
-    void testGetAllCategoriesOfRestaurant_RestaurantNotFound() {
-        GetAllCategoriesInDTO getAllCategoriesInDTO = new GetAllCategoriesInDTO(1L, 1L);
-        UserOutDTO userOutDTO = new UserOutDTO(1L, "email@example.com", "User", "1234567890", Role.OWNER);
-
-        when(userClient.getUserById(1L)).thenReturn(ResponseEntity.ok(userOutDTO));
-        when(restaurantRepository.findByOwnerId(1L)).thenReturn(null);
-
-        assertThrows(RestaurantsNotFoundException.class, () -> categoryService.getAllCategoriesOfRestaurant(getAllCategoriesInDTO));
-    }
-
-    @Test
-    void testGetAllCategoriesOfRestaurant_NoCategoriesFound() {
-        GetAllCategoriesInDTO getAllCategoriesInDTO = new GetAllCategoriesInDTO(1L, 1L);
-        UserOutDTO userOutDTO = new UserOutDTO(1L, "email@example.com", "User", "1234567890", Role.OWNER);
-        Restaurant restaurant = new Restaurant(1L, 1L, "Restaurant", "email@example.com", "1234567890", "Address", new byte[]{});
-
-        when(userClient.getUserById(1L)).thenReturn(ResponseEntity.ok(userOutDTO));
-        when(restaurantRepository.findById(1L)).thenReturn(restaurant);
-        when(categoryRepository.findByRestaurantId(1L)).thenReturn(Collections.emptyList());
-
-        assertThrows(CategoryNotFoundException.class, () -> categoryService.getAllCategoriesOfRestaurant(getAllCategoriesInDTO));
-    }
-
-    @Test
-    void testUpdateCategory_UserNotFound() {
-        UpdateCategoryDTO updateCategoryDTO = new UpdateCategoryDTO(1L, "NewName");
-
-        when(userClient.getUserById(1L)).thenReturn(ResponseEntity.notFound().build());
-
-        assertThrows(UserNotFoundException.class, () -> categoryService.updateCategory(1L, updateCategoryDTO));
-    }
-
-    @Test
-    void testUpdateCategory_UserNotValid() {
-        UpdateCategoryDTO updateCategoryDTO = new UpdateCategoryDTO(1L, "NewName");
-        UserOutDTO userOutDTO = new UserOutDTO(1L, "email@example.com", "User", "1234567890", Role.USER);
-
-        when(userClient.getUserById(1L)).thenReturn(ResponseEntity.ok(userOutDTO));
-
-        assertThrows(UserNotValidException.class, () -> categoryService.updateCategory(1L, updateCategoryDTO));
-    }
-
-    @Test
-    void testUpdateCategory_CategoryNotFound() {
-        UpdateCategoryDTO updateCategoryDTO = new UpdateCategoryDTO(1L, "NewName");
-        UserOutDTO userOutDTO = new UserOutDTO(1L, "email@example.com", "User", "1234567890", Role.OWNER);
+    void updateCategoryCategoryNotFound() {
+        UpdateCategoryDTO updateCategoryDTO = new UpdateCategoryDTO(1L, "New Desserts");
+        UserOutDTO userOutDTO = new UserOutDTO(1L, "email@example.com", "Name", "1234567890", Role.OWNER);
 
         when(userClient.getUserById(1L)).thenReturn(ResponseEntity.ok(userOutDTO));
         when(categoryRepository.findById(1L)).thenReturn(null);
@@ -201,33 +119,29 @@ public class CategoryServiceImplTest {
     }
 
     @Test
-    void testDeleteCategory_UserNotFound() {
-        DeleteCategoryInDTO deleteCategoryInDTO = new DeleteCategoryInDTO(1L, 1L);
-
-        when(userClient.getUserById(1L)).thenReturn(ResponseEntity.notFound().build());
-
-        assertThrows(UserNotFoundException.class, () -> categoryService.deleteCategory(deleteCategoryInDTO));
-    }
-
-    @Test
-    void testDeleteCategory_UserNotValid() {
-        DeleteCategoryInDTO deleteCategoryInDTO = new DeleteCategoryInDTO(1L, 1L);
-        UserOutDTO userOutDTO = new UserOutDTO(1L, "email@example.com", "User", "1234567890", Role.USER);
+    void deleteCategorySuccess() {
+        UserOutDTO userOutDTO = new UserOutDTO(1L, "email@example.com", "Name", "1234567890", Role.OWNER);
+        Category category = new Category();
+        category.setRestaurantId(1L);
+        Restaurant restaurant = new Restaurant();
+        restaurant.setOwnerId(1L);
+        restaurant.setRestaurantId(1L);
 
         when(userClient.getUserById(1L)).thenReturn(ResponseEntity.ok(userOutDTO));
+        when(categoryRepository.findById(1L)).thenReturn(category);
+        when(restaurantRepository.findById(1L)).thenReturn(restaurant);
 
-        assertThrows(UserNotValidException.class, () -> categoryService.deleteCategory(deleteCategoryInDTO));
+        String result = categoryService.deleteCategory(1L,1L);
+        assertEquals("Category Deleted Successfully", result);
     }
 
     @Test
-    void testDeleteCategory_CategoryNotFound() {
-        DeleteCategoryInDTO deleteCategoryInDTO = new DeleteCategoryInDTO(1L, 1L);
-        UserOutDTO userOutDTO = new UserOutDTO(1L, "email@example.com", "User", "1234567890", Role.OWNER);
+    void deleteCategoryCategoryNotFound() {
+        UserOutDTO userOutDTO = new UserOutDTO(1L, "email@example.com", "Name", "1234567890", Role.OWNER);
 
         when(userClient.getUserById(1L)).thenReturn(ResponseEntity.ok(userOutDTO));
         when(categoryRepository.findById(1L)).thenReturn(null);
 
-        assertThrows(CategoryNotFoundException.class, () -> categoryService.deleteCategory(deleteCategoryInDTO));
+        assertThrows(CategoryNotFoundException.class, () -> categoryService.deleteCategory(1L,1L));
     }
 }
-

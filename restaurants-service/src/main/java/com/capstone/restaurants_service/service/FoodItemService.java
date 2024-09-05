@@ -1,9 +1,9 @@
 package com.capstone.restaurants_service.service;
 
-import com.capstone.restaurants_service.InDTO.DeleteFoodItemInDTO;
-import com.capstone.restaurants_service.InDTO.FoodItemInDTO;
-import com.capstone.restaurants_service.InDTO.UpdateFoodItemInDTO;
+import dto.InDTO.FoodItemInDTO;
+import dto.InDTO.UpdateFoodItemInDTO;
 import com.capstone.restaurants_service.entity.FoodItem;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -14,16 +14,18 @@ public interface FoodItemService {
     /**
      * Add new Food Item.
      * @param foodItemInDTO
+     * @param image
      * @return message string
      */
-    String addFoodItem(FoodItemInDTO foodItemInDTO);
+    String addFoodItem(FoodItemInDTO foodItemInDTO, MultipartFile image);
 
     /**
      * Delete Food Item.
-     * @param deleteFoodItemInDTO
+     * @param userId
+     * @param foodId
      * @return String message
      */
-    String deleteFoodItem(DeleteFoodItemInDTO deleteFoodItemInDTO);
+    String deleteFoodItem(long userId, long foodId);
 
     /**
      * Update Food Item.

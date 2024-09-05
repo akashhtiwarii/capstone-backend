@@ -1,8 +1,9 @@
 package com.capstone.restaurants_service.service;
 
-import com.capstone.restaurants_service.InDTO.GetOwnerRestaurantsInDTO;
-import com.capstone.restaurants_service.InDTO.RestaurantInDTO;
+import dto.InDTO.GetOwnerRestaurantsInDTO;
+import dto.InDTO.RestaurantInDTO;
 import com.capstone.restaurants_service.entity.Restaurant;
+import dto.InDTO.UpdateRestaurantInDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -39,4 +40,11 @@ public interface RestaurantService {
      * @return Restaurant
      */
     Restaurant findById(long restaurantId);
+
+    /**
+     * Update Restaurant.
+     * @param updateRestaurantInDTO
+     * @return String message
+     */
+    String updateRestaurant(UpdateRestaurantInDTO updateRestaurantInDTO);
 }

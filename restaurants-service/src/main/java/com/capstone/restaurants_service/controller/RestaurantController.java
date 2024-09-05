@@ -1,15 +1,5 @@
 package com.capstone.restaurants_service.controller;
 
-import com.capstone.restaurants_service.InDTO.CategoryInDTO;
-import com.capstone.restaurants_service.InDTO.DeleteCategoryInDTO;
-import com.capstone.restaurants_service.InDTO.DeleteFoodItemInDTO;
-import com.capstone.restaurants_service.InDTO.FoodItemInDTO;
-import com.capstone.restaurants_service.InDTO.GetAllCategoriesInDTO;
-import com.capstone.restaurants_service.InDTO.GetOwnerRestaurantsInDTO;
-import com.capstone.restaurants_service.InDTO.RestaurantInDTO;
-import com.capstone.restaurants_service.InDTO.RestaurantWithImageInDTO;
-import com.capstone.restaurants_service.InDTO.UpdateCategoryDTO;
-import com.capstone.restaurants_service.InDTO.UpdateFoodItemInDTO;
 import com.capstone.restaurants_service.entity.Category;
 import com.capstone.restaurants_service.entity.FoodItem;
 import com.capstone.restaurants_service.entity.Restaurant;
@@ -17,6 +7,16 @@ import com.capstone.restaurants_service.service.CategoryService;
 import com.capstone.restaurants_service.service.FoodItemService;
 import com.capstone.restaurants_service.service.RestaurantService;
 import com.capstone.restaurants_service.utils.Constants;
+import dto.InDTO.CategoryInDTO;
+import dto.InDTO.FoodItemInDTO;
+import dto.InDTO.FoodItemWithImageInDTO;
+import dto.InDTO.GetOwnerRestaurantsInDTO;
+import dto.InDTO.RestaurantInDTO;
+import dto.InDTO.RestaurantWithImageInDTO;
+import dto.InDTO.UpdateCategoryDTO;
+import dto.InDTO.UpdateFoodItemInDTO;
+import dto.InDTO.UpdateRestaurantInDTO;
+import dto.OutDTO.RequestSuccessOutDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,12 +31,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 
+/**
+ * Restaurant Controller.
+ */
 @RestController
 @RequestMapping(Constants.RESTAURANT_ENDPOINT)
 @CrossOrigin
@@ -66,8 +71,9 @@ public class RestaurantController {
      * @param restaurantWithImageInDTO
      * @return String message
      */
-    @PostMapping("/add")
-    public ResponseEntity<String> addRestaurant(@Valid @ModelAttribute RestaurantWithImageInDTO restaurantWithImageInDTO) {
+    @PostMapping(Constants.ADD_RESTAURANT_ENDPOINT)
+    public ResponseEntity<RequestSuccessOutDTO> addRestaurant(
+            @Valid @ModelAttribute RestaurantWithImageInDTO restaurantWithImageInDTO) {
         logger.info("Adding Restaurant : {}", restaurantWithImageInDTO.getRestaurant().getName());
         RestaurantInDTO restaurant = restaurantWithImageInDTO.getRestaurant();
         logger.info("Restaurant Details Fetched");
@@ -75,28 +81,15 @@ public class RestaurantController {
         logger.info("Image Fetched");
         String message = restaurantService.save(restaurant, image);
         logger.info("Restaurant Added");
-        return ResponseEntity.status(HttpStatus.OK).body(message);
+        return ResponseEntity.status(HttpStatus.OK).body(new RequestSuccessOutDTO(message));
     }
-
-//    /**
-//     * Add new restaurant.
-//     * @param restaurantInDTO request parameter
-//     * @return a string message
-//     */
-//    @PostMapping(Constants.ADD_RESTAURANT_ENDPOINT)
-//    public ResponseEntity<String> addRestaurant(@Valid @RequestBody RestaurantInDTO restaurantInDTO) {
-//        logger.info("Adding new Restaurant : {}", restaurantInDTO.getName());
-//        String message = restaurantService.save(restaurantInDTO);
-//        logger.info("Added Restaurant : {}", restaurantInDTO.getName());
-//        return ResponseEntity.status(HttpStatus.OK).body(message);
-//    }
 
     /**
      * Get Restaurant By ID.
      * @param restaurantId
      * @return Restaurant
      */
-    @GetMapping("/{restaurantId}")
+    @GetMapping(Constants.GET_RESTAURANT_BY_ID)
     public ResponseEntity<Restaurant> getRestaurantById(@PathVariable("restaurantId") long restaurantId) {
         logger.info("Fetching Restaurant by Id : {}", restaurantId);
         Restaurant restaurant = restaurantService.findById(restaurantId);
@@ -135,100 +128,129 @@ public class RestaurantController {
      * @return message
      */
     @PostMapping(Constants.ADD_CATEGORIES_ENDPOINT)
-    public ResponseEntity<String> addCategory(@Valid @RequestBody CategoryInDTO categoryInDTO) {
+    public ResponseEntity<RequestSuccessOutDTO> addCategory(@Valid @RequestBody CategoryInDTO categoryInDTO) {
         logger.info("Adding Category for restaurant ID: {}", categoryInDTO.getRestaurantId());
         String response = categoryService.addCategory(categoryInDTO);
         logger.info("Added Category for restaurant ID: {}", categoryInDTO.getRestaurantId());
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(new RequestSuccessOutDTO(response));
+    }
+
+    /**
+     * Update Restaurant.
+     *
+     * @param updateRestaurantInDTO
+     * @return String message
+     */
+    @PutMapping(Constants.UPDATE_RESTAURANT_ENDPOINT)
+    public ResponseEntity<RequestSuccessOutDTO> updateRestaurant(
+            @Valid @ModelAttribute UpdateRestaurantInDTO updateRestaurantInDTO) {
+        logger.info("Updating Restaurant for restaurant ID: {}", updateRestaurantInDTO.getRestaurantId());
+        String response = restaurantService.updateRestaurant(updateRestaurantInDTO);
+        logger.info("Updated Restaurant for restaurant ID: {}", updateRestaurantInDTO.getRestaurantId());
+        return ResponseEntity.status(HttpStatus.OK).body(new RequestSuccessOutDTO(response));
     }
     /**
      * Get all categories of a restaurant.
-     * @param getAllCategoriesInDTO
+     * @param restaurantId
      * @return List of categories
      */
     @GetMapping(Constants.GET_CATEGORIES_ENDPOINT)
-    public ResponseEntity<List<Category>> getCategories(
-            @Valid @RequestBody GetAllCategoriesInDTO getAllCategoriesInDTO) {
-        logger.info("Fetching Categories for restaurant ID: {}", getAllCategoriesInDTO.getRestaurantId());
-        List<Category> categories = categoryService.getAllCategoriesOfRestaurant(getAllCategoriesInDTO);
-        logger.info("Fetching Categories for restaurant ID: {}", getAllCategoriesInDTO.getRestaurantId());
+    public ResponseEntity<List<Category>> getCategories(@PathVariable("restaurantId") long restaurantId) {
+        logger.info("Fetching Categories for restaurant ID: {}", restaurantId);
+        List<Category> categories = categoryService.getAllCategoriesOfRestaurant(restaurantId);
+        logger.info("Fetching Categories for restaurant ID: {}", restaurantId);
         return ResponseEntity.status(HttpStatus.OK).body(categories);
     }
 
     /**
      * Delete Category.
-     * @param deleteCategoryInDTO
+     * @param categoryId
+     * @param userId
      * @return String message
      */
     @DeleteMapping(Constants.DELETE_CATEGORY_ENDPOINT)
-    public ResponseEntity<String> deleteCategory(@Valid @RequestBody DeleteCategoryInDTO deleteCategoryInDTO) {
-        logger.info("Deleting Category : {}", deleteCategoryInDTO.getCategoryId());
-        String message = categoryService.deleteCategory(deleteCategoryInDTO);
-        logger.info("Deleted Category : {}", deleteCategoryInDTO.getCategoryId());
-        return ResponseEntity.status(HttpStatus.OK).body(message);
+    public ResponseEntity<RequestSuccessOutDTO> deleteCategory(
+            @RequestParam @Min(value = 1, message = "Valid User ID required") long userId,
+            @RequestParam @Min(value = 1, message = "Valid Category ID required") long categoryId) {
+        logger.info("Deleting Category : {}", categoryId);
+        String message = categoryService.deleteCategory(userId, categoryId);
+        logger.info("Deleted Category : {}", categoryId);
+        return ResponseEntity.status(HttpStatus.OK).body(new RequestSuccessOutDTO(message));
     }
 
     /**
      * Update Category.
+     *
      * @param categoryId
      * @param updateCategoryDTO
      * @return String message
      */
-    @PutMapping(Constants.UPDATE_CATEGORY_ENDPOINT + "/{categoryId}")
-    public ResponseEntity<String> updateCategory(@PathVariable("categoryId") long categoryId,
-                                                 @Valid @RequestBody UpdateCategoryDTO updateCategoryDTO) {
+    @PutMapping(Constants.UPDATE_CATEGORY_ENDPOINT)
+    public ResponseEntity<RequestSuccessOutDTO> updateCategory(
+            @PathVariable("categoryId") long categoryId,
+            @Valid @RequestBody UpdateCategoryDTO updateCategoryDTO) {
         logger.info("Updating Category : {}", updateCategoryDTO);
         String message = categoryService.updateCategory(categoryId, updateCategoryDTO);
         logger.info("Updated Category : {}", updateCategoryDTO);
-        return ResponseEntity.status(HttpStatus.OK).body(message);
+        return ResponseEntity.status(HttpStatus.OK).body(new RequestSuccessOutDTO(message));
     }
     /**
      * Add new Food Item.
-     * @param foodItemInDTO
+     *
+     * @param foodItemWithImageInDTO
      * @return String message
      */
     @PostMapping(Constants.ADD_FOOD_ITEM_ENDPOINT)
-    public ResponseEntity<String> addFoodItem(@Valid @RequestBody FoodItemInDTO foodItemInDTO) {
+    public ResponseEntity<RequestSuccessOutDTO> addFoodItem(
+            @Valid @ModelAttribute FoodItemWithImageInDTO foodItemWithImageInDTO) {
         logger.info("Adding new food item.");
-        String message = foodItemService.addFoodItem(foodItemInDTO);
+        FoodItemInDTO foodItemInDTO = foodItemWithImageInDTO.getFoodItem();
+        MultipartFile image = foodItemWithImageInDTO.getImage();
+        String message = foodItemService.addFoodItem(foodItemInDTO, image);
         logger.info("Added new food item.");
-        return ResponseEntity.status(HttpStatus.OK).body(message);
+        return ResponseEntity.status(HttpStatus.OK).body(new RequestSuccessOutDTO(message));
     }
 
     /**
      * Update Food Item.
+     *
      * @param fooditemId
      * @param updateFoodItemInDTO
      * @return String message
      */
-    @PutMapping(Constants.UPDATE_FOOD_ITEM_ENDPOINT + "/{foodItemId}")
-    public ResponseEntity<String> updateFoodItem(@PathVariable("foodItemId") long fooditemId,
-                                                 @Valid @RequestBody UpdateFoodItemInDTO updateFoodItemInDTO) {
+    @PutMapping(Constants.UPDATE_FOOD_ITEM_ENDPOINT)
+    public ResponseEntity<RequestSuccessOutDTO> updateFoodItem(
+            @PathVariable("foodItemId") long fooditemId,
+            @Valid @ModelAttribute UpdateFoodItemInDTO updateFoodItemInDTO) {
         logger.info("Updating food item : {}", fooditemId);
         String message = foodItemService.updateFoodItem(fooditemId, updateFoodItemInDTO);
         logger.info("Updating food item : {}", fooditemId);
-        return ResponseEntity.status(HttpStatus.OK).body(message);
+        return ResponseEntity.status(HttpStatus.OK).body(new RequestSuccessOutDTO(message));
     }
 
     /**
      * Delete Food Item.
-     * @param deleteFoodItemInDTO
+     * @param foodId
+     * @param userId
      * @return String message
      */
     @DeleteMapping(Constants.DELETE_FOOD_ITEM)
-    public ResponseEntity<String> deleteFooditem(DeleteFoodItemInDTO deleteFoodItemInDTO) {
-        logger.info("Deleting Food item : {}", deleteFoodItemInDTO.getFoodId());
-        String message = foodItemService.deleteFoodItem(deleteFoodItemInDTO);
-        logger.info("Deleted Food item : {}", deleteFoodItemInDTO.getFoodId());
-        return ResponseEntity.status(HttpStatus.OK).body(message);
+    public ResponseEntity<RequestSuccessOutDTO> deleteFoodItem(
+            @RequestParam @Min(value = 1, message = "Valid User ID required") long userId,
+            @RequestParam @Min(value = 1, message = "Valid Food ID required") long foodId) {
+        logger.info("Deleting Food item : {}", foodId);
+        String message = foodItemService.deleteFoodItem(userId, foodId);
+        logger.info("Deleted Food item : {}", foodId);
+        return ResponseEntity.status(HttpStatus.OK).body(new RequestSuccessOutDTO(message));
     }
+
 
     /**
      * Get food by restaurant.
      * @param restaurantId
      * @return food items
      */
-    @GetMapping(Constants.GET_FOOD_ITEMS_BY_RESTAURANT + "/{restaurantId}")
+    @GetMapping(Constants.GET_FOOD_ITEMS_BY_RESTAURANT)
     public ResponseEntity<List<FoodItem>> getFoodItemsByRestaurant(@PathVariable("restaurantId") long restaurantId) {
         logger.info("Fetching Food items of restaurant: {}", restaurantId);
         List<FoodItem> foodItems = foodItemService.getAllFoodItemsOfRestaurant(restaurantId);
@@ -241,7 +263,7 @@ public class RestaurantController {
      * @param categoryId
      * @return food items
      */
-    @GetMapping(Constants.GET_FOOD_ITEMS_BY_CATEGORY + "/{categoryId}")
+    @GetMapping(Constants.GET_FOOD_ITEMS_BY_CATEGORY)
     public ResponseEntity<List<FoodItem>> getFoodItemsByCategory(@PathVariable("categoryId") long categoryId) {
         logger.info("Fetching Food items of category: {}", categoryId);
         List<FoodItem> foodItems = foodItemService.getFoodItemsByCategory(categoryId);

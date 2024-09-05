@@ -1,6 +1,6 @@
-package com.capstone.restaurants_service.InDTOTest;
+package com.capstone.restaurants_service.dtoTest.InDTOTest;
 
-import com.capstone.restaurants_service.InDTO.CategoryInDTO;
+import dto.InDTO.CategoryInDTO;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

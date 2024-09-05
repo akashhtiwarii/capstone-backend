@@ -1,9 +1,11 @@
 package com.capstone.restaurants_service.serviceImpl;
 
 import com.capstone.restaurants_service.ENUM.Role;
-import com.capstone.restaurants_service.InDTO.GetOwnerRestaurantsInDTO;
-import com.capstone.restaurants_service.InDTO.RestaurantInDTO;
-import com.capstone.restaurants_service.OutDTO.UserOutDTO;
+import com.capstone.restaurants_service.utils.Constants;
+import dto.InDTO.GetOwnerRestaurantsInDTO;
+import dto.InDTO.RestaurantInDTO;
+import dto.InDTO.UpdateRestaurantInDTO;
+import dto.OutDTO.UserOutDTO;
 import com.capstone.restaurants_service.converters.RestaurantConverters;
 import com.capstone.restaurants_service.entity.Restaurant;
 import com.capstone.restaurants_service.exceptions.EmailAlreadyExistsException;
@@ -19,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * RestaurantServiceImpl for implementing methods of RestaurantService.
@@ -48,14 +51,14 @@ public class RestaurantServiceImpl implements RestaurantService {
     public String save(RestaurantInDTO restaurantInDTO, MultipartFile image) {
         UserOutDTO user = userClient.getUserById(restaurantInDTO.getOwnerId()).getBody();
         if (user == null) {
-            throw new UserNotFoundException("Owner not in database");
+            throw new UserNotFoundException(Constants.USER_NOT_FOUND);
         }
         if (user.getRole() == Role.USER) {
-            throw new UserNotValidException("You cannot add a restaurant");
+            throw new UserNotValidException(Constants.YOU_CANNOT_ADD_RESTAURANT);
         }
         Restaurant restaurantAlreadyExists = restaurantRepository.findByEmail(restaurantInDTO.getEmail());
         if (restaurantAlreadyExists != null) {
-            throw new EmailAlreadyExistsException("Email ID already Exists");
+            throw new EmailAlreadyExistsException(Constants.EMAIL_ALREADY_EXISTS);
         }
 
         Restaurant restaurant = RestaurantConverters.restaurantInDTOTORestaurant(restaurantInDTO);
@@ -64,14 +67,58 @@ public class RestaurantServiceImpl implements RestaurantService {
                 restaurant.setImage(image.getBytes());
             }
             restaurantRepository.save(restaurant);
-            return "Restaurant added successfully";
+            return Constants.RESTAURANT_ADDED_SUCCESSFULLY;
         } catch (IOException e) {
-            throw new RuntimeException("Failed to upload image: " + e.getMessage());
+            throw new RuntimeException(Constants.FAILED_TO_UPLOAD_IMAGE + e.getMessage());
         } catch (Exception e) {
-            throw new RuntimeException("An unexpected error occurred: " + e.getMessage());
+            throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + e.getMessage());
         }
     }
 
+    /**
+     * Update Restaurant.
+     * @param updateRestaurantInDTO
+     * @return String message.
+     */
+    @Override
+    public String updateRestaurant(UpdateRestaurantInDTO updateRestaurantInDTO) {
+        UserOutDTO user = userClient.getUserById(updateRestaurantInDTO.getLoggedInOwnerId()).getBody();
+        if (user == null) {
+            throw new UserNotFoundException(Constants.USER_NOT_FOUND);
+        }
+        if (user.getRole() == Role.USER) {
+            throw new UserNotValidException(Constants.YOU_CANNOT_UPDATE_RESTAURANT);
+        }
+        Restaurant restaurant = restaurantRepository.findById(updateRestaurantInDTO.getRestaurantId());
+        if (restaurant == null) {
+           throw new RestaurantsNotFoundException(Constants.RESTAURANT_DOES_NOT_EXISTS);
+        }
+        if (restaurant.getOwnerId() != updateRestaurantInDTO.getLoggedInOwnerId()) {
+            throw new UserNotValidException(Constants.YOU_CANNOT_UPDATE_RESTAURANT);
+        }
+        if (!Objects.equals(restaurant.getEmail(), updateRestaurantInDTO.getEmail())) {
+            Restaurant restaurantAlreadyExists = restaurantRepository.findByEmail(updateRestaurantInDTO.getEmail());
+            if (restaurantAlreadyExists != null) {
+                throw new EmailAlreadyExistsException(Constants.EMAIL_ALREADY_EXISTS);
+            }
+        }
+        restaurant.setName(updateRestaurantInDTO.getName());
+        restaurant.setEmail(updateRestaurantInDTO.getEmail());
+        restaurant.setPhone(updateRestaurantInDTO.getPhone());
+        restaurant.setAddress(updateRestaurantInDTO.getAddress());
+        MultipartFile image = updateRestaurantInDTO.getImage();
+        try {
+            if (image != null && !image.isEmpty()) {
+                restaurant.setImage(image.getBytes());
+            }
+            restaurantRepository.save(restaurant);
+            return Constants.RESTAURANT_UPDATED_SUCCESSFULLY;
+        } catch (IOException e) {
+            throw new RuntimeException(Constants.FAILED_TO_UPLOAD_IMAGE + e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + e.getMessage());
+        }
+    }
 
     /**
      * Get all restaurants.
@@ -81,7 +128,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     public List<Restaurant> findAll() {
         List<Restaurant> restaurants = restaurantRepository.findAll();
         if (restaurants.isEmpty()) {
-            throw new RestaurantsNotFoundException("No Restaurants in the database");
+            throw new RestaurantsNotFoundException(Constants.RESTAURANT_DOES_NOT_EXISTS);
         }
         return restaurants;
     }
@@ -95,7 +142,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     public List<Restaurant> findByOwnerId(GetOwnerRestaurantsInDTO getOwnerRestaurantsInDTO) {
         List<Restaurant> restaurant = restaurantRepository.findByOwnerId(getOwnerRestaurantsInDTO.getOwnerId());
         if (restaurant.isEmpty()) {
-            throw new RestaurantsNotFoundException("No Restaurants Present");
+            throw new RestaurantsNotFoundException(Constants.RESTAURANT_DOES_NOT_EXISTS);
         }
         return restaurant;
     }
@@ -109,7 +156,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     public Restaurant findById(long restaurantId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId);
         if (restaurant == null) {
-            throw new RestaurantsNotFoundException("No Restaurants in the database");
+            throw new RestaurantsNotFoundException(Constants.RESTAURANT_DOES_NOT_EXISTS);
         }
         return restaurant;
     }

@@ -1,12 +1,16 @@
 package com.capstone.restaurants_service.feignClient;
 
-import com.capstone.restaurants_service.OutDTO.UserOutDTO;
+import com.capstone.restaurants_service.utils.Constants;
+import dto.OutDTO.UserOutDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "users-service", url = "http://localhost:8081/user")
+/**
+ * User Service Connectivity.
+ */
+@FeignClient(name = Constants.USER_SERVICE, url = Constants.USER_SERVICE_ENDPOINT)
 public interface UserClient {
     /**
      * Get User by Id.

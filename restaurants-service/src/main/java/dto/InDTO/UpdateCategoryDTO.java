@@ -1,20 +1,21 @@
-package com.capstone.restaurants_service.InDTO;
+package dto.InDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 /**
- * DTO for Deleting Food Item.
+ * DTO TO update Category.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeleteFoodItemInDTO {
+public class UpdateCategoryDTO {
     /**
      * User ID.
      */
@@ -22,12 +23,10 @@ public class DeleteFoodItemInDTO {
     @Min(value = 1, message = "Valid User ID required")
     private long userId;
     /**
-     * Food ID.
+     * Category Name.
      */
-    @NotNull(message = "Valid Food ID required")
-    @Min(value = 1, message = "Valid Food ID required")
-    private long foodId;
-
+    @NotBlank(message = "Valid Category Name Required")
+    private String name;
     /**
      * Override equals method.
      * @param o
@@ -41,8 +40,8 @@ public class DeleteFoodItemInDTO {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        DeleteFoodItemInDTO that = (DeleteFoodItemInDTO) o;
-        return userId == that.userId && foodId == that.foodId;
+        UpdateCategoryDTO that = (UpdateCategoryDTO) o;
+        return userId == that.userId && Objects.equals(name, that.name);
     }
     /**
      * Override hashcode method.
@@ -50,6 +49,6 @@ public class DeleteFoodItemInDTO {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(userId, foodId);
+        return Objects.hash(userId, name);
     }
 }

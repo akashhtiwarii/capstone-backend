@@ -1,11 +1,10 @@
 package com.capstone.restaurants_service.serviceImpl;
 
 import com.capstone.restaurants_service.ENUM.Role;
-import com.capstone.restaurants_service.InDTO.CategoryInDTO;
-import com.capstone.restaurants_service.InDTO.DeleteCategoryInDTO;
-import com.capstone.restaurants_service.InDTO.GetAllCategoriesInDTO;
-import com.capstone.restaurants_service.InDTO.UpdateCategoryDTO;
-import com.capstone.restaurants_service.OutDTO.UserOutDTO;
+import com.capstone.restaurants_service.utils.Constants;
+import dto.InDTO.CategoryInDTO;
+import dto.InDTO.UpdateCategoryDTO;
+import dto.OutDTO.UserOutDTO;
 import com.capstone.restaurants_service.converters.CategoryConverters;
 import com.capstone.restaurants_service.entity.Category;
 import com.capstone.restaurants_service.entity.Restaurant;
@@ -55,32 +54,32 @@ public class CategoryServiceImpl implements CategoryService {
     public String addCategory(CategoryInDTO categoryInDTO) {
         UserOutDTO user = userClient.getUserById(categoryInDTO.getUserId()).getBody();
         if (user == null) {
-            throw new UserNotFoundException("User Not Found");
+            throw new UserNotFoundException(Constants.USER_NOT_FOUND);
         }
         if (user.getRole() != Role.OWNER) {
-            throw new UserNotValidException("You cannot Add a category");
+            throw new UserNotValidException(Constants.YOU_CANNOT_ADD_A_CATEGORY);
         }
         String categoryName = categoryInDTO.getName().toUpperCase();
         Restaurant restaurant = restaurantRepository.findById(categoryInDTO.getRestaurantId());
         if (restaurant == null) {
-            throw new RestaurantsNotFoundException("Restaurant does not exists");
+            throw new RestaurantsNotFoundException(Constants.RESTAURANT_DOES_NOT_EXISTS);
         }
         if (restaurant.getOwnerId() != categoryInDTO.getUserId()) {
-            throw new UserNotValidException("You cannot add a category to this restaurant");
+            throw new UserNotValidException(Constants.YOU_CANNOT_ADD_A_CATEGORY);
         }
         Category categoryAlreadyExists = categoryRepository.findByNameAndRestaurantId(
                 categoryName,
                 restaurant.getRestaurantId()
         );
         if (categoryAlreadyExists != null) {
-            throw new CategoryAlreadyExistException("Category is already present");
+            throw new CategoryAlreadyExistException(Constants.CATEGORY_ALREADY_PRESENT);
         }
         Category category = CategoryConverters.categoryInDTOToCategoryEntity(categoryInDTO);
         try {
             categoryRepository.save(category);
-            return "Category Added Successfully";
+            return Constants.CATEGORY_ADDED_SUCCESSFULLY;
         } catch (Exception ex) {
-            throw new RuntimeException("An unexpected error occurred: " + ex.getMessage());
+            throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + ex.getMessage());
         }
     }
 
@@ -89,21 +88,14 @@ public class CategoryServiceImpl implements CategoryService {
      * @return the list of all categories
      */
     @Override
-    public List<Category> getAllCategoriesOfRestaurant(GetAllCategoriesInDTO getAllCategoriesInDTO) {
-        UserOutDTO user = userClient.getUserById(getAllCategoriesInDTO.getUserId()).getBody();
-        if (user == null) {
-            throw new UserNotFoundException("User Not Found");
-        }
-        if (user.getRole() != Role.OWNER) {
-            throw new UserNotValidException("You cannot update a category");
-        }
-        Restaurant restaurant = restaurantRepository.findById(getAllCategoriesInDTO.getRestaurantId());
+    public List<Category> getAllCategoriesOfRestaurant(long restaurantId) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId);
         if (restaurant == null) {
-            throw new RestaurantsNotFoundException("You do not have any restaurants");
+            throw new RestaurantsNotFoundException(Constants.NO_RESTAURANTS);
         }
-        List<Category> categories = categoryRepository.findByRestaurantId(getAllCategoriesInDTO.getRestaurantId());
+        List<Category> categories = categoryRepository.findByRestaurantId(restaurantId);
         if (categories.isEmpty()) {
-           throw new CategoryNotFoundException("No Categories for your restaurant");
+           throw new CategoryNotFoundException(Constants.NO_CATEGORIES_FOR_RESTAURANT);
         }
         return categories;
     }
@@ -119,61 +111,64 @@ public class CategoryServiceImpl implements CategoryService {
         UserOutDTO user = userClient.getUserById(updateCategoryDTO.getUserId()).getBody();
         String categoryToBeAdded = updateCategoryDTO.getName().toUpperCase();
         if (user == null) {
-            throw new UserNotFoundException("User Not Found");
+            throw new UserNotFoundException(Constants.USER_NOT_FOUND);
         }
         if (user.getRole() != Role.OWNER) {
-            throw new UserNotValidException("You cannot update a category");
+            throw new UserNotValidException(Constants.YOU_CANNOT_UPDATE_CATEGORY);
         }
         Category category = categoryRepository.findById(categoryId);
         if (category == null) {
-            throw new CategoryNotFoundException("Category Not Found");
+            throw new CategoryNotFoundException(Constants.CATEGORY_NOT_FOUND);
         }
         Restaurant restaurant = restaurantRepository.findById(category.getRestaurantId());
         if (restaurant.getOwnerId() != updateCategoryDTO.getUserId()) {
-            throw new UserNotValidException("You cannot update this category");
+            throw new UserNotValidException(Constants.YOU_CANNOT_UPDATE_CATEGORY);
         }
-        Category categoryAlreadyExists = categoryRepository.findByNameAndRestaurantId(
-                categoryToBeAdded,
-                restaurant.getRestaurantId()
-        );
-        if (categoryAlreadyExists != null) {
-            throw new CategoryAlreadyExistException("Category Already Present");
+        if (!categoryToBeAdded.equals(category.getName())) {
+            Category categoryAlreadyExists = categoryRepository.findByNameAndRestaurantId(
+                    categoryToBeAdded,
+                    restaurant.getRestaurantId()
+            );
+            if (categoryAlreadyExists != null) {
+                throw new CategoryAlreadyExistException(Constants.CATEGORY_ALREADY_PRESENT);
+            }
         }
         try {
             category.setName(updateCategoryDTO.getName().toUpperCase());
             categoryRepository.save(category);
-            return "Category updated successfully";
+            return Constants.CATEGORY_UPDATED_SUCCESSFULLY;
         } catch (Exception ex) {
-            throw new RuntimeException("An unexpected error occurred " + ex.getMessage());
+            throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + ex.getMessage());
         }
     }
 
     /**
      * Delete Category.
-     * @param deleteCategoryInDTO
+     * @param userId
+     * @param categoryId
      * @return Message
      */
     @Override
-    public String deleteCategory(DeleteCategoryInDTO deleteCategoryInDTO) {
-        UserOutDTO user = userClient.getUserById(deleteCategoryInDTO.getUserId()).getBody();
+    public String deleteCategory(long userId, long categoryId) {
+        UserOutDTO user = userClient.getUserById(userId).getBody();
         if (user == null) {
-            throw new UserNotFoundException("User Not Found");
+            throw new UserNotFoundException(Constants.USER_NOT_FOUND);
         }
         if (user.getRole() != Role.OWNER) {
-            throw new UserNotValidException("You cannot delete a category");
+            throw new UserNotValidException(Constants.YOU_CANNOT_DELETE_CATEGORY);
         }
-        Category category = categoryRepository.findById(deleteCategoryInDTO.getCategoryId());
+        Category category = categoryRepository.findById(categoryId);
         if (category == null) {
-            throw new CategoryNotFoundException("Category Not Found");
+            throw new CategoryNotFoundException(Constants.CATEGORY_NOT_FOUND);
         }
-        if (restaurantRepository.findById(category.getRestaurantId()).getOwnerId() != deleteCategoryInDTO.getUserId()) {
-           throw new UserNotValidException("You cannot delete this category");
+        if (restaurantRepository.findById(category.getRestaurantId()).getOwnerId() != userId) {
+           throw new UserNotValidException(Constants.YOU_CANNOT_DELETE_CATEGORY);
         }
         try {
-            categoryRepository.deleteById(deleteCategoryInDTO.getCategoryId());
-            return "Category Deleted Successfully";
+            categoryRepository.deleteById(categoryId);
+            return Constants.CATEGORY_DELETED;
         } catch (Exception ex) {
-            throw new RuntimeException("An unexpected error occurred " + ex.getMessage());
+            throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + ex.getMessage());
         }
 
     }

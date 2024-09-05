@@ -1,6 +1,6 @@
 package com.capstone.restaurants_service.convertersTest;
 
-import com.capstone.restaurants_service.InDTO.CategoryInDTO;
+import dto.InDTO.CategoryInDTO;
 import com.capstone.restaurants_service.converters.CategoryConverters;
 import com.capstone.restaurants_service.entity.Category;
 import org.junit.jupiter.api.Test;
