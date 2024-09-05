@@ -1,4 +1,4 @@
-package com.capstone.restaurants_service.dtoTest.InDTOTest;
+package com.capstone.restaurants_service.dtoTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

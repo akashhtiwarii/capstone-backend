@@ -1,4 +1,4 @@
-package com.capstone.restaurants_service.dtoTest.InDTOTest;
+package com.capstone.restaurants_service.dtoTest;
 
 import com.capstone.restaurants_service.dto.RestaurantInDTO;
 import com.capstone.restaurants_service.dto.RestaurantWithImageInDTO;

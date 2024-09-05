@@ -1,4 +1,4 @@
-package com.capstone.restaurants_service.dtoTest.OutDTOTest;
+package com.capstone.restaurants_service.dtoTest;
 
 import com.capstone.restaurants_service.ENUM.Role;
 import com.capstone.restaurants_service.dto.UserOutDTO;
