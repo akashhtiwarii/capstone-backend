@@ -1,5 +1,6 @@
 package com.capstone.orders_service.dto;
 
+import com.capstone.orders_service.Enum.Status;
 import com.capstone.orders_service.entity.OrderDetail;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,6 +15,7 @@ import java.util.Objects;
 public class OrderDetailsOutDTO {
     private long userId;
     private List<OrderDetail> orderDetailList;
+    private Status status;
     private String address;
 
     @Override
@@ -21,11 +23,11 @@ public class OrderDetailsOutDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         OrderDetailsOutDTO that = (OrderDetailsOutDTO) o;
-        return userId == that.userId && Objects.equals(orderDetailList, that.orderDetailList) && Objects.equals(address, that.address);
+        return userId == that.userId && Objects.equals(orderDetailList, that.orderDetailList) && status == that.status && Objects.equals(address, that.address);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, orderDetailList, address);
+        return Objects.hash(userId, orderDetailList, status, address);
     }
 }

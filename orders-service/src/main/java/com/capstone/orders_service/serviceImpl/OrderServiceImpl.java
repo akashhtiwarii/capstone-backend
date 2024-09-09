@@ -198,8 +198,18 @@ public class OrderServiceImpl implements OrderService {
             orderDetailsOutDTO.setUserId(order.getUserId());
             orderDetailsOutDTO.setOrderDetailList(orderDetails);
             orderDetailsOutDTO.setAddress(address);
+            orderDetailsOutDTO.setStatus(order.getStatus());
             orderDetailsOutDTOS.add(orderDetailsOutDTO);
         }
         return orderDetailsOutDTOS;
+    }
+
+    /**
+     * @param userId
+     * @return
+     */
+    @Override
+    public List<UserOrderDetailsOutDTO> getUserOrders(long userId) {
+        return new ArrayList<>();
     }
 }

@@ -16,6 +16,7 @@ public class CartConverter {
 
     public static CartItemOutDTO cartEntityToCartItemOutDTO(CartItem cartItem) {
         CartItemOutDTO cartItemOutDTO = new CartItemOutDTO();
+        cartItemOutDTO.setCartItemId(cartItem.getCartItemId());
         cartItemOutDTO.setUserId(cartItem.getUserId());
         cartItemOutDTO.setRestaurantId(cartItem.getRestaurantId());
         cartItemOutDTO.setFoodId(cartItem.getFoodId());

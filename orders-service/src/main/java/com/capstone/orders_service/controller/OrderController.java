@@ -2,6 +2,7 @@ package com.capstone.orders_service.controller;
 
 import com.capstone.orders_service.Enum.Status;
 import com.capstone.orders_service.dto.AddToCartInDTO;
+import com.capstone.orders_service.dto.CartItemOutDTO;
 import com.capstone.orders_service.dto.OrderDetailsOutDTO;
 import com.capstone.orders_service.dto.OrderOutDTO;
 import com.capstone.orders_service.service.CartItemService;
@@ -36,6 +37,12 @@ public class OrderController {
     public ResponseEntity<String> addOrder(@RequestParam @Min(value = 1, message = "UserId not Valid") long userId) {
         String response = orderService.addOrder(userId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping("/mycart")
+    public ResponseEntity<List<CartItemOutDTO>> getMyCart(@RequestParam @Min(value = 1, message = "UserId not Valid") long userId) {
+        List<CartItemOutDTO> cartItemOutDTOS = cartItemService.getCartItems(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(cartItemOutDTOS);
     }
 
     @PostMapping("/cart/add")
