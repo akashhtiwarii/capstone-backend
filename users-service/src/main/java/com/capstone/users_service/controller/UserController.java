@@ -21,13 +21,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 import com.capstone.users_service.utils.Constants;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Rest Controller for managing user-operations.
@@ -110,20 +104,6 @@ public class UserController {
         logger.info("Fetched user info..{}", userId);
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
-
-    /**
-     * Get Addresses of a user.
-     * @param addressRequestInDTO Request body
-     * @return address with a specific Id
-     */
-    @PostMapping(Constants.USER_ADDRESS_ENDPOINT)
-    public List<Address> getAddressesById(@RequestBody AddressRequestInDTO addressRequestInDTO) {
-        logger.info("Fetching addresses for email ID: {}", addressRequestInDTO.getEmail());
-        List<Address> addresses = addressService.findUserAddresses(addressRequestInDTO);
-        logger.info("Addresses fetched successfully for email ID: {}", addressRequestInDTO.getEmail());
-        return addresses;
-    }
-
     /**
      * Add new address of a user.
      * @param addressInDTO request parameter
@@ -135,5 +115,12 @@ public class UserController {
         String message = addressService.addAddress(addressInDTO);
         logger.info("Address added successfully for email ID: {}", addressInDTO.getEmail());
         return ResponseEntity.status(HttpStatus.OK).body(message);
+    }
+    @GetMapping("/address")
+    public ResponseEntity<Address> getAddressById(@RequestParam long userId) {
+        logger.info("Fetching address for user ID: {}", userId);
+        Address response = addressService.getAddressById(userId);
+        logger.info("Fetched address for user ID: {}", userId);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

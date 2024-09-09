@@ -11,16 +11,11 @@ import java.util.List;
  */
 public interface AddressService {
     /**
-     * Get list of addresses added by user.
-     * @param addressRequestInDTO request body
-     * @return list of addresses of a user
-     */
-    List<Address> findUserAddresses(AddressRequestInDTO addressRequestInDTO);
-
-    /**
      * Add new address.
      * @param addressInDTO request parameter
      * @return String message
      */
     String addAddress(AddressInDTO addressInDTO);
+
+    Address getAddressById(long userId);
 }

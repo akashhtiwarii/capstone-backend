@@ -32,26 +32,6 @@ public class AddressServiceImpl implements AddressService {
     private UserRepository userRepository;
 
     /**
-     * Get list of addresses added by user.
-     *
-     * @param addressRequestInDTO request body
-     * @return list of addresses of a user
-     */
-    @Override
-    public List<Address> findUserAddresses(AddressRequestInDTO addressRequestInDTO) {
-        User user = userRepository.findByEmail(addressRequestInDTO.getEmail());
-        if (user == null) {
-            throw new UserNotFoundException("User not found with email: " + addressRequestInDTO.getEmail());
-        }
-        List<Address> addresses = addressRepository.findByUserId(user.getUserId());
-        if (addresses == null || addresses.isEmpty()) {
-            throw new AddressNotFoundException("No addresses found for user with email: "
-                    + addressRequestInDTO.getEmail());
-        }
-        return addresses;
-    }
-
-    /**
      * Add new address.
      * @param addressInDTO request parameter
      * @return a string message
@@ -74,5 +54,14 @@ public class AddressServiceImpl implements AddressService {
         } catch (Exception e) {
             throw new RuntimeException("An unexpected error occurred: " + e.getMessage());
         }
+    }
+
+    @Override
+    public Address getAddressById(long userId) {
+        Address address = addressRepository.findByUserId(userId);
+        if (address == null) {
+           throw new AddressNotFoundException("Address Not Found");
+        }
+        return address;
     }
 }

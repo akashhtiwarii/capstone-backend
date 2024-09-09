@@ -37,6 +37,8 @@ public class Order {
     private Status status;
     @Column(name = "order_time")
     private LocalDateTime orderTime;
+    @Column(name = "address_id")
+    private long addressId;
 
     @Override
     public boolean equals(Object o) {
@@ -47,11 +49,15 @@ public class Order {
             return false;
         }
         Order order = (Order) o;
-        return orderId == order.orderId && userId == order.userId && restaurantId == order.restaurantId && Double.compare(price, order.price) == 0 && status == order.status && Objects.equals(orderTime, order.orderTime);
+        return orderId == order.orderId && userId == order.userId
+                && restaurantId == order.restaurantId
+                && Double.compare(price, order.price) == 0
+                && status == order.status && Objects.equals(orderTime, order.orderTime)
+                && Objects.equals(addressId, order.addressId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(orderId, userId, restaurantId, price, status, orderTime);
+        return Objects.hash(orderId, userId, restaurantId, price, status, orderTime, addressId);
     }
 }

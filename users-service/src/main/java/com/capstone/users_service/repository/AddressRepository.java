@@ -10,10 +10,5 @@ import java.util.List;
  */
 @Repository
 public interface AddressRepository extends JpaRepository<Address, Long> {
-    /**
-     * Get list of addresses added by user.
-     * @param userId
-     * @return list of addresses of a user
-     */
-    List<Address> findByUserId(long userId);
+    Address findByUserId(long userId);
 }
