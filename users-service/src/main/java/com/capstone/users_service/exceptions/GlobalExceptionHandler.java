@@ -26,6 +26,14 @@ public class GlobalExceptionHandler {
     private ErrorResponse buildSimpleErrorResponse(Exception ex, HttpStatus status) {
         return new ErrorResponse(status.value(), ex.getMessage());
     }
+
+    @ExceptionHandler(AddressAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorResponse> handleAddressAlreadyExistsException(AddressAlreadyExistsException ex) {
+        ErrorResponse errorResponse = buildSimpleErrorResponse(ex, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
     /**
      * Handle User Not Valid Exception.
      * @param ex User not valid exception

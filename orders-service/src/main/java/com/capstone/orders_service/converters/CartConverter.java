@@ -11,7 +11,6 @@ public class CartConverter {
         cartItem.setRestaurantId(addToCartInDTO.getRestaurantId());
         cartItem.setFoodId(addToCartInDTO.getFoodId());
         cartItem.setQuantity(addToCartInDTO.getQuantity());
-        cartItem.setPrice(addToCartInDTO.getPrice());
         return cartItem;
     }
 

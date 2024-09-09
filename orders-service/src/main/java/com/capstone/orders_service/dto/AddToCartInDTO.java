@@ -25,9 +25,6 @@ public class AddToCartInDTO {
     @NotNull(message = "Valid Quantity Required")
     @Positive(message = "Valid Quantity Required")
     private int quantity;
-    @NotNull(message = "Valid Price Required")
-    @Positive(message = "Valid Price Required")
-    private double price;
 
     @Override
     public boolean equals(Object o) {
@@ -38,11 +35,11 @@ public class AddToCartInDTO {
             return false;
         }
         AddToCartInDTO that = (AddToCartInDTO) o;
-        return userId == that.userId && restaurantId == that.restaurantId && foodId == that.foodId && quantity == that.quantity && Double.compare(price, that.price) == 0;
+        return userId == that.userId && restaurantId == that.restaurantId && foodId == that.foodId && quantity == that.quantity;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, restaurantId, foodId, quantity, price);
+        return Objects.hash(userId, restaurantId, foodId, quantity);
     }
 }

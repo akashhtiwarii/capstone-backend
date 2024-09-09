@@ -4,6 +4,7 @@ import com.capstone.users_service.InDTO.AddressInDTO;
 import com.capstone.users_service.InDTO.AddressRequestInDTO;
 import com.capstone.users_service.entity.Address;
 import com.capstone.users_service.entity.User;
+import com.capstone.users_service.exceptions.AddressAlreadyExistsException;
 import com.capstone.users_service.exceptions.AddressNotFoundException;
 import com.capstone.users_service.exceptions.UserNotFoundException;
 import com.capstone.users_service.repository.AddressRepository;
@@ -41,6 +42,10 @@ public class AddressServiceImpl implements AddressService {
         User user = userRepository.findByEmail(addressInDTO.getEmail());
         if (user == null) {
             throw new UserNotFoundException("User not found with email: " + addressInDTO.getEmail());
+        }
+        Address addressAlreadyExist = addressRepository.findByUserId(user.getUserId());
+        if (addressAlreadyExist != null) {
+            throw new AddressAlreadyExistsException("Address Already Present for this user");
         }
         Address address = new Address();
         address.setUserId(user.getUserId());

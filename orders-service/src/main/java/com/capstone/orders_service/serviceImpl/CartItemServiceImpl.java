@@ -39,6 +39,12 @@ public class CartItemServiceImpl implements CartItemService {
             throw new UserNotFoundException("User Not Found");
         }
         try {
+            FoodItemOutDTO foodItemOutDTO = restaurantFeignClient.getFoodItemById(cartItem.getFoodId()).getBody();
+            cartItem.setPrice(cartItem.getQuantity() * foodItemOutDTO.getPrice());
+        } catch (FeignException.NotFound e) {
+            throw new FoodItemNotFoundException("Food Item Not Found");
+        }
+        try {
             List<FoodItemOutDTO> foodItemOutDTOS = restaurantFeignClient.getFoodItemsByRestaurant(addToCartInDTO.getRestaurantId()).getBody();
             if (foodItemOutDTOS.isEmpty()) {
                 throw new FoodItemNotFoundException("Food Item Not Present");

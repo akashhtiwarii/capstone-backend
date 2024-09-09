@@ -9,7 +9,7 @@ import java.util.Objects;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AddressInDTO {
+public class AddressOutDTO {
     private long addressId;
     private long userId;
     private String address;
@@ -25,12 +25,17 @@ public class AddressInDTO {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        AddressInDTO that = (AddressInDTO) o;
+        AddressOutDTO that = (AddressOutDTO) o;
         return addressId == that.addressId && userId == that.userId && Objects.equals(address, that.address) && Objects.equals(pincode, that.pincode) && Objects.equals(city, that.city) && Objects.equals(state, that.state);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(addressId, userId, address, pincode, city, state);
+    }
+
+    @Override
+    public String toString() {
+        return (userId + ", " + address + ", " + city + ", " + state + ", " + pincode);
     }
 }

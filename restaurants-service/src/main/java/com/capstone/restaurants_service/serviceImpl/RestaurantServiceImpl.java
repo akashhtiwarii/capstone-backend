@@ -135,12 +135,12 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     /**
      * Get Restaurants by owner ID.
-     * @param getOwnerRestaurantsInDTO
+     * @param ownerId
      * @return restaurants list
      */
     @Override
-    public List<Restaurant> findByOwnerId(GetOwnerRestaurantsInDTO getOwnerRestaurantsInDTO) {
-        List<Restaurant> restaurant = restaurantRepository.findByOwnerId(getOwnerRestaurantsInDTO.getOwnerId());
+    public List<Restaurant> findByOwnerId(long ownerId) {
+        List<Restaurant> restaurant = restaurantRepository.findByOwnerId(ownerId);
         if (restaurant.isEmpty()) {
             throw new RestaurantsNotFoundException(Constants.RESTAURANT_DOES_NOT_EXISTS);
         }
