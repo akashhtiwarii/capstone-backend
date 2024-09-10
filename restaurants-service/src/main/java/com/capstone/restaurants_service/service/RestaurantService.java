@@ -29,10 +29,10 @@ public interface RestaurantService {
 
     /**
      * Get Restaurant bu ownerId.
-     * @param getOwnerRestaurantsInDTO
+     * @param ownerId
      * @return List of restaurants
      */
-    List<Restaurant> findByOwnerId(GetOwnerRestaurantsInDTO getOwnerRestaurantsInDTO);
+    List<Restaurant> findByOwnerId(long ownerId);
 
     /**
      * Get Restaurant By Id.

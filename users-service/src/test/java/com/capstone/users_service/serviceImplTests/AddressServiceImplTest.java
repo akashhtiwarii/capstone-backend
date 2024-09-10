@@ -1,7 +1,7 @@
 package com.capstone.users_service.serviceImplTests;
 
-import com.capstone.users_service.InDTO.AddressInDTO;
-import com.capstone.users_service.InDTO.AddressRequestInDTO;
+import com.capstone.users_service.dto.AddressInDTO;
+import com.capstone.users_service.dto.AddressRequestInDTO;
 import com.capstone.users_service.entity.Address;
 import com.capstone.users_service.entity.User;
 import com.capstone.users_service.exceptions.AddressNotFoundException;

@@ -1,6 +1,6 @@
 package com.capstone.users_service.InDTOTest;
 
-import com.capstone.users_service.InDTO.AddressRequestInDTO;
+import com.capstone.users_service.dto.AddressRequestInDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

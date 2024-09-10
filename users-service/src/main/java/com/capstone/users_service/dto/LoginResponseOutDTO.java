@@ -1,4 +1,4 @@
-package com.capstone.users_service.OutDTO;
+package com.capstone.users_service.dto;
 
 import com.capstone.users_service.Enum.Role;
 import lombok.AllArgsConstructor;

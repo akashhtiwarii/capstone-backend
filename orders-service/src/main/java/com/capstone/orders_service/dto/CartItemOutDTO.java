@@ -10,10 +10,9 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CartItemOutDTO {
-    private long cartItemId;
     private long userId;
-    private long restaurantId;
-    private long foodId;
+    private String restaurantName;
+    private String foodName;
     private int quantity;
     private double price;
 
@@ -26,11 +25,11 @@ public class CartItemOutDTO {
             return false;
         }
         CartItemOutDTO that = (CartItemOutDTO) o;
-        return cartItemId == that.cartItemId && userId == that.userId && restaurantId == that.restaurantId && foodId == that.foodId && quantity == that.quantity && Double.compare(price, that.price) == 0;
+        return userId == that.userId && Objects.equals(restaurantName, that.restaurantName) && Objects.equals(foodName, that.foodName) && quantity == that.quantity && Double.compare(price, that.price) == 0;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(cartItemId, userId, restaurantId, foodId, quantity, price);
+        return Objects.hash(userId, restaurantName, foodName, quantity, price);
     }
 }

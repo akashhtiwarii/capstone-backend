@@ -99,15 +99,15 @@ public class RestaurantController {
 
     /**
      * Get owner Restaurants.
-     * @param getOwnerRestaurantsInDTO
+     * @param ownerId
      * @return owner restaurants
      */
-    @PostMapping(Constants.GET_OWNER_RESTAURANTS)
+    @GetMapping(Constants.GET_OWNER_RESTAURANTS)
     public ResponseEntity<List<Restaurant>> getOwnerRestaurants(
-            @Valid @RequestBody GetOwnerRestaurantsInDTO getOwnerRestaurantsInDTO) {
-        logger.info("Fetching Restaurants of ownerID : {}", getOwnerRestaurantsInDTO.getOwnerId());
-        List<Restaurant> restaurants = restaurantService.findByOwnerId(getOwnerRestaurantsInDTO);
-        logger.info("Fetching Restaurant of ownerId : {}", getOwnerRestaurantsInDTO.getOwnerId());
+            @RequestParam @Min(value = 1, message = "Valid Owner ID required") long ownerId) {
+        logger.info("Fetching Restaurants of ownerID : {}", ownerId);
+        List<Restaurant> restaurants = restaurantService.findByOwnerId(ownerId);
+        logger.info("Fetching Restaurant of ownerId : {}", ownerId);
         return ResponseEntity.status(HttpStatus.OK).body(restaurants);
     }
 
@@ -269,5 +269,13 @@ public class RestaurantController {
         List<FoodItem> foodItems = foodItemService.getFoodItemsByCategory(categoryId);
         logger.info("Fetched Food items of category: {}", categoryId);
         return ResponseEntity.status(HttpStatus.OK).body(foodItems);
+    }
+
+    @GetMapping("food/id")
+    public ResponseEntity<FoodItem> getFoodItemById(@RequestParam long foodId) {
+        logger.info("Fetching Food item of ID: {}", foodId);
+        FoodItem foodItem = foodItemService.getByFoodId(foodId);
+        logger.info("Fetched Food item of ID: {}", foodId);
+        return ResponseEntity.status(HttpStatus.OK).body(foodItem);
     }
 }

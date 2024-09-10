@@ -1,10 +1,7 @@
 package com.capstone.orders_service.serviceImpl;
 
 import com.capstone.orders_service.converters.CartConverter;
-import com.capstone.orders_service.dto.AddToCartInDTO;
-import com.capstone.orders_service.dto.CartItemOutDTO;
-import com.capstone.orders_service.dto.FoodItemOutDTO;
-import com.capstone.orders_service.dto.UserOutDTO;
+import com.capstone.orders_service.dto.*;
 import com.capstone.orders_service.entity.CartItem;
 import com.capstone.orders_service.exceptions.*;
 import com.capstone.orders_service.feignClient.RestaurantFeignClient;
@@ -37,6 +34,12 @@ public class CartItemServiceImpl implements CartItemService {
             UserOutDTO user = usersFeignClient.getUserById(addToCartInDTO.getUserId()).getBody();
         } catch (FeignException.NotFound e) {
             throw new UserNotFoundException("User Not Found");
+        }
+        try {
+            FoodItemOutDTO foodItemOutDTO = restaurantFeignClient.getFoodItemById(cartItem.getFoodId()).getBody();
+            cartItem.setPrice(cartItem.getQuantity() * foodItemOutDTO.getPrice());
+        } catch (FeignException.NotFound e) {
+            throw new FoodItemNotFoundException("Food Item Not Found");
         }
         try {
             List<FoodItemOutDTO> foodItemOutDTOS = restaurantFeignClient.getFoodItemsByRestaurant(addToCartInDTO.getRestaurantId()).getBody();
@@ -84,7 +87,19 @@ public class CartItemServiceImpl implements CartItemService {
         }
         List<CartItemOutDTO> cartItemOutDTOS = new ArrayList<>();
         for (CartItem cartItem: cartItems) {
-            cartItemOutDTOS.add(CartConverter.cartEntityToCartItemOutDTO(cartItem));
+            try {
+                FoodItemOutDTO foodItemOutDTO = restaurantFeignClient.getFoodItemById(cartItem.getFoodId()).getBody();
+                RestaurantOutDTO restaurant = restaurantFeignClient.getRestaurantById(cartItem.getRestaurantId()).getBody();
+                CartItemOutDTO cartItemOutDTO = new CartItemOutDTO();
+                cartItemOutDTO.setUserId(cartItem.getUserId());
+                cartItemOutDTO.setFoodName(foodItemOutDTO.getName());
+                cartItemOutDTO.setRestaurantName(restaurant.getName());
+                cartItemOutDTO.setQuantity(cartItem.getQuantity());
+                cartItemOutDTO.setPrice(cartItem.getPrice());
+                cartItemOutDTOS.add(cartItemOutDTO);
+            } catch (FeignException.NotFound e) {
+                throw new ResourceNotFoundException("Food Item Not Found");
+            }
         }
         return cartItemOutDTOS;
     }

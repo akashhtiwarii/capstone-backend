@@ -1,6 +1,6 @@
 package com.capstone.users_service.InDTOTest;
 
-import com.capstone.users_service.InDTO.LoginRequestInDTO;
+import com.capstone.users_service.dto.LoginRequestInDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

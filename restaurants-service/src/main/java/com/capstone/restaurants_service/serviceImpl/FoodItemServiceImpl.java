@@ -224,6 +224,14 @@ public class FoodItemServiceImpl implements FoodItemService {
         } catch (Exception ex) {
             throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + ex.getMessage());
         }
+    }
 
+    @Override
+    public FoodItem getByFoodId(long foodId) {
+        FoodItem foodItem = foodItemRepository.findById(foodId);
+        if (foodItem == null) {
+            throw new FoodItemNotFoundException("Food Item Not Found");
+        }
+        return foodItem;
     }
 }
