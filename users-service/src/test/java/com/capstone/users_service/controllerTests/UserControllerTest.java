@@ -1,10 +1,10 @@
 package com.capstone.users_service.controllerTests;
 
-import com.capstone.users_service.InDTO.AddressInDTO;
-import com.capstone.users_service.InDTO.AddressRequestInDTO;
-import com.capstone.users_service.InDTO.LoginRequestInDTO;
-import com.capstone.users_service.InDTO.UserInDTO;
-import com.capstone.users_service.OutDTO.LoginResponseOutDTO;
+import com.capstone.users_service.dto.AddressInDTO;
+import com.capstone.users_service.dto.AddressRequestInDTO;
+import com.capstone.users_service.dto.LoginRequestInDTO;
+import com.capstone.users_service.dto.UserInDTO;
+import com.capstone.users_service.dto.LoginResponseOutDTO;
 import com.capstone.users_service.controller.UserController;
 import com.capstone.users_service.entity.Address;
 import com.capstone.users_service.service.AddressService;

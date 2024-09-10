@@ -1,11 +1,6 @@
 package com.capstone.users_service.controller;
 
-import com.capstone.users_service.InDTO.AddressInDTO;
-import com.capstone.users_service.InDTO.AddressRequestInDTO;
-import com.capstone.users_service.InDTO.GetUserInfoInDTO;
-import com.capstone.users_service.InDTO.LoginRequestInDTO;
-import com.capstone.users_service.InDTO.UserInDTO;
-import com.capstone.users_service.OutDTO.LoginResponseOutDTO;
+import com.capstone.users_service.dto.*;
 import com.capstone.users_service.entity.Address;
 import com.capstone.users_service.entity.User;
 import com.capstone.users_service.entity.Wallet;
@@ -20,9 +15,8 @@ import org.springframework.http.ResponseEntity;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
-
-import java.util.List;
 
 import com.capstone.users_service.utils.Constants;
 import org.springframework.web.bind.annotation.*;
@@ -99,6 +93,25 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
+    @GetMapping("/profile")
+    public ResponseEntity<ProfileOutDTO> getUserProfile(@RequestParam long userId) {
+        logger.info("Fetching user info..{}", userId);
+        ProfileOutDTO profileOutDTO = userService.getProfileInfo(userId);
+        logger.info("Fetched user info..{}", userId);
+        return ResponseEntity.status(HttpStatus.OK).body(profileOutDTO);
+    }
+
+    @PutMapping("/profile/update")
+    public ResponseEntity<RequestSuccessOutDTO> updateUserProfile(
+            @RequestParam @Min(value = 1, message = "Valid User ID required") long userId,
+            @Valid @RequestBody UpdateProfileInDTO updateProfileInDTO
+    ) {
+        logger.info("Updating user info..{}", userId);
+        String message = userService.updateUserProfile(userId, updateProfileInDTO);
+        logger.info("Updated user info..{}", userId);
+        return ResponseEntity.status(HttpStatus.OK).body(new RequestSuccessOutDTO(message));
+    }
+
     /**
      * Get by ID for feign client.
      * @param userId
@@ -146,6 +159,17 @@ public class UserController {
     ) {
         logger.info("Updating Wallet for UserID : {}", userId);
         String message = walletService.updateWallet(userId, amount);
+        logger.info("Updated Wallet for UserID : {}", userId);
+        return ResponseEntity.status(HttpStatus.OK).body(message);
+    }
+
+    @PutMapping("/wallet/recharge")
+    public ResponseEntity<String> rechargeWallet(
+            @RequestParam @Min(value = 1, message = "Valid User ID required") long userId,
+            @RequestParam @Positive(message = "Valid Amount required") double amount
+    ) {
+        logger.info("Updating Wallet for UserID : {}", userId);
+        String message = walletService.rechargeWallet(userId, amount);
         logger.info("Updated Wallet for UserID : {}", userId);
         return ResponseEntity.status(HttpStatus.OK).body(message);
     }

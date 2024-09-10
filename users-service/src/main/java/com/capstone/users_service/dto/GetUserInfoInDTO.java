@@ -1,4 +1,4 @@
-package com.capstone.users_service.InDTO;
+package com.capstone.users_service.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

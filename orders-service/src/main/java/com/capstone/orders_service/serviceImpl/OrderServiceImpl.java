@@ -210,6 +210,39 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public List<UserOrderDetailsOutDTO> getUserOrders(long userId) {
-        return new ArrayList<>();
+        try {
+            UserOutDTO user = usersFeignClient.getUserById(userId).getBody();
+            List<Order> orders = orderRepository.findByUserId(user.getUserId());
+            if (orders.isEmpty()) {
+                throw new OrderNotFoundException("You Do not have any orders");
+            }
+            List<UserOrderDetailsOutDTO> userOrderDetailsOutDTOS = new ArrayList<>();
+            for (Order order : orders) {
+                try {
+                    String restaurantName = restaurantFeignClient.getRestaurantById(order.getRestaurantId()).getBody().getName();
+                    List<OrderDetail> orderDetails = orderDetailRepository.findByOrderId(order.getOrderId());
+                    UserOrderDetailsOutDTO userOrderDetailsOutDTO = new UserOrderDetailsOutDTO();
+                    userOrderDetailsOutDTO.setRestaurantName(restaurantName);
+                    userOrderDetailsOutDTO.setStatus(order.getStatus());
+                    List<UserFoodItemOutDTO> foodItemOutDTOS = new ArrayList<>();
+                    for (OrderDetail orderDetail : orderDetails) {
+                        FoodItemOutDTO foodItem = restaurantFeignClient.getFoodItemById(orderDetail.getFoodId()).getBody();
+                        UserFoodItemOutDTO userFoodItemOutDTO = new UserFoodItemOutDTO();
+                        userFoodItemOutDTO.setFoodId(foodItem.getFoodId());
+                        userFoodItemOutDTO.setName(foodItem.getName());
+                        userFoodItemOutDTO.setQuantity(orderDetail.getQuantity());
+                        userFoodItemOutDTO.setPrice(foodItem.getPrice() * orderDetail.getQuantity());
+                        foodItemOutDTOS.add(userFoodItemOutDTO);
+                    }
+                    userOrderDetailsOutDTO.setFoodItemOutDTOS(foodItemOutDTOS);
+                    userOrderDetailsOutDTOS.add(userOrderDetailsOutDTO);
+                } catch (Exception e) {
+                    throw new RuntimeException("An unexpected error occurred. Try Again");
+                }
+            }
+            return userOrderDetailsOutDTOS;
+        } catch (FeignException.NotFound e) {
+            throw new ResourceNotFoundException("Resource Not Found");
+        }
     }
 }

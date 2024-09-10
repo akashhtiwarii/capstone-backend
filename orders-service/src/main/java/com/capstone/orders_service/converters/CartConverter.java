@@ -13,15 +13,4 @@ public class CartConverter {
         cartItem.setQuantity(addToCartInDTO.getQuantity());
         return cartItem;
     }
-
-    public static CartItemOutDTO cartEntityToCartItemOutDTO(CartItem cartItem) {
-        CartItemOutDTO cartItemOutDTO = new CartItemOutDTO();
-        cartItemOutDTO.setCartItemId(cartItem.getCartItemId());
-        cartItemOutDTO.setUserId(cartItem.getUserId());
-        cartItemOutDTO.setRestaurantId(cartItem.getRestaurantId());
-        cartItemOutDTO.setFoodId(cartItem.getFoodId());
-        cartItemOutDTO.setQuantity(cartItem.getQuantity());
-        cartItemOutDTO.setPrice(cartItem.getPrice());
-        return cartItemOutDTO;
-    }
 }

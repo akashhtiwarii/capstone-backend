@@ -1,7 +1,6 @@
 package com.capstone.users_service.serviceImpl;
 
-import com.capstone.users_service.InDTO.AddressInDTO;
-import com.capstone.users_service.InDTO.AddressRequestInDTO;
+import com.capstone.users_service.dto.AddressInDTO;
 import com.capstone.users_service.entity.Address;
 import com.capstone.users_service.entity.User;
 import com.capstone.users_service.exceptions.AddressAlreadyExistsException;
@@ -12,8 +11,6 @@ import com.capstone.users_service.repository.UserRepository;
 import com.capstone.users_service.service.AddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * AddressServiceImpl for implementing methods of AddressService.

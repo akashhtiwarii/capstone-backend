@@ -1,7 +1,7 @@
 package com.capstone.users_service.OutDTOTest;
 
 import com.capstone.users_service.Enum.Role;
-import com.capstone.users_service.OutDTO.LoginResponseOutDTO;
+import com.capstone.users_service.dto.LoginResponseOutDTO;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

@@ -38,4 +38,16 @@ public class WalletServiceImpl implements WalletService {
         }
         return "Wallet Updated Successfully";
     }
+
+    @Override
+    public String rechargeWallet(long userId, double amount) {
+        Wallet wallet = walletRepository.findByUserId(userId);
+        if (wallet == null) {
+            throw new UserNotFoundException("No User Present");
+        }
+        double walletBalance = wallet.getAmount();
+        wallet.setAmount(walletBalance + amount);
+        walletRepository.save(wallet);
+        return "Wallet Recharged";
+    }
 }

@@ -1,10 +1,7 @@
 package com.capstone.orders_service.controller;
 
 import com.capstone.orders_service.Enum.Status;
-import com.capstone.orders_service.dto.AddToCartInDTO;
-import com.capstone.orders_service.dto.CartItemOutDTO;
-import com.capstone.orders_service.dto.OrderDetailsOutDTO;
-import com.capstone.orders_service.dto.OrderOutDTO;
+import com.capstone.orders_service.dto.*;
 import com.capstone.orders_service.service.CartItemService;
 import com.capstone.orders_service.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import java.util.List;
-import java.util.Stack;
 
 @RestController
 @RequestMapping("/order")
@@ -65,5 +61,13 @@ public class OrderController {
             @RequestParam @Min(value = 1, message = "Valid Restaurant ID required") long restaurantId) {
         List<OrderDetailsOutDTO> orderDetailsOutDTOS = orderService.getOrderDetails(restaurantId);
         return ResponseEntity.status(HttpStatus.OK).body(orderDetailsOutDTOS);
+    }
+
+    @GetMapping("/user/orders")
+    public ResponseEntity<List<UserOrderDetailsOutDTO>> getUserOrders(
+            @RequestParam @Min(value = 1, message = "Valid UserID required") long userId
+    ) {
+        List<UserOrderDetailsOutDTO> userOrderDetailsOutDTOS = orderService.getUserOrders(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(userOrderDetailsOutDTOS);
     }
 }

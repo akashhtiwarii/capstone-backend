@@ -1,9 +1,6 @@
 package com.capstone.users_service.service;
 
-import com.capstone.users_service.InDTO.GetUserInfoInDTO;
-import com.capstone.users_service.InDTO.LoginRequestInDTO;
-import com.capstone.users_service.InDTO.UserInDTO;
-import com.capstone.users_service.OutDTO.LoginResponseOutDTO;
+import com.capstone.users_service.dto.*;
 import com.capstone.users_service.entity.User;
 
 /**
@@ -16,6 +13,8 @@ public interface UserService {
      * @return user
      */
     User getById(GetUserInfoInDTO getUserInfoInDTO);
+
+    ProfileOutDTO getProfileInfo(long userId);
 
     /**
      * Get user for feign client.
@@ -36,4 +35,6 @@ public interface UserService {
      * @return the user details if exists
      */
     LoginResponseOutDTO loginUser(LoginRequestInDTO loginRequestInDTO);
+
+    String updateUserProfile(long userId, UpdateProfileInDTO updateProfileInDTO);
 }

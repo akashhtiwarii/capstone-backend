@@ -8,4 +8,5 @@ import com.capstone.users_service.entity.Wallet;
 public interface WalletService {
     Wallet findByUserId(long userId);
     String updateWallet(long userId, double amount);
+    String rechargeWallet(long userId, double amount);
 }
