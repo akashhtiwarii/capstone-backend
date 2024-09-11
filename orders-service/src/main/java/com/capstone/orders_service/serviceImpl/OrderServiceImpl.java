@@ -79,16 +79,16 @@ public class OrderServiceImpl implements OrderService {
         try {
             user = usersFeignClient.getUserById(userId).getBody();
         } catch (FeignException.NotFound e) {
-            throw new UserNotFoundException("User Not Found");
+            throw new ResourceNotFoundException("User Not Found");
         }
         try {
             addressOutDTO = usersFeignClient.getAddressById(userId).getBody();
         } catch (FeignException.NotFound e) {
-            throw new AddressNotFoundException("No Address Added");
+            throw new ResourceNotFoundException("No Address Added");
         }
         List<CartItem> cartItems = cartItemRepository.findByUserId(userId);
         if (cartItems.isEmpty()) {
-            throw new CartItemDoesNotExistsException("No Items in your Cart");
+            throw new ResourceNotFoundException("No Items in your Cart");
         }
         double price = 0.0;
         for (CartItem cartItem : cartItems) {
@@ -102,7 +102,7 @@ public class OrderServiceImpl implements OrderService {
             double updatedAmount = wallet.getAmount() - price;
             String message = usersFeignClient.updateUserWallet(userId, updatedAmount).getBody();
         } catch (FeignException.NotFound e) {
-            throw new UserNotFoundException("User not found");
+            throw new ResourceNotFoundException("User not found");
         }
         Order order = new Order();
         order.setUserId(userId);
@@ -137,7 +137,7 @@ public class OrderServiceImpl implements OrderService {
     public String deleteOrder(long orderId) {
         Order order = orderRepository.findById(orderId);
         if (order == null) {
-            throw new OrderNotFoundException("Specified order not present");
+            throw new ResourceNotFoundException("Specified order not present");
         }
         List<OrderDetail> orderDetails = orderDetailRepository.findByOrderId(orderId);
         for (OrderDetail orderDetail : orderDetails) {
@@ -156,7 +156,7 @@ public class OrderServiceImpl implements OrderService {
     public String updateOrder(long userId, long orderId, Status status) {
         Order order = orderRepository.findById(orderId);
         if (order == null) {
-            throw new OrderNotFoundException("Order Not Found");
+            throw new ResourceNotFoundException("Order Not Found");
         }
         try {
             RestaurantOutDTO restaurant = restaurantFeignClient.getRestaurantById(order.getRestaurantId()).getBody();
@@ -178,7 +178,7 @@ public class OrderServiceImpl implements OrderService {
         List<Order> orders = orderRepository.findByRestaurantId(restaurantId);
         String address = "";
         if (orders.isEmpty()) {
-            throw new OrderNotFoundException("No Orders Present");
+            throw new ResourceNotFoundException("No Orders Present");
         }
         List<RestaurantOrderDetailsOutDTO> restaurantOrderDetailsOutDTOS = new ArrayList<>();
         for (Order order : orders) {
@@ -188,7 +188,7 @@ public class OrderServiceImpl implements OrderService {
                 UserOutDTO user = usersFeignClient.getUserById(order.getUserId()).getBody();
                 restaurantOrderDetailsOutDTO.setUserName(user.getName());
             } catch (FeignException.NotFound e) {
-                throw new UserNotFoundException("User Not Found");
+                throw new ResourceNotFoundException("User Not Found");
             }
             List<OrderDetail> orderDetails = orderDetailRepository.findByOrderId(order.getOrderId());
             List<OrderDetailOutDTO> orderDetailOutDTOS = new ArrayList<>();
@@ -200,14 +200,14 @@ public class OrderServiceImpl implements OrderService {
                     orderDetailOutDTO.setQuantity(orderDetail.getQuantity());
                     orderDetailOutDTO.setPrice(orderDetail.getPrice());
                 } catch (FeignException.NotFound e) {
-                    throw new FoodItemNotFoundException("No Food Item Present");
+                    throw new ResourceNotFoundException("No Food Item Present");
                 }
                 orderDetailOutDTOS.add(orderDetailOutDTO);
             }
             try {
                 address = usersFeignClient.getAddressById(order.getUserId()).getBody().toString();
             } catch (FeignException.NotFound e) {
-                throw new AddressNotFoundException("No Address Present for an Order");
+                throw new ResourceNotFoundException("No Address Present for an Order");
             }
             restaurantOrderDetailsOutDTO.setUserId(order.getUserId());
             restaurantOrderDetailsOutDTO.setOrderDetailOutDTOS(orderDetailOutDTOS);
@@ -228,7 +228,7 @@ public class OrderServiceImpl implements OrderService {
             UserOutDTO user = usersFeignClient.getUserById(userId).getBody();
             List<Order> orders = orderRepository.findByUserId(user.getUserId());
             if (orders.isEmpty()) {
-                throw new OrderNotFoundException("You Do not have any orders");
+                throw new ResourceNotFoundException("You Do not have any orders");
             }
             List<UserOrderDetailsOutDTO> userOrderDetailsOutDTOS = new ArrayList<>();
             for (Order order : orders) {
@@ -269,7 +269,7 @@ public class OrderServiceImpl implements OrderService {
     public String cancelOrder(long orderId) {
         Order order = orderRepository.findById(orderId);
         if (order == null) {
-            throw new OrderNotFoundException("Order Not Found");
+            throw new ResourceNotFoundException("Order Not Found");
         }
         LocalDateTime currentTime = LocalDateTime.now();
         Duration timeDifference = Duration.between(order.getOrderTime(), currentTime);

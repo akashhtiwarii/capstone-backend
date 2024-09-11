@@ -6,7 +6,6 @@ import com.capstone.users_service.dto.UserInDTO;
 import com.capstone.users_service.dto.LoginResponseOutDTO;
 import com.capstone.users_service.entity.User;
 import com.capstone.users_service.entity.Wallet;
-import com.capstone.users_service.exceptions.EmailAlreadyExistsException;
 import com.capstone.users_service.repository.UserRepository;
 import com.capstone.users_service.repository.WalletRepository;
 import com.capstone.users_service.serviceImpl.UserServiceImpl;

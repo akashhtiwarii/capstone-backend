@@ -1,7 +1,7 @@
 package com.capstone.users_service.serviceImpl;
 
 import com.capstone.users_service.entity.Wallet;
-import com.capstone.users_service.exceptions.UserNotFoundException;
+import com.capstone.users_service.exceptions.ResourceNotFoundException;
 import com.capstone.users_service.repository.WalletRepository;
 import com.capstone.users_service.service.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ public class WalletServiceImpl implements WalletService {
     public Wallet findByUserId(long userId) {
         Wallet wallet = walletRepository.findByUserId(userId);
         if (wallet == null) {
-            throw new UserNotFoundException("User not present");
+            throw new ResourceNotFoundException("User not present");
         }
         return wallet;
     }
@@ -28,7 +28,7 @@ public class WalletServiceImpl implements WalletService {
     public String updateWallet(long userId, double amount) {
         Wallet wallet = walletRepository.findByUserId(userId);
         if (wallet == null) {
-            throw new UserNotFoundException("User not present");
+            throw new ResourceNotFoundException("User not present");
         }
         wallet.setAmount(amount);
         try {
@@ -43,7 +43,7 @@ public class WalletServiceImpl implements WalletService {
     public String rechargeWallet(long userId, double amount) {
         Wallet wallet = walletRepository.findByUserId(userId);
         if (wallet == null) {
-            throw new UserNotFoundException("No User Present");
+            throw new ResourceNotFoundException("No User Present");
         }
         double walletBalance = wallet.getAmount();
         wallet.setAmount(walletBalance + amount);

@@ -33,25 +33,25 @@ public class CartItemServiceImpl implements CartItemService {
         try {
             UserOutDTO user = usersFeignClient.getUserById(addToCartInDTO.getUserId()).getBody();
         } catch (FeignException.NotFound e) {
-            throw new UserNotFoundException("User Not Found");
+            throw new ResourceNotFoundException("User Not Found");
         }
         try {
             FoodItemOutDTO foodItemOutDTO = restaurantFeignClient.getFoodItemById(cartItem.getFoodId()).getBody();
             cartItem.setPrice(cartItem.getQuantity() * foodItemOutDTO.getPrice());
         } catch (FeignException.NotFound e) {
-            throw new FoodItemNotFoundException("Food Item Not Found");
+            throw new ResourceNotFoundException("Food Item Not Found");
         }
         try {
             List<FoodItemOutDTO> foodItemOutDTOS = restaurantFeignClient.getFoodItemsByRestaurant(addToCartInDTO.getRestaurantId()).getBody();
             if (foodItemOutDTOS.isEmpty()) {
-                throw new FoodItemNotFoundException("Food Item Not Present");
+                throw new ResourceNotFoundException("Food Item Not Present");
             }
             List<Long> foodIds = foodItemOutDTOS.stream().map(FoodItemOutDTO::getFoodId).collect(Collectors.toList());
             if (!foodIds.contains(addToCartInDTO.getFoodId())) {
-                throw new FoodItemNotFoundException("Food Item Not Present");
+                throw new ResourceNotFoundException("Food Item Not Present");
             }
         } catch (FeignException.NotFound e) {
-            throw new FoodItemNotFoundException("Food Item Not Present");
+            throw new ResourceNotFoundException("Food Item Not Present");
         }
         List<CartItem> cartItemList = cartItemRepository.findByUserId(addToCartInDTO.getUserId());
         if (!cartItemList.isEmpty()) {
@@ -73,7 +73,7 @@ public class CartItemServiceImpl implements CartItemService {
     public String deleteCartItem(long cartItemId) {
         CartItem cartItem = cartItemRepository.findById(cartItemId);
         if (cartItem == null) {
-            throw new CartItemDoesNotExistsException("Item Not Found");
+            throw new ResourceNotFoundException("Item Not Found");
         }
         cartItemRepository.deleteById(cartItemId);
         return "Cart Item Deleted";
@@ -83,7 +83,7 @@ public class CartItemServiceImpl implements CartItemService {
     public List<CartItemOutDTO> getCartItems(long userId) {
         List<CartItem> cartItems = cartItemRepository.findByUserId(userId);
         if (cartItems.isEmpty()) {
-            throw new CartItemDoesNotExistsException("No Items in Cart");
+            throw new ResourceNotFoundException("No Items in Cart");
         }
         List<CartItemOutDTO> cartItemOutDTOS = new ArrayList<>();
         for (CartItem cartItem: cartItems) {
@@ -113,7 +113,7 @@ public class CartItemServiceImpl implements CartItemService {
     public String updateCartItem(long cartItemId, int index) {
        CartItem cartItem = cartItemRepository.findById(cartItemId);
        if (cartItem == null) {
-           throw new CartItemDoesNotExistsException("Cart Item is not present");
+           throw new ResourceNotFoundException("Cart Item is not present");
        }
        cartItem.setQuantity(cartItem.getQuantity() + index);
        cartItemRepository.save(cartItem);

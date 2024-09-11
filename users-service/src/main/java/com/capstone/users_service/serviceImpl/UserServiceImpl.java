@@ -5,10 +5,9 @@ import com.capstone.users_service.dto.*;
 import com.capstone.users_service.entity.Address;
 import com.capstone.users_service.entity.User;
 import com.capstone.users_service.entity.Wallet;
-import com.capstone.users_service.exceptions.AddressNotFoundException;
-import com.capstone.users_service.exceptions.EmailAlreadyExistsException;
-import com.capstone.users_service.exceptions.UserNotFoundException;
-import com.capstone.users_service.exceptions.UserNotValidException;
+import com.capstone.users_service.exceptions.ResourceAlreadyExistsException;
+import com.capstone.users_service.exceptions.ResourceNotFoundException;
+import com.capstone.users_service.exceptions.ResourceNotValidException;
 import com.capstone.users_service.repository.AddressRepository;
 import com.capstone.users_service.repository.UserRepository;
 import com.capstone.users_service.repository.WalletRepository;
@@ -50,10 +49,10 @@ public class UserServiceImpl implements UserService {
             User user = userRepository.findById(getUserInfoInDTO.getUserId());
             User loggedInUser = userRepository.findById(getUserInfoInDTO.getLoggedInUserId());
             if (user == null || loggedInUser == null) {
-                throw new UserNotFoundException("User not Found");
+                throw new ResourceNotFoundException("User not Found");
             }
             if (user != loggedInUser) {
-                throw new UserNotValidException("You Cannot view this user");
+                throw new ResourceNotValidException("You Cannot view this user");
             }
             return user;
         } catch (Exception e) {
@@ -66,7 +65,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId);
         Wallet wallet = walletRepository.findByUserId(userId);
         if (user == null) {
-            throw new UserNotFoundException("User Not Found");
+            throw new ResourceNotFoundException("User Not Found");
         }
         Address address = addressRepository.findByUserId(userId);
         ProfileOutDTO profileOutDTO = new ProfileOutDTO();
@@ -95,7 +94,7 @@ public class UserServiceImpl implements UserService {
     public User getByIdentity(long userId) {
         User user = userRepository.findById(userId);
         if (user == null) {
-            throw new UserNotFoundException("User not found");
+            throw new ResourceNotFoundException("User not found");
         }
         return user;
     }
@@ -110,7 +109,7 @@ public class UserServiceImpl implements UserService {
     public String registerUser(UserInDTO userInDTO) {
         User user = UserConverters.registerUserInDTOToUserEntity(userInDTO);
             if (userRepository.existsByEmail(user.getEmail())) {
-                throw new EmailAlreadyExistsException(Constants.EMAIL_ALREADY_IN_USE);
+                throw new ResourceAlreadyExistsException(Constants.EMAIL_ALREADY_IN_USE);
             }
             try {
                 userRepository.save(user);
@@ -151,13 +150,13 @@ public class UserServiceImpl implements UserService {
     public String updateUserProfile(long userId, UpdateProfileInDTO updateProfileInDTO) {
         User user = userRepository.findById(userId);
         if (user == null) {
-            throw new UserNotFoundException("User Not Found");
+            throw new ResourceNotFoundException("User Not Found");
         }
         Address address = addressRepository.findByUserId(userId);
         if (user.getEmail() != updateProfileInDTO.getEmail()) {
             User emailExists = userRepository.findByEmail(updateProfileInDTO.getEmail());
             if (emailExists != null) {
-                throw new EmailAlreadyExistsException("Email Already Exists");
+                throw new ResourceAlreadyExistsException("Email Already Exists");
             }
         }
         user.setEmail(updateProfileInDTO.getEmail());

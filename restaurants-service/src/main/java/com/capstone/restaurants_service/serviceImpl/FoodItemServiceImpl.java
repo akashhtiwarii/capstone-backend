@@ -1,6 +1,9 @@
 package com.capstone.restaurants_service.serviceImpl;
 
 import com.capstone.restaurants_service.ENUM.Role;
+import com.capstone.restaurants_service.exceptions.ResourceAlreadyExistsException;
+import com.capstone.restaurants_service.exceptions.ResourceNotFoundException;
+import com.capstone.restaurants_service.exceptions.ResourceNotValidException;
 import com.capstone.restaurants_service.utils.Constants;
 import com.capstone.restaurants_service.dto.FoodItemInDTO;
 import com.capstone.restaurants_service.dto.UpdateFoodItemInDTO;
@@ -9,13 +12,6 @@ import com.capstone.restaurants_service.converters.FoodItemConverters;
 import com.capstone.restaurants_service.entity.Category;
 import com.capstone.restaurants_service.entity.FoodItem;
 import com.capstone.restaurants_service.entity.Restaurant;
-import com.capstone.restaurants_service.exceptions.CategoryNotFoundException;
-import com.capstone.restaurants_service.exceptions.FoodAlreadyExistsException;
-import com.capstone.restaurants_service.exceptions.FoodItemNotFoundException;
-import com.capstone.restaurants_service.exceptions.InvalidCategoryException;
-import com.capstone.restaurants_service.exceptions.RestaurantsNotFoundException;
-import com.capstone.restaurants_service.exceptions.UserNotFoundException;
-import com.capstone.restaurants_service.exceptions.UserNotValidException;
 import com.capstone.restaurants_service.feignClient.UserClient;
 import com.capstone.restaurants_service.repository.CategoryRepository;
 import com.capstone.restaurants_service.repository.FoodItemRepository;
@@ -65,27 +61,27 @@ public class FoodItemServiceImpl implements FoodItemService {
     public String addFoodItem(FoodItemInDTO foodItemInDTO, MultipartFile image) {
         UserOutDTO user = userClient.getUserById(foodItemInDTO.getLoggedInOwnerId()).getBody();
         if (user == null) {
-            throw new UserNotFoundException(Constants.USER_NOT_FOUND);
+            throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
         }
         if (user.getRole() != Role.OWNER) {
-            throw new UserNotValidException(Constants.YOU_CANNOT_ADD_FOOD);
+            throw new ResourceNotValidException(Constants.YOU_CANNOT_ADD_FOOD);
         }
         String foodItemName = StringUtils.capitalizeFirstLetter(foodItemInDTO.getName());
         Category category = categoryRepository.findById(foodItemInDTO.getCategoryId());
         if (category == null) {
-            throw new CategoryNotFoundException(Constants.CATEGORY_NOT_FOUND);
+            throw new ResourceNotFoundException(Constants.CATEGORY_NOT_FOUND);
         }
         Restaurant restaurant = restaurantRepository.findById(category.getRestaurantId());
         if (restaurant == null) {
-            throw new RestaurantsNotFoundException(Constants.RESTAURANT_NOT_FOUND);
+            throw new ResourceNotFoundException(Constants.RESTAURANT_NOT_FOUND);
         }
         if (restaurant.getOwnerId() != user.getUserId()) {
-            throw new UserNotValidException(Constants.YOU_CANNOT_ADD_FOOD);
+            throw new ResourceNotValidException(Constants.YOU_CANNOT_ADD_FOOD);
         }
         FoodItem foodItemAlreadyExists = foodItemRepository.findByCategoryIdAndName(
                 foodItemInDTO.getCategoryId(), foodItemName);
         if (foodItemAlreadyExists != null) {
-           throw new FoodAlreadyExistsException(Constants.FOOD_ALREADY_PRESENT);
+           throw new ResourceAlreadyExistsException(Constants.FOOD_ALREADY_PRESENT);
         }
         FoodItem foodItem = FoodItemConverters.foodItemInDTOToFoodItemEntity(foodItemInDTO);
         try {
@@ -111,19 +107,19 @@ public class FoodItemServiceImpl implements FoodItemService {
     public String deleteFoodItem(long userId, long foodId) {
         UserOutDTO user = userClient.getUserById(userId).getBody();
         if (user == null) {
-            throw new UserNotFoundException(Constants.USER_NOT_FOUND);
+            throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
         }
         if (user.getRole() != Role.OWNER) {
-            throw new UserNotValidException(Constants.YOU_CANNOT_DELETE_FOOD);
+            throw new ResourceNotValidException(Constants.YOU_CANNOT_DELETE_FOOD);
         }
         FoodItem foodItem = foodItemRepository.findById(foodId);
         if (foodItem == null) {
-            throw new FoodItemNotFoundException(Constants.FOOD_NOT_FOUND);
+            throw new ResourceNotFoundException(Constants.FOOD_NOT_FOUND);
         }
         Category category = categoryRepository.findById(foodItem.getCategoryId());
         Restaurant restaurant = restaurantRepository.findById(category.getRestaurantId());
         if (restaurant.getOwnerId() != user.getUserId()) {
-            throw new UserNotValidException(Constants.YOU_CANNOT_DELETE_FOOD);
+            throw new ResourceNotValidException(Constants.YOU_CANNOT_DELETE_FOOD);
         }
         try {
             foodItemRepository.deleteById(foodId);
@@ -143,24 +139,24 @@ public class FoodItemServiceImpl implements FoodItemService {
     public String updateFoodItem(long foodItemId, UpdateFoodItemInDTO updateFoodItemInDTO, MultipartFile image) {
         UserOutDTO user = userClient.getUserById(updateFoodItemInDTO.getLoggedInOwnerId()).getBody();
         if (user == null) {
-            throw new UserNotFoundException(Constants.USER_NOT_FOUND);
+            throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
         }
         if (user.getRole() != Role.OWNER) {
-            throw new UserNotValidException(Constants.YOU_CANNOT_UPDATE_FOOD);
+            throw new ResourceNotValidException(Constants.YOU_CANNOT_UPDATE_FOOD);
         }
         FoodItem foodItem = foodItemRepository.findById(foodItemId);
         if (foodItem == null) {
-            throw new FoodItemNotFoundException(Constants.FOOD_NOT_FOUND);
+            throw new ResourceNotFoundException(Constants.FOOD_NOT_FOUND);
         }
         Category category = categoryRepository.findById(foodItem.getCategoryId());
         Restaurant restaurant = restaurantRepository.findById(category.getRestaurantId());
         if (restaurant.getOwnerId() != user.getUserId()) {
-            throw new UserNotValidException(Constants.YOU_CANNOT_UPDATE_FOOD);
+            throw new ResourceNotValidException(Constants.YOU_CANNOT_UPDATE_FOOD);
         }
         Category foodItemCategory = categoryRepository.findById(updateFoodItemInDTO.getCategoryId());
         Restaurant foodItemRestaurant = restaurantRepository.findById(foodItemCategory.getRestaurantId());
         if (foodItemRestaurant != restaurant) {
-            throw new InvalidCategoryException(Constants.INVALID_CATEGORY);
+            throw new ResourceNotValidException(Constants.INVALID_CATEGORY);
         }
         foodItem.setCategoryId(updateFoodItemInDTO.getCategoryId());
         foodItem.setName(updateFoodItemInDTO.getName());
@@ -188,11 +184,11 @@ public class FoodItemServiceImpl implements FoodItemService {
     public List<FoodItem> getAllFoodItemsOfRestaurant(long restaurantId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId);
         if (restaurant == null) {
-            throw new RestaurantsNotFoundException(Constants.RESTAURANT_NOT_FOUND);
+            throw new ResourceNotFoundException(Constants.RESTAURANT_NOT_FOUND);
         }
         List<Category> categories = categoryRepository.findByRestaurantId(restaurantId);
         if (categories.isEmpty()) {
-            throw new CategoryNotFoundException(Constants.CATEGORY_NOT_FOUND);
+            throw new ResourceNotFoundException(Constants.CATEGORY_NOT_FOUND);
         }
         List<FoodItem> allFoodItems = new ArrayList<>();
         for (Category category : categories) {
@@ -202,7 +198,7 @@ public class FoodItemServiceImpl implements FoodItemService {
             }
         }
         if (allFoodItems.isEmpty()) {
-            throw new FoodItemNotFoundException(Constants.FOOD_NOT_FOUND);
+            throw new ResourceNotFoundException(Constants.FOOD_NOT_FOUND);
         }
         return allFoodItems;
     }
@@ -217,7 +213,7 @@ public class FoodItemServiceImpl implements FoodItemService {
         try {
             List<FoodItem> foodItems = foodItemRepository.findByCategoryId(categoryId);
             if (foodItems == null) {
-               throw new FoodItemNotFoundException(Constants.FOOD_NOT_FOUND);
+               throw new ResourceNotFoundException(Constants.FOOD_NOT_FOUND);
             }
             return foodItems;
         } catch (Exception ex) {
@@ -229,7 +225,7 @@ public class FoodItemServiceImpl implements FoodItemService {
     public FoodItem getByFoodId(long foodId) {
         FoodItem foodItem = foodItemRepository.findById(foodId);
         if (foodItem == null) {
-            throw new FoodItemNotFoundException("Food Item Not Found");
+            throw new ResourceNotFoundException("Food Item Not Found");
         }
         return foodItem;
     }
