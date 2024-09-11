@@ -91,6 +91,7 @@ public class CartItemServiceImpl implements CartItemService {
                 FoodItemOutDTO foodItemOutDTO = restaurantFeignClient.getFoodItemById(cartItem.getFoodId()).getBody();
                 RestaurantOutDTO restaurant = restaurantFeignClient.getRestaurantById(cartItem.getRestaurantId()).getBody();
                 CartItemOutDTO cartItemOutDTO = new CartItemOutDTO();
+                cartItemOutDTO.setCartItemId(cartItem.getCartItemId());
                 cartItemOutDTO.setUserId(cartItem.getUserId());
                 cartItemOutDTO.setFoodName(foodItemOutDTO.getName());
                 cartItemOutDTO.setRestaurantName(restaurant.getName());
@@ -102,5 +103,20 @@ public class CartItemServiceImpl implements CartItemService {
             }
         }
         return cartItemOutDTOS;
+    }
+
+    /**
+     * @param cartItemId
+     * @return
+     */
+    @Override
+    public String updateCartItem(long cartItemId, int index) {
+       CartItem cartItem = cartItemRepository.findById(cartItemId);
+       if (cartItem == null) {
+           throw new CartItemDoesNotExistsException("Cart Item is not present");
+       }
+       cartItem.setQuantity(cartItem.getQuantity() + index);
+       cartItemRepository.save(cartItem);
+       return "Cart Updated Successfully";
     }
 }

@@ -52,11 +52,6 @@ public class UpdateFoodItemInDTO {
     private double price;
 
     /**
-     * Food Item Image.
-     */
-    private MultipartFile image;
-
-    /**
      * Override Equals.
      * @param o
      * @return Boolean
@@ -74,8 +69,7 @@ public class UpdateFoodItemInDTO {
                 && categoryId == that.categoryId
                 && Double.compare(price, that.price) == 0
                 && Objects.equals(name, that.name)
-                && Objects.equals(description, that.description)
-                && Objects.equals(image, that.image);
+                && Objects.equals(description, that.description);
     }
 
     /**
@@ -84,6 +78,6 @@ public class UpdateFoodItemInDTO {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(loggedInOwnerId, categoryId, name, description, price, image);
+        return Objects.hash(loggedInOwnerId, categoryId, name, description, price);
     }
 }

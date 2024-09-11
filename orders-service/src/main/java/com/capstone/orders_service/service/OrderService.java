@@ -14,4 +14,5 @@ public interface OrderService {
     String updateOrder(long userId, long orderId, Status status);
     List<OrderDetailsOutDTO> getOrderDetails(long restaurantId);
     List<UserOrderDetailsOutDTO> getUserOrders(long userId);
+    String cancelOrder(long orderId);
 }

@@ -140,7 +140,7 @@ public class FoodItemServiceImpl implements FoodItemService {
      * @return String message
      */
     @Override
-    public String updateFoodItem(long foodItemId, UpdateFoodItemInDTO updateFoodItemInDTO) {
+    public String updateFoodItem(long foodItemId, UpdateFoodItemInDTO updateFoodItemInDTO, MultipartFile image) {
         UserOutDTO user = userClient.getUserById(updateFoodItemInDTO.getLoggedInOwnerId()).getBody();
         if (user == null) {
             throw new UserNotFoundException(Constants.USER_NOT_FOUND);
@@ -167,7 +167,6 @@ public class FoodItemServiceImpl implements FoodItemService {
         foodItem.setDescription(updateFoodItemInDTO.getDescription());
         foodItem.setPrice(updateFoodItemInDTO.getPrice());
         try {
-            MultipartFile image = updateFoodItemInDTO.getImage();
             if (image != null && !image.isEmpty()) {
                 foodItem.setImage(image.getBytes());
             }
