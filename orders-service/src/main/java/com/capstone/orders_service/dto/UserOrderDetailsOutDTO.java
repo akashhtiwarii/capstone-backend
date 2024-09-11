@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Data Transfer Object for representing detailed information about a user's order.
@@ -32,4 +33,17 @@ public class UserOrderDetailsOutDTO {
      * The date and time when the order was placed.
      */
     private LocalDateTime orderTime;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserOrderDetailsOutDTO that = (UserOrderDetailsOutDTO) o;
+        return Objects.equals(restaurantName, that.restaurantName) && Objects.equals(foodItemOutDTOS, that.foodItemOutDTOS) && status == that.status && Objects.equals(orderTime, that.orderTime);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(restaurantName, foodItemOutDTOS, status, orderTime);
+    }
 }

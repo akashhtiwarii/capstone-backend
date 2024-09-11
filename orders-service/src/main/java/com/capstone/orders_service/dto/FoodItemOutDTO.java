@@ -2,6 +2,9 @@ package com.capstone.orders_service.dto;
 
 import lombok.Data;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 /**
  * Data Transfer Object for representing a food item.
  * This class is used to transfer food item details from the server to the client.
@@ -39,4 +42,21 @@ public class FoodItemOutDTO {
      * This may be used to display the food item visually.
      */
     private byte[] image;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        FoodItemOutDTO that = (FoodItemOutDTO) o;
+        return foodId == that.foodId && categoryId == that.categoryId && Double.compare(price, that.price) == 0 && Objects.equals(name, that.name) && Objects.equals(description, that.description) && Objects.deepEquals(image, that.image);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(foodId, categoryId, name, description, price, Arrays.hashCode(image));
+    }
 }
