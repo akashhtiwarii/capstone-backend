@@ -32,13 +32,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> handleTypeMismatchException(MethodArgumentTypeMismatchException ex) {
         if (ex.getRequiredType() != null && ex.getRequiredType().isEnum()) {
-            // Construct the error response with a proper message
             String message = "Invalid status value. Allowed values are: PENDING, ONGOING, COMPLETED";
             ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), message);
             return ResponseEntity.badRequest().body(errorResponse);
         }
         ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(), "An error occurred.");
+                HttpStatus.INTERNAL_SERVER_ERROR.value(), "Invalid Data Provided");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 

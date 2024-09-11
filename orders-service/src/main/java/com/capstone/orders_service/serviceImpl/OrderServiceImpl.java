@@ -18,6 +18,7 @@ import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -244,5 +245,24 @@ public class OrderServiceImpl implements OrderService {
         } catch (FeignException.NotFound e) {
             throw new ResourceNotFoundException("Resource Not Found");
         }
+    }
+
+    /**
+     * @param orderId
+     * @return
+     */
+    @Override
+    public String cancelOrder(long orderId) {
+        Order order = orderRepository.findById(orderId);
+        if (order == null) {
+            throw new OrderNotFoundException("Order Not Found");
+        }
+        LocalDateTime currentTime = LocalDateTime.now();
+        Duration timeDifference = Duration.between(order.getOrderTime(), currentTime);
+        if (timeDifference.getSeconds() > 30) {
+            return "Cannot Cancel Order Now";
+        }
+        order.setStatus(Status.CANCELLED);
+        return "Order Cancelled Successfully";
     }
 }

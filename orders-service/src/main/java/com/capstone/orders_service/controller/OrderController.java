@@ -1,7 +1,11 @@
 package com.capstone.orders_service.controller;
 
 import com.capstone.orders_service.Enum.Status;
-import com.capstone.orders_service.dto.*;
+import com.capstone.orders_service.dto.AddToCartInDTO;
+import com.capstone.orders_service.dto.CartItemOutDTO;
+import com.capstone.orders_service.dto.OrderDetailsOutDTO;
+import com.capstone.orders_service.dto.OrderOutDTO;
+import com.capstone.orders_service.dto.UserOrderDetailsOutDTO;
 import com.capstone.orders_service.service.CartItemService;
 import com.capstone.orders_service.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,5 +73,29 @@ public class OrderController {
     ) {
         List<UserOrderDetailsOutDTO> userOrderDetailsOutDTOS = orderService.getUserOrders(userId);
         return ResponseEntity.status(HttpStatus.OK).body(userOrderDetailsOutDTOS);
+    }
+
+    @PutMapping("/cart/update")
+    public ResponseEntity<String> updateCartItem(
+            @RequestParam @Min(value = 1, message = "Valid Cart Item ID is required") long cartItemId,
+            @RequestParam int delta
+    ) {
+        String message = cartItemService.updateCartItem(cartItemId, delta);
+        return ResponseEntity.status(HttpStatus.OK).body(message);
+    }
+
+    @DeleteMapping("/cart/delete")
+    public ResponseEntity<String> deleteCartItem(
+            @RequestParam @Min(value = 1, message = "Valid Cart Item ID is required") long cartItemId
+    ) {
+        String message = cartItemService.deleteCartItem(cartItemId);
+        return ResponseEntity.status(HttpStatus.OK).body(message);
+    }
+
+    @PutMapping("/order/cancel")
+    public ResponseEntity<String> cancelOrder(
+            @RequestParam @Min(value = 1, message = "Valid Order ID is required") long orderId
+    ) {
+        String message =
     }
 }

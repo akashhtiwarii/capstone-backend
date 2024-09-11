@@ -1,5 +1,6 @@
 package com.capstone.restaurants_service.controller;
 
+import com.capstone.restaurants_service.dto.*;
 import com.capstone.restaurants_service.entity.Category;
 import com.capstone.restaurants_service.entity.FoodItem;
 import com.capstone.restaurants_service.entity.Restaurant;
@@ -7,16 +8,6 @@ import com.capstone.restaurants_service.service.CategoryService;
 import com.capstone.restaurants_service.service.FoodItemService;
 import com.capstone.restaurants_service.service.RestaurantService;
 import com.capstone.restaurants_service.utils.Constants;
-import com.capstone.restaurants_service.dto.CategoryInDTO;
-import com.capstone.restaurants_service.dto.FoodItemInDTO;
-import com.capstone.restaurants_service.dto.FoodItemWithImageInDTO;
-import com.capstone.restaurants_service.dto.GetOwnerRestaurantsInDTO;
-import com.capstone.restaurants_service.dto.RestaurantInDTO;
-import com.capstone.restaurants_service.dto.RestaurantWithImageInDTO;
-import com.capstone.restaurants_service.dto.UpdateCategoryDTO;
-import com.capstone.restaurants_service.dto.UpdateFoodItemInDTO;
-import com.capstone.restaurants_service.dto.UpdateRestaurantInDTO;
-import com.capstone.restaurants_service.dto.RequestSuccessOutDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -215,15 +206,17 @@ public class RestaurantController {
      * Update Food Item.
      *
      * @param fooditemId
-     * @param updateFoodItemInDTO
+     * @param updateFoodItemWithImageInDTO
      * @return String message
      */
     @PutMapping(Constants.UPDATE_FOOD_ITEM_ENDPOINT)
     public ResponseEntity<RequestSuccessOutDTO> updateFoodItem(
             @PathVariable("foodItemId") long fooditemId,
-            @Valid @ModelAttribute UpdateFoodItemInDTO updateFoodItemInDTO) {
+            @Valid @ModelAttribute UpdateFoodItemWithImageInDTO updateFoodItemWithImageInDTO) {
         logger.info("Updating food item : {}", fooditemId);
-        String message = foodItemService.updateFoodItem(fooditemId, updateFoodItemInDTO);
+        UpdateFoodItemInDTO updateFoodItemInDTO = updateFoodItemWithImageInDTO.getUpdateFoodItemInDTO();
+        MultipartFile image = updateFoodItemWithImageInDTO.getImage();
+        String message = foodItemService.updateFoodItem(fooditemId, updateFoodItemInDTO, image);
         logger.info("Updating food item : {}", fooditemId);
         return ResponseEntity.status(HttpStatus.OK).body(new RequestSuccessOutDTO(message));
     }

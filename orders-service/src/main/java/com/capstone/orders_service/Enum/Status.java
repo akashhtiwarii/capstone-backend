@@ -15,5 +15,9 @@ public enum Status {
     /**
      * Order Completed.
      */
-    COMPLETED
+    COMPLETED,
+    /**
+     * Order Completed.
+     */
+    CANCELLED
 }
