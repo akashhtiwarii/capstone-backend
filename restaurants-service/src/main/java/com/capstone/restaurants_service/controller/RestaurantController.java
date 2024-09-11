@@ -59,18 +59,18 @@ public class RestaurantController {
 
     /**
      * Add Restaurant.
-     * @param restaurantWithImageInDTO
+     * @param restaurantInDTO
+     * @param image
      * @return String message
      */
     @PostMapping(Constants.ADD_RESTAURANT_ENDPOINT)
     public ResponseEntity<RequestSuccessOutDTO> addRestaurant(
-            @Valid @ModelAttribute RestaurantWithImageInDTO restaurantWithImageInDTO) {
-        logger.info("Adding Restaurant : {}", restaurantWithImageInDTO.getRestaurant().getName());
-        RestaurantInDTO restaurant = restaurantWithImageInDTO.getRestaurant();
+             @ModelAttribute @Valid RestaurantInDTO restaurantInDTO,
+             @RequestParam(value = "image", required = false) MultipartFile image) {
+        logger.info("Adding Restaurant : {}", restaurantInDTO.getName());
         logger.info("Restaurant Details Fetched");
-        MultipartFile image = restaurantWithImageInDTO.getImage();
         logger.info("Image Fetched");
-        String message = restaurantService.save(restaurant, image);
+        String message = restaurantService.save(restaurantInDTO, image);
         logger.info("Restaurant Added");
         return ResponseEntity.status(HttpStatus.OK).body(new RequestSuccessOutDTO(message));
     }
@@ -129,14 +129,16 @@ public class RestaurantController {
     /**
      * Update Restaurant.
      *
+     * @param image
      * @param updateRestaurantInDTO
      * @return String message
      */
-    @PutMapping(Constants.UPDATE_RESTAURANT_ENDPOINT)
+    @PutMapping(value = Constants.UPDATE_RESTAURANT_ENDPOINT)
     public ResponseEntity<RequestSuccessOutDTO> updateRestaurant(
-            @Valid @ModelAttribute UpdateRestaurantInDTO updateRestaurantInDTO) {
+             @ModelAttribute @Valid UpdateRestaurantInDTO updateRestaurantInDTO,
+             @RequestParam(value = "image", required = false) MultipartFile image) {
         logger.info("Updating Restaurant for restaurant ID: {}", updateRestaurantInDTO.getRestaurantId());
-        String response = restaurantService.updateRestaurant(updateRestaurantInDTO);
+        String response = restaurantService.updateRestaurant(updateRestaurantInDTO, image);
         logger.info("Updated Restaurant for restaurant ID: {}", updateRestaurantInDTO.getRestaurantId());
         return ResponseEntity.status(HttpStatus.OK).body(new RequestSuccessOutDTO(response));
     }
@@ -188,15 +190,15 @@ public class RestaurantController {
     /**
      * Add new Food Item.
      *
-     * @param foodItemWithImageInDTO
+     * @param foodItemInDTO
+     * @param image
      * @return String message
      */
     @PostMapping(Constants.ADD_FOOD_ITEM_ENDPOINT)
     public ResponseEntity<RequestSuccessOutDTO> addFoodItem(
-            @Valid @ModelAttribute FoodItemWithImageInDTO foodItemWithImageInDTO) {
+            @ModelAttribute @Valid FoodItemInDTO foodItemInDTO,
+            @RequestParam(value = "image", required = false) MultipartFile image) {
         logger.info("Adding new food item.");
-        FoodItemInDTO foodItemInDTO = foodItemWithImageInDTO.getFoodItem();
-        MultipartFile image = foodItemWithImageInDTO.getImage();
         String message = foodItemService.addFoodItem(foodItemInDTO, image);
         logger.info("Added new food item.");
         return ResponseEntity.status(HttpStatus.OK).body(new RequestSuccessOutDTO(message));
@@ -206,16 +208,16 @@ public class RestaurantController {
      * Update Food Item.
      *
      * @param fooditemId
-     * @param updateFoodItemWithImageInDTO
+     * @param updateFoodItemInDTO
+     * @param image
      * @return String message
      */
     @PutMapping(Constants.UPDATE_FOOD_ITEM_ENDPOINT)
     public ResponseEntity<RequestSuccessOutDTO> updateFoodItem(
             @PathVariable("foodItemId") long fooditemId,
-            @Valid @ModelAttribute UpdateFoodItemWithImageInDTO updateFoodItemWithImageInDTO) {
+            @ModelAttribute @Valid UpdateFoodItemInDTO updateFoodItemInDTO,
+            @RequestParam(value = "image", required = false) MultipartFile image) {
         logger.info("Updating food item : {}", fooditemId);
-        UpdateFoodItemInDTO updateFoodItemInDTO = updateFoodItemWithImageInDTO.getUpdateFoodItemInDTO();
-        MultipartFile image = updateFoodItemWithImageInDTO.getImage();
         String message = foodItemService.updateFoodItem(fooditemId, updateFoodItemInDTO, image);
         logger.info("Updating food item : {}", fooditemId);
         return ResponseEntity.status(HttpStatus.OK).body(new RequestSuccessOutDTO(message));

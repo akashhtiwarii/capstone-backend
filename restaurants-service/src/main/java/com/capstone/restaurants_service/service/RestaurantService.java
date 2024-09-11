@@ -46,5 +46,5 @@ public interface RestaurantService {
      * @param updateRestaurantInDTO
      * @return String message
      */
-    String updateRestaurant(UpdateRestaurantInDTO updateRestaurantInDTO);
+    String updateRestaurant(UpdateRestaurantInDTO updateRestaurantInDTO, MultipartFile image);
 }

@@ -14,14 +14,12 @@ import com.capstone.orders_service.repository.OrderDetailRepository;
 import com.capstone.orders_service.repository.OrderRepository;
 import com.capstone.orders_service.service.OrderService;
 import feign.FeignException;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -161,13 +159,8 @@ public class OrderServiceImpl implements OrderService {
             throw new OrderNotFoundException("Order Not Found");
         }
         try {
-            List<RestaurantOutDTO> restaurants = restaurantFeignClient.getRestaurantByOwnerId(userId).getBody();
+            RestaurantOutDTO restaurant = restaurantFeignClient.getRestaurantById(order.getRestaurantId()).getBody();
             long restaurantId = order.getRestaurantId();
-            boolean restaurantExists = restaurants.stream()
-                    .anyMatch(restaurant -> restaurant.getRestaurantId() == restaurantId);
-            if (!restaurantExists) {
-                throw new ResourceNotValidException("Invalid Request");
-            }
         } catch (FeignException.NotFound e) {
             throw new ResourceNotFoundException("Restaurant Not Found");
         }
@@ -181,28 +174,48 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     @Override
-    public List<OrderDetailsOutDTO> getOrderDetails(long restaurantId) {
+    public List<RestaurantOrderDetailsOutDTO> getOrderDetails(long restaurantId) {
         List<Order> orders = orderRepository.findByRestaurantId(restaurantId);
         String address = "";
         if (orders.isEmpty()) {
             throw new OrderNotFoundException("No Orders Present");
         }
-        List<OrderDetailsOutDTO> orderDetailsOutDTOS = new ArrayList<>();
+        List<RestaurantOrderDetailsOutDTO> restaurantOrderDetailsOutDTOS = new ArrayList<>();
         for (Order order : orders) {
-            OrderDetailsOutDTO orderDetailsOutDTO = new OrderDetailsOutDTO();
+            RestaurantOrderDetailsOutDTO restaurantOrderDetailsOutDTO = new RestaurantOrderDetailsOutDTO();
+            restaurantOrderDetailsOutDTO.setOrderId(order.getOrderId());
+            try {
+                UserOutDTO user = usersFeignClient.getUserById(order.getUserId()).getBody();
+                restaurantOrderDetailsOutDTO.setUserName(user.getName());
+            } catch (FeignException.NotFound e) {
+                throw new UserNotFoundException("User Not Found");
+            }
             List<OrderDetail> orderDetails = orderDetailRepository.findByOrderId(order.getOrderId());
+            List<OrderDetailOutDTO> orderDetailOutDTOS = new ArrayList<>();
+            for (OrderDetail orderDetail : orderDetails) {
+                OrderDetailOutDTO orderDetailOutDTO = new OrderDetailOutDTO();
+                try {
+                    FoodItemOutDTO foodItemOutDTO = restaurantFeignClient.getFoodItemById(orderDetail.getFoodId()).getBody();
+                    orderDetailOutDTO.setFoodName(foodItemOutDTO.getName());
+                    orderDetailOutDTO.setQuantity(orderDetail.getQuantity());
+                    orderDetailOutDTO.setPrice(orderDetail.getPrice());
+                } catch (FeignException.NotFound e) {
+                    throw new FoodItemNotFoundException("No Food Item Present");
+                }
+                orderDetailOutDTOS.add(orderDetailOutDTO);
+            }
             try {
                 address = usersFeignClient.getAddressById(order.getUserId()).getBody().toString();
             } catch (FeignException.NotFound e) {
                 throw new AddressNotFoundException("No Address Present for an Order");
             }
-            orderDetailsOutDTO.setUserId(order.getUserId());
-            orderDetailsOutDTO.setOrderDetailList(orderDetails);
-            orderDetailsOutDTO.setAddress(address);
-            orderDetailsOutDTO.setStatus(order.getStatus());
-            orderDetailsOutDTOS.add(orderDetailsOutDTO);
+            restaurantOrderDetailsOutDTO.setUserId(order.getUserId());
+            restaurantOrderDetailsOutDTO.setOrderDetailOutDTOS(orderDetailOutDTOS);
+            restaurantOrderDetailsOutDTO.setAddress(address);
+            restaurantOrderDetailsOutDTO.setStatus(order.getStatus());
+            restaurantOrderDetailsOutDTOS.add(restaurantOrderDetailsOutDTO);
         }
-        return orderDetailsOutDTOS;
+        return restaurantOrderDetailsOutDTOS;
     }
 
     /**
@@ -236,6 +249,7 @@ public class OrderServiceImpl implements OrderService {
                         foodItemOutDTOS.add(userFoodItemOutDTO);
                     }
                     userOrderDetailsOutDTO.setFoodItemOutDTOS(foodItemOutDTOS);
+                    userOrderDetailsOutDTO.setOrderTime(order.getOrderTime());
                     userOrderDetailsOutDTOS.add(userOrderDetailsOutDTO);
                 } catch (Exception e) {
                     throw new RuntimeException("An unexpected error occurred. Try Again");
@@ -260,9 +274,10 @@ public class OrderServiceImpl implements OrderService {
         LocalDateTime currentTime = LocalDateTime.now();
         Duration timeDifference = Duration.between(order.getOrderTime(), currentTime);
         if (timeDifference.getSeconds() > 30) {
-            return "Cannot Cancel Order Now";
+            throw new ResourceNotValidException("Cannot Cancel the order Now " + timeDifference.getSeconds());
         }
         order.setStatus(Status.CANCELLED);
+        orderRepository.save(order);
         return "Order Cancelled Successfully";
     }
 }

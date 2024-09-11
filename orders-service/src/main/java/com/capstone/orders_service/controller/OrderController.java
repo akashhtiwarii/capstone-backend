@@ -3,7 +3,7 @@ package com.capstone.orders_service.controller;
 import com.capstone.orders_service.Enum.Status;
 import com.capstone.orders_service.dto.AddToCartInDTO;
 import com.capstone.orders_service.dto.CartItemOutDTO;
-import com.capstone.orders_service.dto.OrderDetailsOutDTO;
+import com.capstone.orders_service.dto.RestaurantOrderDetailsOutDTO;
 import com.capstone.orders_service.dto.OrderOutDTO;
 import com.capstone.orders_service.dto.UserOrderDetailsOutDTO;
 import com.capstone.orders_service.service.CartItemService;
@@ -61,10 +61,10 @@ public class OrderController {
     }
 
     @GetMapping("/restaurantId")
-    public ResponseEntity<List<OrderDetailsOutDTO>> getRestaurantOrderDetails(
+    public ResponseEntity<List<RestaurantOrderDetailsOutDTO>> getRestaurantOrderDetails(
             @RequestParam @Min(value = 1, message = "Valid Restaurant ID required") long restaurantId) {
-        List<OrderDetailsOutDTO> orderDetailsOutDTOS = orderService.getOrderDetails(restaurantId);
-        return ResponseEntity.status(HttpStatus.OK).body(orderDetailsOutDTOS);
+        List<RestaurantOrderDetailsOutDTO> restaurantOrderDetailsOutDTOS = orderService.getOrderDetails(restaurantId);
+        return ResponseEntity.status(HttpStatus.OK).body(restaurantOrderDetailsOutDTOS);
     }
 
     @GetMapping("/user/orders")
@@ -92,10 +92,11 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 
-    @PutMapping("/order/cancel")
+    @PutMapping("/cancel")
     public ResponseEntity<String> cancelOrder(
             @RequestParam @Min(value = 1, message = "Valid Order ID is required") long orderId
     ) {
-        String message =
+        String response = orderService.cancelOrder(orderId);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

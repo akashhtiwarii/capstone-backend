@@ -66,10 +66,6 @@ public class UpdateRestaurantInDTO {
     @NotBlank(message = "Address for restaurant cannot be empty")
     private String address;
 
-    /**
-     * Image of restaurant.
-     */
-    private MultipartFile image;
 
     /**
      * Override Equals.
@@ -90,8 +86,7 @@ public class UpdateRestaurantInDTO {
                 && Objects.equals(name, that.name)
                 && Objects.equals(email, that.email)
                 && Objects.equals(phone, that.phone)
-                && Objects.equals(address, that.address)
-                && Objects.equals(image, that.image);
+                && Objects.equals(address, that.address);
     }
 
     /**
@@ -100,6 +95,6 @@ public class UpdateRestaurantInDTO {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(loggedInOwnerId, restaurantId, name, email, phone, address, image);
+        return Objects.hash(loggedInOwnerId, restaurantId, name, email, phone, address);
     }
 }

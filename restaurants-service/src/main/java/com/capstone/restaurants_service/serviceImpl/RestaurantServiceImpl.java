@@ -81,7 +81,7 @@ public class RestaurantServiceImpl implements RestaurantService {
      * @return String message.
      */
     @Override
-    public String updateRestaurant(UpdateRestaurantInDTO updateRestaurantInDTO) {
+    public String updateRestaurant(UpdateRestaurantInDTO updateRestaurantInDTO, MultipartFile image) {
         UserOutDTO user = userClient.getUserById(updateRestaurantInDTO.getLoggedInOwnerId()).getBody();
         if (user == null) {
             throw new UserNotFoundException(Constants.USER_NOT_FOUND);
@@ -106,7 +106,6 @@ public class RestaurantServiceImpl implements RestaurantService {
         restaurant.setEmail(updateRestaurantInDTO.getEmail());
         restaurant.setPhone(updateRestaurantInDTO.getPhone());
         restaurant.setAddress(updateRestaurantInDTO.getAddress());
-        MultipartFile image = updateRestaurantInDTO.getImage();
         try {
             if (image != null && !image.isEmpty()) {
                 restaurant.setImage(image.getBytes());

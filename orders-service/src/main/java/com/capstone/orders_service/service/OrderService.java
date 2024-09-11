@@ -1,7 +1,7 @@
 package com.capstone.orders_service.service;
 
 import com.capstone.orders_service.Enum.Status;
-import com.capstone.orders_service.dto.OrderDetailsOutDTO;
+import com.capstone.orders_service.dto.RestaurantOrderDetailsOutDTO;
 import com.capstone.orders_service.dto.OrderOutDTO;
 import com.capstone.orders_service.dto.UserOrderDetailsOutDTO;
 
@@ -12,7 +12,7 @@ public interface OrderService {
     String addOrder(long userId);
     String deleteOrder(long orderId);
     String updateOrder(long userId, long orderId, Status status);
-    List<OrderDetailsOutDTO> getOrderDetails(long restaurantId);
+    List<RestaurantOrderDetailsOutDTO> getOrderDetails(long restaurantId);
     List<UserOrderDetailsOutDTO> getUserOrders(long userId);
     String cancelOrder(long orderId);
 }
