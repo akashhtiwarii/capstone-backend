@@ -196,7 +196,7 @@ public class UserController {
     @PutMapping("/wallet/recharge")
     public ResponseEntity<String> rechargeWallet(
             @RequestParam @Min(value = 1, message = "Valid User ID required") long userId,
-            @RequestParam @Positive(message = "Valid Amount required") double amount\d
+            @RequestParam @Positive(message = "Valid Amount required") double amount
     ) {
         logger.info("Updating Wallet for UserID : {}", userId);
         String message = walletService.rechargeWallet(userId, amount);
