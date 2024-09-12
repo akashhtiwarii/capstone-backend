@@ -9,12 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProfileOutDTO {
-    private long userId;
     private String name;
     private String email;
-    private String password;
     private String phone;
-    private Role role;
     private String address;
     private String city;
     private long pincode;
