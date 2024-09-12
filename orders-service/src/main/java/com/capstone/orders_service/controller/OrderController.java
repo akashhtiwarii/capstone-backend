@@ -44,11 +44,13 @@ public class OrderController {
      * Adds a new order for a user.
      *
      * @param userId The ID of the user placing the order.
+     * @param addressId
      * @return A response message indicating the result of the operation.
      */
     @PostMapping("/add")
-    public ResponseEntity<String> addOrder(@RequestParam @Min(value = 1, message = "UserId not Valid") long userId) {
-        String response = orderService.addOrder(userId);
+    public ResponseEntity<String> addOrder(@RequestParam @Min(value = 1, message = "UserId not Valid") long userId,
+                                           @RequestParam @Min(value = 1, message = "AddressId not Valid") long addressId) {
+        String response = orderService.addOrder(userId, addressId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

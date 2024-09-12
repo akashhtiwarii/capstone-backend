@@ -72,7 +72,7 @@ public class OrderServiceImpl implements OrderService {
      * @return String message
      */
     @Override
-    public String addOrder(long userId) {
+    public String addOrder(long userId, long addressId) {
         UserOutDTO user;
         AddressOutDTO addressOutDTO;
         WalletOutDTO wallet;
@@ -82,7 +82,7 @@ public class OrderServiceImpl implements OrderService {
             throw new ResourceNotFoundException("User Not Found");
         }
         try {
-            addressOutDTO = usersFeignClient.getAddressById(userId).getBody();
+            addressOutDTO = usersFeignClient.getAddressById(addressId).getBody();
         } catch (FeignException.NotFound e) {
             throw new ResourceNotFoundException("No Address Added");
         }
@@ -205,7 +205,7 @@ public class OrderServiceImpl implements OrderService {
                 orderDetailOutDTOS.add(orderDetailOutDTO);
             }
             try {
-                address = usersFeignClient.getAddressById(order.getUserId()).getBody().toString();
+                address = usersFeignClient.getAddressByUserId(order.getUserId()).getBody().toString();
             } catch (FeignException.NotFound e) {
                 throw new ResourceNotFoundException("No Address Present for an Order");
             }

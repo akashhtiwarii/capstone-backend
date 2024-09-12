@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface OrderService {
     List<OrderOutDTO> getOrders(long loggedInUserId, long restaurantId);
-    String addOrder(long userId);
+    String addOrder(long userId, long addressId);
     String deleteOrder(long orderId);
     String updateOrder(long userId, long orderId, Status status);
     List<RestaurantOrderDetailsOutDTO> getOrderDetails(long restaurantId);

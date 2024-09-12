@@ -21,12 +21,9 @@ import static com.capstone.users_service.utils.Constants.MIN_PINCODE_VALUE;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddressInDTO {
-    /**
-     * email of the user whose address is to be added.
-     */
-    @Email(message = "No valid email found")
-    @NotBlank(message = "Email cannot be empty")
-    private String email;
+
+    @Min(value = 1, message = "Valid User ID required")
+    private long userId;
     /**
      * address of the user whose address is to be added.
      */
@@ -56,16 +53,10 @@ public class AddressInDTO {
      */
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         AddressInDTO that = (AddressInDTO) o;
-        return pincode == that.pincode && Objects.equals(email, that.email)
-                && Objects.equals(address, that.address) && Objects.equals(city, that.city)
-                && Objects.equals(state, that.state);
+        return userId == that.userId && pincode == that.pincode && Objects.equals(address, that.address) && Objects.equals(city, that.city) && Objects.equals(state, that.state);
     }
 
     /**
@@ -74,6 +65,6 @@ public class AddressInDTO {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(email, address, pincode, city, state);
+        return Objects.hash(userId, address, pincode, city, state);
     }
 }
