@@ -83,6 +83,6 @@ public class AddressOutDTO {
      */
     @Override
     public String toString() {
-        return (userId + ", " + address + ", " + city + ", " + state + ", " + pincode);
+        return (address + ", " + city + ", " + state + ", " + pincode);
     }
 }
