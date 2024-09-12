@@ -16,7 +16,11 @@ import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * Restaurant Entity mapping with restaurants table.
+ * Represents a restaurant entity mapped to the 'restaurants' table in the database.
+ * <p>
+ * This class is used to persist and retrieve restaurant information, including details such as restaurant ID,
+ * owner ID, name, email, phone number, address, and image of the restaurant.
+ * </p>
  */
 @Entity
 @Table(name = "restaurants")
@@ -24,8 +28,10 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Restaurant {
+
     /**
-     * restaurantId for pairing with the restaurant_id field in database using ORM.
+     * Unique identifier for the restaurant entity.
+     * This field is mapped to the 'restaurant_id' column in the database.
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,37 +39,43 @@ public class Restaurant {
     private long restaurantId;
 
     /**
-     * ownerId for pairing with the owner_id field in database using ORM.
+     * Identifier for the owner of the restaurant.
+     * This field is mapped to the 'owner_id' column in the database.
      */
     @Column(name = "owner_id")
     private long ownerId;
 
     /**
-     * name for pairing with the name field in database using ORM.
+     * The name of the restaurant.
+     * This field is mapped to the 'name' column in the database.
      */
     @Column(name = "name")
     private String name;
 
     /**
-     * email for pairing with the email field in database using ORM.
+     * The email address of the restaurant.
+     * This field is mapped to the 'email' column in the database.
      */
     @Column(name = "email")
     private String email;
 
     /**
-     * phone for pairing with the phone field in database using ORM.
+     * The phone number of the restaurant.
+     * This field is mapped to the 'phone' column in the database.
      */
     @Column(name = "phone")
     private String phone;
 
     /**
-     * address for pairing with the address field in database using ORM.
+     * The address of the restaurant.
+     * This field is mapped to the 'address' column in the database.
      */
     @Column(name = "address")
     private String address;
 
     /**
-     * image for pairing with the image field in database using ORM.
+     * The image of the restaurant.
+     * This field is mapped to the 'image' column in the database and is stored as a binary large object (BLOB).
      */
     @Lob
     @Column(name = "image")
@@ -71,9 +83,13 @@ public class Restaurant {
     private byte[] image;
 
     /**
-     * Override equals method for testing.
-     * @param o object
-     * @return true or false based on conditions
+     * Compares this restaurant entity with another object for equality.
+     * <p>
+     * Two restaurant entities are considered equal if they have the same restaurant ID, owner ID, name, email,
+     * phone number, address, and image.
+     * </p>
+     * @param o the object to be compared
+     * @return true if this restaurant is equal to the specified object, false otherwise
      */
     @Override
     public boolean equals(Object o) {
@@ -84,14 +100,22 @@ public class Restaurant {
             return false;
         }
         Restaurant that = (Restaurant) o;
-        return restaurantId == that.restaurantId && ownerId == that.ownerId && Objects.equals(name, that.name)
-                && Objects.equals(email, that.email) && Objects.equals(phone, that.phone)
-                && Objects.equals(address, that.address) && Objects.deepEquals(image, that.image);
+        return restaurantId == that.restaurantId
+                && ownerId == that.ownerId
+                && Objects.equals(name, that.name)
+                && Objects.equals(email, that.email)
+                && Objects.equals(phone, that.phone)
+                && Objects.equals(address, that.address)
+                && Objects.deepEquals(image, that.image);
     }
 
     /**
-     * Override hashCode for testing.
-     * @return hashed object
+     * Returns a hash code value for this restaurant entity.
+     * <p>
+     * The hash code is computed based on the restaurant ID, owner ID, name, email, phone number, address,
+     * and image.
+     * </p>
+     * @return a hash code value for this restaurant entity
      */
     @Override
     public int hashCode() {

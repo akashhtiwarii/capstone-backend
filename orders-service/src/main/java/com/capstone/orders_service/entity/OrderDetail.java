@@ -13,7 +13,11 @@ import javax.persistence.Table;
 import java.util.Objects;
 
 /**
- * Represents the details of an order.
+ * Represents the details of an order, mapped to the 'order_details' table in the database.
+ * <p>
+ * This class captures the specifics of individual food items within an order, including
+ * identifiers for the order and food item, quantity, and price.
+ * </p>
  */
 @Entity
 @Table(name = "order_details")
@@ -21,9 +25,12 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderDetail {
+
     /**
      * Unique identifier for the order detail.
-     * Mapped to the "order_details_id" column in the database.
+     * <p>
+     * This field is mapped to the 'order_details_id' column in the database.
+     * </p>
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,36 +39,46 @@ public class OrderDetail {
 
     /**
      * Identifier of the order to which this detail belongs.
-     * Mapped to the "order_id" column in the database.
+     * <p>
+     * This field is mapped to the 'order_id' column in the database.
+     * </p>
      */
     @Column(name = "order_id")
     private long orderId;
 
     /**
      * Identifier of the food item in the order detail.
-     * Mapped to the "food_id" column in the database.
+     * <p>
+     * This field is mapped to the 'food_id' column in the database.
+     * </p>
      */
     @Column(name = "food_id")
     private long foodId;
 
     /**
      * Quantity of the food item in the order detail.
-     * Mapped to the "quantity" column in the database.
+     * <p>
+     * This field is mapped to the 'quantity' column in the database.
+     * </p>
      */
     @Column(name = "quantity")
     private int quantity;
 
     /**
      * Price of the food item in the order detail.
-     * Mapped to the "price" column in the database.
+     * <p>
+     * This field is mapped to the 'price' column in the database.
+     * </p>
      */
     @Column(name = "price")
     private double price;
 
     /**
-     * Compares this order detail to another object.
-     * Two order details are considered equal if they have the same orderDetailId, orderId, foodId, quantity, and price.
-     *
+     * Compares this order detail to another object for equality.
+     * <p>
+     * Two order details are considered equal if they have the same orderDetailId, orderId, foodId,
+     * quantity, and price.
+     * </p>
      * @param o The object to compare with.
      * @return true if this order detail is equal to the specified object; false otherwise.
      */
@@ -74,13 +91,18 @@ public class OrderDetail {
             return false;
         }
         OrderDetail that = (OrderDetail) o;
-        return orderDetailId == that.orderDetailId && orderId == that.orderId && foodId == that.foodId && quantity == that.quantity && Double.compare(price, that.price) == 0;
+        return orderDetailId == that.orderDetailId
+                && orderId == that.orderId
+                && foodId == that.foodId
+                && quantity == that.quantity
+                && Double.compare(that.price, price) == 0;
     }
 
     /**
      * Returns a hash code value for this order detail.
+     * <p>
      * The hash code is computed based on orderDetailId, orderId, foodId, quantity, and price.
-     *
+     * </p>
      * @return The hash code value for this order detail.
      */
     @Override

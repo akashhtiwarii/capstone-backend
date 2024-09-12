@@ -10,10 +10,15 @@ import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.util.Objects;
 
 /**
- * Wallet Entity mapping with wallet table.
+ * Represents a wallet entity mapped to the 'wallet' table in the database.
+ * <p>
+ * This class is used to persist and retrieve wallet information, including details such as wallet ID, user ID,
+ * and the amount of money in the wallet.
+ * </p>
  */
 @Entity
 @Table(name = "wallet")
@@ -23,7 +28,8 @@ import java.util.Objects;
 public class Wallet {
 
     /**
-     walletId for connecting wallet_id field in database using ORM.
+     * Unique identifier for the wallet entity.
+     * This field is mapped to the 'wallet_id' column in the database.
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,21 +37,26 @@ public class Wallet {
     private long walletId;
 
     /**
-     userId for connecting userId field in database using ORM.
+     * Identifier for the user associated with this wallet.
+     * This field is mapped to the 'user_id' column in the database.
      */
     @Column(name = "user_id")
     private long userId;
 
     /**
-     amount for connecting amount field in database using ORM.
+     * The amount of money in the wallet.
+     * This field is mapped to the 'amount' column in the database.
      */
     @Column(name = "amount")
     private double amount;
 
     /**
-     * Override equals method for testing.
-     * @param o object
-     * @return true or false based on conditions
+     * Compares this wallet entity with another object for equality.
+     * <p>
+     * Two wallet entities are considered equal if they have the same wallet ID, user ID, and amount.
+     * </p>
+     * @param o the object to be compared
+     * @return true if this wallet is equal to the specified object, false otherwise
      */
     @Override
     public boolean equals(Object o) {
@@ -60,8 +71,11 @@ public class Wallet {
     }
 
     /**
-     * Override hashCode for testing.
-     * @return hashed object
+     * Returns a hash code value for this wallet entity.
+     * <p>
+     * The hash code is computed based on the wallet ID, user ID, and amount.
+     * </p>
+     * @return a hash code value for this wallet entity
      */
     @Override
     public int hashCode() {
