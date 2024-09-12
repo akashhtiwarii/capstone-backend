@@ -1,7 +1,7 @@
 package com.capstone.users_service.converters;
 
-import com.capstone.users_service.InDTO.UserInDTO;
-import com.capstone.users_service.OutDTO.LoginResponseOutDTO;
+import com.capstone.users_service.dto.UserInDTO;
+import com.capstone.users_service.dto.LoginResponseOutDTO;
 import com.capstone.users_service.entity.User;
 
 /**

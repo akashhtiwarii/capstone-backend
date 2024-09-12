@@ -1,9 +1,6 @@
 package com.capstone.users_service.exceptionsTest;
 
-import com.capstone.users_service.exceptions.AddressNotFoundException;
-import com.capstone.users_service.exceptions.EmailAlreadyExistsException;
 import com.capstone.users_service.exceptions.GlobalExceptionHandler;
-import com.capstone.users_service.exceptions.UserNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

@@ -1,15 +1,12 @@
 package com.capstone.users_service.controller;
 
-import com.capstone.users_service.InDTO.AddressInDTO;
-import com.capstone.users_service.InDTO.AddressRequestInDTO;
-import com.capstone.users_service.InDTO.GetUserInfoInDTO;
-import com.capstone.users_service.InDTO.LoginRequestInDTO;
-import com.capstone.users_service.InDTO.UserInDTO;
-import com.capstone.users_service.OutDTO.LoginResponseOutDTO;
+import com.capstone.users_service.dto.*;
 import com.capstone.users_service.entity.Address;
 import com.capstone.users_service.entity.User;
+import com.capstone.users_service.entity.Wallet;
 import com.capstone.users_service.service.AddressService;
 import com.capstone.users_service.service.UserService;
+import com.capstone.users_service.service.WalletService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,17 +14,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import javax.validation.Valid;
-
-import java.util.List;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
 import com.capstone.users_service.utils.Constants;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Rest Controller for managing user-operations.
@@ -53,6 +45,9 @@ public class UserController {
      */
     @Autowired
     private AddressService addressService;
+
+    @Autowired
+    private WalletService walletService;
 
     /**
      * Registers a new user.
@@ -98,6 +93,25 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
+    @GetMapping("/profile")
+    public ResponseEntity<ProfileOutDTO> getUserProfile(@RequestParam long userId) {
+        logger.info("Fetching user info..{}", userId);
+        ProfileOutDTO profileOutDTO = userService.getProfileInfo(userId);
+        logger.info("Fetched user info..{}", userId);
+        return ResponseEntity.status(HttpStatus.OK).body(profileOutDTO);
+    }
+
+    @PutMapping("/profile/update")
+    public ResponseEntity<RequestSuccessOutDTO> updateUserProfile(
+            @RequestParam @Min(value = 1, message = "Valid User ID required") long userId,
+            @Valid @RequestBody UpdateProfileInDTO updateProfileInDTO
+    ) {
+        logger.info("Updating user info..{}", userId);
+        String message = userService.updateUserProfile(userId, updateProfileInDTO);
+        logger.info("Updated user info..{}", userId);
+        return ResponseEntity.status(HttpStatus.OK).body(new RequestSuccessOutDTO(message));
+    }
+
     /**
      * Get by ID for feign client.
      * @param userId
@@ -110,20 +124,6 @@ public class UserController {
         logger.info("Fetched user info..{}", userId);
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
-
-    /**
-     * Get Addresses of a user.
-     * @param addressRequestInDTO Request body
-     * @return address with a specific Id
-     */
-    @PostMapping(Constants.USER_ADDRESS_ENDPOINT)
-    public List<Address> getAddressesById(@RequestBody AddressRequestInDTO addressRequestInDTO) {
-        logger.info("Fetching addresses for email ID: {}", addressRequestInDTO.getEmail());
-        List<Address> addresses = addressService.findUserAddresses(addressRequestInDTO);
-        logger.info("Addresses fetched successfully for email ID: {}", addressRequestInDTO.getEmail());
-        return addresses;
-    }
-
     /**
      * Add new address of a user.
      * @param addressInDTO request parameter
@@ -134,6 +134,43 @@ public class UserController {
         logger.info("Adding new address for email ID: {}", addressInDTO.getEmail());
         String message = addressService.addAddress(addressInDTO);
         logger.info("Address added successfully for email ID: {}", addressInDTO.getEmail());
+        return ResponseEntity.status(HttpStatus.OK).body(message);
+    }
+    @GetMapping("/address")
+    public ResponseEntity<Address> getAddressById(@RequestParam long userId) {
+        logger.info("Fetching address for user ID: {}", userId);
+        Address response = addressService.getAddressById(userId);
+        logger.info("Fetched address for user ID: {}", userId);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping("/wallet")
+    public ResponseEntity<Wallet> findUserWallet(@RequestParam long userId) {
+        logger.info("Fetching wallet for userId: {}", userId);
+        Wallet wallet = walletService.findByUserId(userId);
+        logger.info("Fetched wallet for userId: {}", userId);
+        return ResponseEntity.status(HttpStatus.OK).body(wallet);
+    }
+
+    @PutMapping("/wallet/update")
+    public ResponseEntity<String> updateUserWallet(
+            @RequestParam @Min(value = 1, message = "Valid User ID required") long userId,
+            @RequestParam @PositiveOrZero(message = "Valid amount required") double amount
+    ) {
+        logger.info("Updating Wallet for UserID : {}", userId);
+        String message = walletService.updateWallet(userId, amount);
+        logger.info("Updated Wallet for UserID : {}", userId);
+        return ResponseEntity.status(HttpStatus.OK).body(message);
+    }
+
+    @PutMapping("/wallet/recharge")
+    public ResponseEntity<String> rechargeWallet(
+            @RequestParam @Min(value = 1, message = "Valid User ID required") long userId,
+            @RequestParam @Positive(message = "Valid Amount required") double amount
+    ) {
+        logger.info("Updating Wallet for UserID : {}", userId);
+        String message = walletService.rechargeWallet(userId, amount);
+        logger.info("Updated Wallet for UserID : {}", userId);
         return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 }

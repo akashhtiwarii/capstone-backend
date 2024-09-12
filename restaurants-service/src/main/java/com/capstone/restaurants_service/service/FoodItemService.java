@@ -31,9 +31,10 @@ public interface FoodItemService {
      * Update Food Item.
      * @param foodItemId
      * @param updateFoodItemInDTO
+     * @param image
      * @return String message
      */
-    String updateFoodItem(long foodItemId, UpdateFoodItemInDTO updateFoodItemInDTO);
+    String updateFoodItem(long foodItemId, UpdateFoodItemInDTO updateFoodItemInDTO, MultipartFile image);
 
     /**
      * Get Food Items of a Restaurant.
@@ -48,4 +49,6 @@ public interface FoodItemService {
      * @return Food items
      */
     List<FoodItem> getFoodItemsByCategory(long categoryId);
+
+    FoodItem getByFoodId(long foodId);
 }

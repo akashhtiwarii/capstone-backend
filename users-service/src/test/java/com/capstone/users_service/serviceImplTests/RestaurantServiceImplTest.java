@@ -2,8 +2,6 @@ package com.capstone.users_service.serviceImplTests;
 
 import com.capstone.users_service.Enum.Role;
 import com.capstone.users_service.entity.User;
-import com.capstone.users_service.exceptions.UserNotFoundException;
-import com.capstone.users_service.exceptions.UserNotValidException;
 import com.capstone.users_service.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

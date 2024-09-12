@@ -1,12 +1,11 @@
 package com.capstone.users_service.serviceImplTests;
 
 import com.capstone.users_service.Enum.Role;
-import com.capstone.users_service.InDTO.LoginRequestInDTO;
-import com.capstone.users_service.InDTO.UserInDTO;
-import com.capstone.users_service.OutDTO.LoginResponseOutDTO;
+import com.capstone.users_service.dto.LoginRequestInDTO;
+import com.capstone.users_service.dto.UserInDTO;
+import com.capstone.users_service.dto.LoginResponseOutDTO;
 import com.capstone.users_service.entity.User;
 import com.capstone.users_service.entity.Wallet;
-import com.capstone.users_service.exceptions.EmailAlreadyExistsException;
 import com.capstone.users_service.repository.UserRepository;
 import com.capstone.users_service.repository.WalletRepository;
 import com.capstone.users_service.serviceImpl.UserServiceImpl;

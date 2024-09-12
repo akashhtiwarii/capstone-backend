@@ -1,5 +1,6 @@
 package com.capstone.restaurants_service.controller;
 
+import com.capstone.restaurants_service.dto.*;
 import com.capstone.restaurants_service.entity.Category;
 import com.capstone.restaurants_service.entity.FoodItem;
 import com.capstone.restaurants_service.entity.Restaurant;
@@ -7,16 +8,6 @@ import com.capstone.restaurants_service.service.CategoryService;
 import com.capstone.restaurants_service.service.FoodItemService;
 import com.capstone.restaurants_service.service.RestaurantService;
 import com.capstone.restaurants_service.utils.Constants;
-import com.capstone.restaurants_service.dto.CategoryInDTO;
-import com.capstone.restaurants_service.dto.FoodItemInDTO;
-import com.capstone.restaurants_service.dto.FoodItemWithImageInDTO;
-import com.capstone.restaurants_service.dto.GetOwnerRestaurantsInDTO;
-import com.capstone.restaurants_service.dto.RestaurantInDTO;
-import com.capstone.restaurants_service.dto.RestaurantWithImageInDTO;
-import com.capstone.restaurants_service.dto.UpdateCategoryDTO;
-import com.capstone.restaurants_service.dto.UpdateFoodItemInDTO;
-import com.capstone.restaurants_service.dto.UpdateRestaurantInDTO;
-import com.capstone.restaurants_service.dto.RequestSuccessOutDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,18 +59,18 @@ public class RestaurantController {
 
     /**
      * Add Restaurant.
-     * @param restaurantWithImageInDTO
+     * @param restaurantInDTO
+     * @param image
      * @return String message
      */
     @PostMapping(Constants.ADD_RESTAURANT_ENDPOINT)
     public ResponseEntity<RequestSuccessOutDTO> addRestaurant(
-            @Valid @ModelAttribute RestaurantWithImageInDTO restaurantWithImageInDTO) {
-        logger.info("Adding Restaurant : {}", restaurantWithImageInDTO.getRestaurant().getName());
-        RestaurantInDTO restaurant = restaurantWithImageInDTO.getRestaurant();
+             @ModelAttribute @Valid RestaurantInDTO restaurantInDTO,
+             @RequestParam(value = "image", required = false) MultipartFile image) {
+        logger.info("Adding Restaurant : {}", restaurantInDTO.getName());
         logger.info("Restaurant Details Fetched");
-        MultipartFile image = restaurantWithImageInDTO.getImage();
         logger.info("Image Fetched");
-        String message = restaurantService.save(restaurant, image);
+        String message = restaurantService.save(restaurantInDTO, image);
         logger.info("Restaurant Added");
         return ResponseEntity.status(HttpStatus.OK).body(new RequestSuccessOutDTO(message));
     }
@@ -99,15 +90,15 @@ public class RestaurantController {
 
     /**
      * Get owner Restaurants.
-     * @param getOwnerRestaurantsInDTO
+     * @param ownerId
      * @return owner restaurants
      */
-    @PostMapping(Constants.GET_OWNER_RESTAURANTS)
+    @GetMapping(Constants.GET_OWNER_RESTAURANTS)
     public ResponseEntity<List<Restaurant>> getOwnerRestaurants(
-            @Valid @RequestBody GetOwnerRestaurantsInDTO getOwnerRestaurantsInDTO) {
-        logger.info("Fetching Restaurants of ownerID : {}", getOwnerRestaurantsInDTO.getOwnerId());
-        List<Restaurant> restaurants = restaurantService.findByOwnerId(getOwnerRestaurantsInDTO);
-        logger.info("Fetching Restaurant of ownerId : {}", getOwnerRestaurantsInDTO.getOwnerId());
+            @RequestParam @Min(value = 1, message = "Valid Owner ID required") long ownerId) {
+        logger.info("Fetching Restaurants of ownerID : {}", ownerId);
+        List<Restaurant> restaurants = restaurantService.findByOwnerId(ownerId);
+        logger.info("Fetching Restaurant of ownerId : {}", ownerId);
         return ResponseEntity.status(HttpStatus.OK).body(restaurants);
     }
 
@@ -138,14 +129,16 @@ public class RestaurantController {
     /**
      * Update Restaurant.
      *
+     * @param image
      * @param updateRestaurantInDTO
      * @return String message
      */
-    @PutMapping(Constants.UPDATE_RESTAURANT_ENDPOINT)
+    @PutMapping(value = Constants.UPDATE_RESTAURANT_ENDPOINT)
     public ResponseEntity<RequestSuccessOutDTO> updateRestaurant(
-            @Valid @ModelAttribute UpdateRestaurantInDTO updateRestaurantInDTO) {
+             @ModelAttribute @Valid UpdateRestaurantInDTO updateRestaurantInDTO,
+             @RequestParam(value = "image", required = false) MultipartFile image) {
         logger.info("Updating Restaurant for restaurant ID: {}", updateRestaurantInDTO.getRestaurantId());
-        String response = restaurantService.updateRestaurant(updateRestaurantInDTO);
+        String response = restaurantService.updateRestaurant(updateRestaurantInDTO, image);
         logger.info("Updated Restaurant for restaurant ID: {}", updateRestaurantInDTO.getRestaurantId());
         return ResponseEntity.status(HttpStatus.OK).body(new RequestSuccessOutDTO(response));
     }
@@ -197,15 +190,15 @@ public class RestaurantController {
     /**
      * Add new Food Item.
      *
-     * @param foodItemWithImageInDTO
+     * @param foodItemInDTO
+     * @param image
      * @return String message
      */
     @PostMapping(Constants.ADD_FOOD_ITEM_ENDPOINT)
     public ResponseEntity<RequestSuccessOutDTO> addFoodItem(
-            @Valid @ModelAttribute FoodItemWithImageInDTO foodItemWithImageInDTO) {
+            @ModelAttribute @Valid FoodItemInDTO foodItemInDTO,
+            @RequestParam(value = "image", required = false) MultipartFile image) {
         logger.info("Adding new food item.");
-        FoodItemInDTO foodItemInDTO = foodItemWithImageInDTO.getFoodItem();
-        MultipartFile image = foodItemWithImageInDTO.getImage();
         String message = foodItemService.addFoodItem(foodItemInDTO, image);
         logger.info("Added new food item.");
         return ResponseEntity.status(HttpStatus.OK).body(new RequestSuccessOutDTO(message));
@@ -216,14 +209,16 @@ public class RestaurantController {
      *
      * @param fooditemId
      * @param updateFoodItemInDTO
+     * @param image
      * @return String message
      */
     @PutMapping(Constants.UPDATE_FOOD_ITEM_ENDPOINT)
     public ResponseEntity<RequestSuccessOutDTO> updateFoodItem(
             @PathVariable("foodItemId") long fooditemId,
-            @Valid @ModelAttribute UpdateFoodItemInDTO updateFoodItemInDTO) {
+            @ModelAttribute @Valid UpdateFoodItemInDTO updateFoodItemInDTO,
+            @RequestParam(value = "image", required = false) MultipartFile image) {
         logger.info("Updating food item : {}", fooditemId);
-        String message = foodItemService.updateFoodItem(fooditemId, updateFoodItemInDTO);
+        String message = foodItemService.updateFoodItem(fooditemId, updateFoodItemInDTO, image);
         logger.info("Updating food item : {}", fooditemId);
         return ResponseEntity.status(HttpStatus.OK).body(new RequestSuccessOutDTO(message));
     }
@@ -269,5 +264,13 @@ public class RestaurantController {
         List<FoodItem> foodItems = foodItemService.getFoodItemsByCategory(categoryId);
         logger.info("Fetched Food items of category: {}", categoryId);
         return ResponseEntity.status(HttpStatus.OK).body(foodItems);
+    }
+
+    @GetMapping("food/id")
+    public ResponseEntity<FoodItem> getFoodItemById(@RequestParam long foodId) {
+        logger.info("Fetching Food item of ID: {}", foodId);
+        FoodItem foodItem = foodItemService.getByFoodId(foodId);
+        logger.info("Fetched Food item of ID: {}", foodId);
+        return ResponseEntity.status(HttpStatus.OK).body(foodItem);
     }
 }

@@ -1,18 +1,15 @@
 package com.capstone.users_service.serviceImpl;
 
-import com.capstone.users_service.InDTO.AddressInDTO;
-import com.capstone.users_service.InDTO.AddressRequestInDTO;
+import com.capstone.users_service.dto.AddressInDTO;
 import com.capstone.users_service.entity.Address;
 import com.capstone.users_service.entity.User;
-import com.capstone.users_service.exceptions.AddressNotFoundException;
-import com.capstone.users_service.exceptions.UserNotFoundException;
+import com.capstone.users_service.exceptions.ResourceAlreadyExistsException;
+import com.capstone.users_service.exceptions.ResourceNotFoundException;
 import com.capstone.users_service.repository.AddressRepository;
 import com.capstone.users_service.repository.UserRepository;
 import com.capstone.users_service.service.AddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * AddressServiceImpl for implementing methods of AddressService.
@@ -32,26 +29,6 @@ public class AddressServiceImpl implements AddressService {
     private UserRepository userRepository;
 
     /**
-     * Get list of addresses added by user.
-     *
-     * @param addressRequestInDTO request body
-     * @return list of addresses of a user
-     */
-    @Override
-    public List<Address> findUserAddresses(AddressRequestInDTO addressRequestInDTO) {
-        User user = userRepository.findByEmail(addressRequestInDTO.getEmail());
-        if (user == null) {
-            throw new UserNotFoundException("User not found with email: " + addressRequestInDTO.getEmail());
-        }
-        List<Address> addresses = addressRepository.findByUserId(user.getUserId());
-        if (addresses == null || addresses.isEmpty()) {
-            throw new AddressNotFoundException("No addresses found for user with email: "
-                    + addressRequestInDTO.getEmail());
-        }
-        return addresses;
-    }
-
-    /**
      * Add new address.
      * @param addressInDTO request parameter
      * @return a string message
@@ -60,7 +37,11 @@ public class AddressServiceImpl implements AddressService {
     public String addAddress(AddressInDTO addressInDTO) {
         User user = userRepository.findByEmail(addressInDTO.getEmail());
         if (user == null) {
-            throw new UserNotFoundException("User not found with email: " + addressInDTO.getEmail());
+            throw new ResourceNotFoundException("User not found with email: " + addressInDTO.getEmail());
+        }
+        Address addressAlreadyExist = addressRepository.findByUserId(user.getUserId());
+        if (addressAlreadyExist != null) {
+            throw new ResourceAlreadyExistsException("Address Already Present for this user");
         }
         Address address = new Address();
         address.setUserId(user.getUserId());
@@ -74,5 +55,14 @@ public class AddressServiceImpl implements AddressService {
         } catch (Exception e) {
             throw new RuntimeException("An unexpected error occurred: " + e.getMessage());
         }
+    }
+
+    @Override
+    public Address getAddressById(long userId) {
+        Address address = addressRepository.findByUserId(userId);
+        if (address == null) {
+           throw new ResourceNotFoundException("Address Not Found");
+        }
+        return address;
     }
 }

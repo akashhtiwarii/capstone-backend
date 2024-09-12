@@ -1,7 +1,7 @@
 package com.capstone.users_service.InDTOTest;
 
 import com.capstone.users_service.Enum.Role;
-import com.capstone.users_service.InDTO.UserInDTO;
+import com.capstone.users_service.dto.UserInDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

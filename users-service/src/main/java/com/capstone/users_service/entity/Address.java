@@ -88,4 +88,9 @@ public class Address {
     public int hashCode() {
         return Objects.hash(addressId, userId, address, pincode, city, state);
     }
+
+    @Override
+    public String toString() {
+        return (address + ", " + city + ", " + state + ", " + pincode);
+    }
 }

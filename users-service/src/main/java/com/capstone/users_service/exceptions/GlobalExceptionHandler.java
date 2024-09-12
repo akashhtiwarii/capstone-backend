@@ -1,7 +1,9 @@
 package com.capstone.users_service.exceptions;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -26,51 +28,56 @@ public class GlobalExceptionHandler {
     private ErrorResponse buildSimpleErrorResponse(Exception ex, HttpStatus status) {
         return new ErrorResponse(status.value(), ex.getMessage());
     }
+
     /**
-     * Handle User Not Valid Exception.
-     * @param ex User not valid exception
-     * @return Error with a message
+     * Constraint Violation.
+     * @param ex
+     * @return Error message
      */
-    @ExceptionHandler(UserNotValidException.class)
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Map<String, String>> handleConstraintViolationException(
+            ConstraintViolationException ex) {
+        Map<String, String> response = new HashMap<>();
+        response.put("status", "400");
+        response.put("message", "Invalid Request. Try Again!");
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+    /**
+     * Request Body not found.
+     * @param ex
+     * @return Error message and status
+     */
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Map<String, String>> handleHttpMessageNotReadableException(
+            HttpMessageNotReadableException ex) {
+        Map<String, String> response = new HashMap<>();
+        response.put("status", "400");
+        response.put("message", "Invalid Request. Try Again!");
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorResponse> handleResourceAlreadyExistsException(ResourceAlreadyExistsException ex) {
+        ErrorResponse errorResponse = buildSimpleErrorResponse(ex, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+
+    @ExceptionHandler(ResourceNotValidException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ResponseEntity<ErrorResponse> handleUserNotValidException(UserNotValidException ex) {
+    public ResponseEntity<ErrorResponse> handleResourceNotValidException(ResourceNotValidException ex) {
         ErrorResponse errorResponse = buildSimpleErrorResponse(ex, HttpStatus.UNAUTHORIZED);
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
-    /**
-     * Handle User Not Found Exception.
-     * @param ex User not found exception
-     * @return Error with a message
-     */
-    @ExceptionHandler(UserNotFoundException.class)
+    @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex) {
+    public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex) {
         ErrorResponse errorResponse = buildSimpleErrorResponse(ex, HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
-    }
-
-    /**
-     * Handle Address not found exception.
-     * @param ex
-     * @return Error with a message
-     */
-    @ExceptionHandler(AddressNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<ErrorResponse> handleAddressNotFoundException(AddressNotFoundException ex) {
-        ErrorResponse errorResponse = buildSimpleErrorResponse(ex, HttpStatus.NOT_FOUND);
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
-    }
-    /**
-     * Handle EmailAlreadyExists Exception.
-     * @param ex Email already in database exception object
-     * @return Error message with an error code.
-     */
-    @ExceptionHandler(EmailAlreadyExistsException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ErrorResponse> handleEmailAlreadyExistsException(EmailAlreadyExistsException ex) {
-        ErrorResponse errorResponse = buildSimpleErrorResponse(ex, HttpStatus.BAD_REQUEST);
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     /**
