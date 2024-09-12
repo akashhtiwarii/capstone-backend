@@ -236,6 +236,7 @@ public class OrderServiceImpl implements OrderService {
                     String restaurantName = restaurantFeignClient.getRestaurantById(order.getRestaurantId()).getBody().getName();
                     List<OrderDetail> orderDetails = orderDetailRepository.findByOrderId(order.getOrderId());
                     UserOrderDetailsOutDTO userOrderDetailsOutDTO = new UserOrderDetailsOutDTO();
+                    userOrderDetailsOutDTO.setOrderId(order.getOrderId());
                     userOrderDetailsOutDTO.setRestaurantName(restaurantName);
                     userOrderDetailsOutDTO.setStatus(order.getStatus());
                     List<UserFoodItemOutDTO> foodItemOutDTOS = new ArrayList<>();

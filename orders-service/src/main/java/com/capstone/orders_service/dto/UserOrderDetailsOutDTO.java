@@ -19,6 +19,8 @@ public class UserOrderDetailsOutDTO {
      */
     private String restaurantName;
 
+    private long orderId;
+
     /**
      * A list of food items included in the order, each represented by a {@link UserFoodItemOutDTO}.
      */
@@ -39,11 +41,11 @@ public class UserOrderDetailsOutDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserOrderDetailsOutDTO that = (UserOrderDetailsOutDTO) o;
-        return Objects.equals(restaurantName, that.restaurantName) && Objects.equals(foodItemOutDTOS, that.foodItemOutDTOS) && status == that.status && Objects.equals(orderTime, that.orderTime);
+        return orderId == that.orderId && Objects.equals(restaurantName, that.restaurantName) && Objects.equals(foodItemOutDTOS, that.foodItemOutDTOS) && status == that.status && Objects.equals(orderTime, that.orderTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(restaurantName, foodItemOutDTOS, status, orderTime);
+        return Objects.hash(restaurantName, orderId, foodItemOutDTOS, status, orderTime);
     }
 }
