@@ -10,12 +10,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+
 @FeignClient(name = "users-service", url = "http://localhost:8081/user")
 public interface UsersFeignClient {
     @GetMapping("/{id}")
     ResponseEntity<UserOutDTO> getUserById(@PathVariable("id") long userId);
+    @GetMapping("/address/id")
+    ResponseEntity<AddressOutDTO> getAddressById(@RequestParam long addressId);
     @GetMapping("/address")
-    ResponseEntity<AddressOutDTO> getAddressById(@RequestParam long userId);
+    ResponseEntity<List<AddressOutDTO>> getAddressByUserId(@RequestParam long userId);
     @GetMapping("/wallet")
     ResponseEntity<WalletOutDTO> getUserWallet(@RequestParam long userId);
     @PutMapping("/wallet/update")

@@ -21,6 +21,8 @@ import javax.validation.constraints.PositiveOrZero;
 import com.capstone.users_service.utils.Constants;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * Rest Controller for managing user-operations.
 * */
@@ -131,17 +133,45 @@ public class UserController {
      */
     @PostMapping(Constants.USER_ADD_ADDRESS_ENDPOINT)
     public ResponseEntity<String> addAddress(@Valid @RequestBody AddressInDTO addressInDTO) {
-        logger.info("Adding new address for email ID: {}", addressInDTO.getEmail());
+        logger.info("Adding new address for User ID: {}", addressInDTO.getUserId());
         String message = addressService.addAddress(addressInDTO);
-        logger.info("Address added successfully for email ID: {}", addressInDTO.getEmail());
+        logger.info("Address added successfully for User ID: {}", addressInDTO.getUserId());
         return ResponseEntity.status(HttpStatus.OK).body(message);
     }
+
+    @GetMapping("/address/id")
+    public ResponseEntity<Address> getAddressById(@RequestParam long addressId) {
+        logger.info("Fetching address for address ID: {}", addressId);
+        Address response = addressService.getAddressById(addressId);
+        logger.info("Fetched address for address ID: {}", addressId);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
     @GetMapping("/address")
-    public ResponseEntity<Address> getAddressById(@RequestParam long userId) {
+    public ResponseEntity<List<Address>> getAddressByUserId(@RequestParam long userId) {
         logger.info("Fetching address for user ID: {}", userId);
-        Address response = addressService.getAddressById(userId);
+        List<Address> response = addressService.getAddressByUserId(userId);
         logger.info("Fetched address for user ID: {}", userId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @DeleteMapping("/address/delete")
+    public ResponseEntity<RequestSuccessOutDTO> deleteAddress(
+            @RequestParam @Min(value = 1, message = "Valid User ID required") long userId,
+            @RequestParam @Min(value = 1, message = "Valid Address ID required") long addressId
+    ) {
+        logger.info("Deleting address for user ID: {}", userId);
+        String response = addressService.deleteAddress(userId, addressId);
+        logger.info("Deleted address for user ID: {}", userId);
+        return ResponseEntity.status(HttpStatus.OK).body(new RequestSuccessOutDTO(response));
+    }
+
+    @PutMapping("address/update")
+    public ResponseEntity<RequestSuccessOutDTO> updateAddress(@Valid @RequestBody UpdateAddressInDTO updateAddressInDTO) {
+        logger.info("Updating address for user ID: {}", updateAddressInDTO.getUserId());
+        String response = addressService.updateAddress(updateAddressInDTO);
+        logger.info("Updated address for user ID: {}", updateAddressInDTO.getUserId());
+        return ResponseEntity.status(HttpStatus.OK).body(new RequestSuccessOutDTO(response));
     }
 
     @GetMapping("/wallet")

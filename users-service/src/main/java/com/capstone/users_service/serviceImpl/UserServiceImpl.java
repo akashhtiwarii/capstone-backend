@@ -69,18 +69,11 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             throw new ResourceNotFoundException("User Not Found");
         }
-        Address address = addressRepository.findByUserId(userId);
         ProfileOutDTO profileOutDTO = new ProfileOutDTO();
         profileOutDTO.setName(user.getName());
         profileOutDTO.setEmail(user.getEmail());
         profileOutDTO.setPhone(user.getPhone());
         profileOutDTO.setWalletAmount(wallet.getAmount());
-        if (address != null) {
-            profileOutDTO.setAddress(address.getAddress());
-            profileOutDTO.setCity(address.getCity());
-            profileOutDTO.setState(address.getState());
-            profileOutDTO.setPincode(address.getPincode());
-        }
         return profileOutDTO;
     }
 
@@ -151,10 +144,7 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             throw new ResourceNotFoundException("User Not Found");
         }
-        Address address = addressRepository.findByUserId(userId);
         if (!Objects.equals(user.getEmail(), updateProfileInDTO.getEmail())) {
-            System.out.println(user.getEmail());
-            System.out.println(updateProfileInDTO.getEmail());
             User emailExists = userRepository.findByEmail(updateProfileInDTO.getEmail());
             if (emailExists != null) {
                 throw new ResourceAlreadyExistsException("Email Already Exists");
@@ -163,21 +153,6 @@ public class UserServiceImpl implements UserService {
         user.setEmail(updateProfileInDTO.getEmail());
         user.setName(updateProfileInDTO.getName());
         user.setPhone(updateProfileInDTO.getPhone());
-        if (address == null) {
-            Address newAddress = new Address();
-            newAddress.setUserId(userId);
-            newAddress.setAddress(updateProfileInDTO.getAddress());
-            newAddress.setCity(updateProfileInDTO.getCity());
-            newAddress.setPincode(updateProfileInDTO.getPincode());
-            newAddress.setState(updateProfileInDTO.getState());
-            addressRepository.save(newAddress);
-        } else {
-            address.setAddress(updateProfileInDTO.getAddress());
-            address.setCity(updateProfileInDTO.getCity());
-            address.setPincode(updateProfileInDTO.getPincode());
-            address.setState(updateProfileInDTO.getState());
-            addressRepository.save(address);
-        }
         userRepository.save(user);
         return "Profile Updated Successfully";
     }

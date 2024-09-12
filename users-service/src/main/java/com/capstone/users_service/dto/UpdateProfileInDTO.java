@@ -33,17 +33,4 @@ public class UpdateProfileInDTO {
             message = "Phone number should be valid"
     )
     private String phone;
-
-    @NotBlank(message = "Address cannot be empty")
-    private String address;
-
-    @NotBlank(message = "City cannot be empty")
-    private String city;
-
-    @Min(value = MIN_PINCODE_VALUE, message = "Pincode must be a 6-digit number")
-    @Max(value = MAX_PINCODE_VALUE, message = "Pincode must be a 6-digit number")
-    private long pincode;
-
-    @NotBlank(message = "State cannot be empty")
-    private String state;
 }
