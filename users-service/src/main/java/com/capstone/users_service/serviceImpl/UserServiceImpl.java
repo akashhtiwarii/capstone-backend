@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import com.capstone.users_service.converters.UserConverters;
 import com.capstone.users_service.utils.Constants;
 
+import java.util.Objects;
+
 /**
  * UserServiceImpl for implementing methods of UserService.
  */
@@ -69,12 +71,9 @@ public class UserServiceImpl implements UserService {
         }
         Address address = addressRepository.findByUserId(userId);
         ProfileOutDTO profileOutDTO = new ProfileOutDTO();
-        profileOutDTO.setUserId(user.getUserId());
         profileOutDTO.setName(user.getName());
         profileOutDTO.setEmail(user.getEmail());
-        profileOutDTO.setPassword(user.getPassword());
         profileOutDTO.setPhone(user.getPhone());
-        profileOutDTO.setRole(user.getRole());
         profileOutDTO.setWalletAmount(wallet.getAmount());
         if (address != null) {
             profileOutDTO.setAddress(address.getAddress());
@@ -153,7 +152,9 @@ public class UserServiceImpl implements UserService {
             throw new ResourceNotFoundException("User Not Found");
         }
         Address address = addressRepository.findByUserId(userId);
-        if (user.getEmail() != updateProfileInDTO.getEmail()) {
+        if (!Objects.equals(user.getEmail(), updateProfileInDTO.getEmail())) {
+            System.out.println(user.getEmail());
+            System.out.println(updateProfileInDTO.getEmail());
             User emailExists = userRepository.findByEmail(updateProfileInDTO.getEmail());
             if (emailExists != null) {
                 throw new ResourceAlreadyExistsException("Email Already Exists");
