@@ -2,7 +2,6 @@ package com.capstone.users_service.serviceImpl;
 
 import com.capstone.users_service.Enum.Role;
 import com.capstone.users_service.dto.*;
-import com.capstone.users_service.entity.Address;
 import com.capstone.users_service.entity.User;
 import com.capstone.users_service.entity.Wallet;
 import com.capstone.users_service.exceptions.ResourceAlreadyExistsException;
@@ -13,10 +12,14 @@ import com.capstone.users_service.repository.UserRepository;
 import com.capstone.users_service.repository.WalletRepository;
 import com.capstone.users_service.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import com.capstone.users_service.converters.UserConverters;
 import com.capstone.users_service.utils.Constants;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import java.util.Objects;
 
 /**
@@ -25,6 +28,8 @@ import java.util.Objects;
 @Service
 public class UserServiceImpl implements UserService {
 
+    @Autowired
+    private JavaMailSender javaMailSender;
     /**
      * userRepository for accessing users table using Jpa methods.
      */
@@ -65,7 +70,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public ProfileOutDTO getProfileInfo(long userId) {
         User user = userRepository.findById(userId);
-        Wallet wallet = walletRepository.findByUserId(userId);
         if (user == null) {
             throw new ResourceNotFoundException("User Not Found");
         }
@@ -73,7 +77,10 @@ public class UserServiceImpl implements UserService {
         profileOutDTO.setName(user.getName());
         profileOutDTO.setEmail(user.getEmail());
         profileOutDTO.setPhone(user.getPhone());
-        profileOutDTO.setWalletAmount(wallet.getAmount());
+        if (user.getRole() == Role.USER) {
+            Wallet wallet = walletRepository.findByUserId(userId);
+            profileOutDTO.setWalletAmount(wallet.getAmount());
+        }
         return profileOutDTO;
     }
 
@@ -156,4 +163,29 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
         return "Profile Updated Successfully";
     }
+
+    @Override
+    public String contactUs(ContactUsInDTO contactUsInDTO) {
+        try {
+            sendEmail(contactUsInDTO);
+            return "Your message has been sent successfully!";
+        } catch (MessagingException e) {
+            throw new RuntimeException("Error while sending email: " + e.getMessage());
+        }
+    }
+
+    private void sendEmail(ContactUsInDTO contactUsDTO) throws MessagingException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+        helper.setReplyTo(contactUsDTO.getFromEmail());
+
+        helper.setTo(contactUsDTO.getRestaurantEmail());
+
+        helper.setSubject(contactUsDTO.getSubject());
+        helper.setText(contactUsDTO.getMessage(), true);
+
+        javaMailSender.send(message);
+    }
 }
+

@@ -19,6 +19,8 @@ public class UserOrderDetailsOutDTO {
      */
     private String restaurantName;
 
+    private String restaurantEmail;
+
     private long orderId;
 
     /**

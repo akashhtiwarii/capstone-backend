@@ -1,13 +1,11 @@
 package com.capstone.orders_service.controller;
 
 import com.capstone.orders_service.Enum.Status;
-import com.capstone.orders_service.dto.AddToCartInDTO;
-import com.capstone.orders_service.dto.CartItemOutDTO;
-import com.capstone.orders_service.dto.RestaurantOrderDetailsOutDTO;
-import com.capstone.orders_service.dto.OrderOutDTO;
-import com.capstone.orders_service.dto.UserOrderDetailsOutDTO;
+import com.capstone.orders_service.dto.*;
 import com.capstone.orders_service.service.CartItemService;
 import com.capstone.orders_service.service.OrderService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +19,9 @@ import java.util.List;
 @RequestMapping("/order")
 @CrossOrigin
 public class OrderController {
+
+    private final Logger logger = LogManager.getLogger(OrderController.class);
+    
     @Autowired
     private OrderService orderService;
     @Autowired
@@ -37,7 +38,10 @@ public class OrderController {
     public ResponseEntity<List<OrderOutDTO>> getOrders(
             @RequestParam @Min(value = 1, message = "UserId not Valid") long loggedInUserId,
             @RequestParam @Min(value = 1, message = "RestaurantId not Valid") long restaurantId) {
-        return ResponseEntity.status(HttpStatus.OK).body(orderService.getOrders(loggedInUserId, restaurantId));
+        logger.info("Fetching orders for restaurant : {}", restaurantId);
+        List<OrderOutDTO> orders = orderService.getOrders(loggedInUserId, restaurantId);
+        logger.info("Fetched orders for restaurant : {}", restaurantId);
+        return ResponseEntity.status(HttpStatus.OK).body(orders);
     }
 
     /**
@@ -48,10 +52,12 @@ public class OrderController {
      * @return A response message indicating the result of the operation.
      */
     @PostMapping("/add")
-    public ResponseEntity<String> addOrder(@RequestParam @Min(value = 1, message = "UserId not Valid") long userId,
-                                           @RequestParam @Min(value = 1, message = "AddressId not Valid") long addressId) {
+    public ResponseEntity<RequestSuccessOutDTO> addOrder(@RequestParam @Min(value = 1, message = "UserId not Valid") long userId,
+                                                         @RequestParam @Min(value = 1, message = "AddressId not Valid") long addressId) {
+        logger.info("Adding orders for user : {}", userId);
         String response = orderService.addOrder(userId, addressId);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        logger.info("Added orders for user : {}", userId);
+        return ResponseEntity.status(HttpStatus.OK).body(new RequestSuccessOutDTO(response));
     }
 
     /**
@@ -62,7 +68,9 @@ public class OrderController {
      */
     @GetMapping("/mycart")
     public ResponseEntity<List<CartItemOutDTO>> getMyCart(@RequestParam @Min(value = 1, message = "UserId not Valid") long userId) {
+        logger.info("Fetching Cart for user : {}", userId);
         List<CartItemOutDTO> cartItemOutDTOS = cartItemService.getCartItems(userId);
+        logger.info("Fetched Cart for user : {}", userId);
         return ResponseEntity.status(HttpStatus.OK).body(cartItemOutDTOS);
     }
 
@@ -73,9 +81,11 @@ public class OrderController {
      * @return A response message indicating the result of the operation.
      */
     @PostMapping("/cart/add")
-    public ResponseEntity<String> addToCart(@Valid @RequestBody AddToCartInDTO addToCartInDTO) {
+    public ResponseEntity<RequestSuccessOutDTO> addToCart(@Valid @RequestBody AddToCartInDTO addToCartInDTO) {
+        logger.info("Adding to Cart for user : {}", addToCartInDTO.getUserId());
         String response = cartItemService.addToCart(addToCartInDTO);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        logger.info("Added to Cart for user : {}", addToCartInDTO.getUserId());
+        return ResponseEntity.status(HttpStatus.OK).body(new RequestSuccessOutDTO(response));
     }
 
     /**
@@ -87,12 +97,12 @@ public class OrderController {
      * @return A response message indicating the result of the operation.
      */
     @PutMapping("/update")
-    public ResponseEntity<String> updateOrder(
+    public ResponseEntity<RequestSuccessOutDTO> updateOrder(
             @RequestParam @Min(value = 1, message = "OwnerId not Valid") long ownerId,
             @RequestParam @Min(value = 1, message = "OrderId not Valid") long orderId,
             @RequestParam Status status) {
         String response = orderService.updateOrder(ownerId, orderId, status);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(new RequestSuccessOutDTO(response));
     }
 
     /**
@@ -130,12 +140,12 @@ public class OrderController {
      * @return A response message indicating the result of the operation.
      */
     @PutMapping("/cart/update")
-    public ResponseEntity<String> updateCartItem(
+    public ResponseEntity<RequestSuccessOutDTO> updateCartItem(
             @RequestParam @Min(value = 1, message = "Valid Cart Item ID is required") long cartItemId,
             @RequestParam int delta
     ) {
         String message = cartItemService.updateCartItem(cartItemId, delta);
-        return ResponseEntity.status(HttpStatus.OK).body(message);
+        return ResponseEntity.status(HttpStatus.OK).body(new RequestSuccessOutDTO(message));
     }
 
     /**
@@ -145,11 +155,11 @@ public class OrderController {
      * @return A response message indicating the result of the operation.
      */
     @DeleteMapping("/cart/delete")
-    public ResponseEntity<String> deleteCartItem(
+    public ResponseEntity<RequestSuccessOutDTO> deleteCartItem(
             @RequestParam @Min(value = 1, message = "Valid Cart Item ID is required") long cartItemId
     ) {
         String message = cartItemService.deleteCartItem(cartItemId);
-        return ResponseEntity.status(HttpStatus.OK).body(message);
+        return ResponseEntity.status(HttpStatus.OK).body(new RequestSuccessOutDTO(message));
     }
 
     /**
@@ -159,10 +169,10 @@ public class OrderController {
      * @return A response message indicating the result of the operation.
      */
     @PutMapping("/cancel")
-    public ResponseEntity<String> cancelOrder(
+    public ResponseEntity<RequestSuccessOutDTO> cancelOrder(
             @RequestParam @Min(value = 1, message = "Valid Order ID is required") long orderId
     ) {
         String response = orderService.cancelOrder(orderId);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(new RequestSuccessOutDTO(response));
     }
 }

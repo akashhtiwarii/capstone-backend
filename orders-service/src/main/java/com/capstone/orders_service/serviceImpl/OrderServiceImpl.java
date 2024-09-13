@@ -233,11 +233,12 @@ public class OrderServiceImpl implements OrderService {
             List<UserOrderDetailsOutDTO> userOrderDetailsOutDTOS = new ArrayList<>();
             for (Order order : orders) {
                 try {
-                    String restaurantName = restaurantFeignClient.getRestaurantById(order.getRestaurantId()).getBody().getName();
+                    RestaurantOutDTO restaurant = restaurantFeignClient.getRestaurantById(order.getRestaurantId()).getBody();
                     List<OrderDetail> orderDetails = orderDetailRepository.findByOrderId(order.getOrderId());
                     UserOrderDetailsOutDTO userOrderDetailsOutDTO = new UserOrderDetailsOutDTO();
                     userOrderDetailsOutDTO.setOrderId(order.getOrderId());
-                    userOrderDetailsOutDTO.setRestaurantName(restaurantName);
+                    userOrderDetailsOutDTO.setRestaurantName(restaurant.getName());
+                    userOrderDetailsOutDTO.setRestaurantEmail(restaurant.getEmail());
                     userOrderDetailsOutDTO.setStatus(order.getStatus());
                     List<UserFoodItemOutDTO> foodItemOutDTOS = new ArrayList<>();
                     for (OrderDetail orderDetail : orderDetails) {

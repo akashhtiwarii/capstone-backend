@@ -37,4 +37,6 @@ public interface UserService {
     LoginResponseOutDTO loginUser(LoginRequestInDTO loginRequestInDTO);
 
     String updateUserProfile(long userId, UpdateProfileInDTO updateProfileInDTO);
+
+    String contactUs(ContactUsInDTO contactUsInDTO);
 }

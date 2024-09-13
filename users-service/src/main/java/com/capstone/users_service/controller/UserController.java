@@ -57,11 +57,11 @@ public class UserController {
      * @return a ResponseEntity containing the registration status
      */
     @PostMapping(Constants.USER_REGISTER_ENDPOINT)
-    public ResponseEntity<String> registerUser(@Valid @RequestBody UserInDTO userInDTO) {
+    public ResponseEntity<RequestSuccessOutDTO> registerUser(@Valid @RequestBody UserInDTO userInDTO) {
         logger.info("Registering new user: {}", userInDTO.getEmail());
         String message = userService.registerUser(userInDTO);
         logger.info("User registered successfully: {}", userInDTO.getEmail());
-        return ResponseEntity.status(HttpStatus.OK).body(message);
+        return ResponseEntity.status(HttpStatus.OK).body(new RequestSuccessOutDTO(message));
     }
 
     /**
@@ -132,11 +132,11 @@ public class UserController {
      * @return a string message
      */
     @PostMapping(Constants.USER_ADD_ADDRESS_ENDPOINT)
-    public ResponseEntity<String> addAddress(@Valid @RequestBody AddressInDTO addressInDTO) {
+    public ResponseEntity<RequestSuccessOutDTO> addAddress(@Valid @RequestBody AddressInDTO addressInDTO) {
         logger.info("Adding new address for User ID: {}", addressInDTO.getUserId());
         String message = addressService.addAddress(addressInDTO);
         logger.info("Address added successfully for User ID: {}", addressInDTO.getUserId());
-        return ResponseEntity.status(HttpStatus.OK).body(message);
+        return ResponseEntity.status(HttpStatus.OK).body(new RequestSuccessOutDTO(message));
     }
 
     @GetMapping("/address/id")
@@ -183,24 +183,32 @@ public class UserController {
     }
 
     @PutMapping("/wallet/update")
-    public ResponseEntity<String> updateUserWallet(
+    public ResponseEntity<RequestSuccessOutDTO> updateUserWallet(
             @RequestParam @Min(value = 1, message = "Valid User ID required") long userId,
             @RequestParam @PositiveOrZero(message = "Valid amount required") double amount
     ) {
         logger.info("Updating Wallet for UserID : {}", userId);
         String message = walletService.updateWallet(userId, amount);
         logger.info("Updated Wallet for UserID : {}", userId);
-        return ResponseEntity.status(HttpStatus.OK).body(message);
+        return ResponseEntity.status(HttpStatus.OK).body(new RequestSuccessOutDTO(message));
     }
 
     @PutMapping("/wallet/recharge")
-    public ResponseEntity<String> rechargeWallet(
+    public ResponseEntity<RequestSuccessOutDTO> rechargeWallet(
             @RequestParam @Min(value = 1, message = "Valid User ID required") long userId,
             @RequestParam @Positive(message = "Valid Amount required") double amount
     ) {
         logger.info("Updating Wallet for UserID : {}", userId);
         String message = walletService.rechargeWallet(userId, amount);
         logger.info("Updated Wallet for UserID : {}", userId);
-        return ResponseEntity.status(HttpStatus.OK).body(message);
+        return ResponseEntity.status(HttpStatus.OK).body(new RequestSuccessOutDTO(message));
+    }
+
+    @PostMapping("/contact-us")
+    public RequestSuccessOutDTO contactUs(@RequestBody ContactUsInDTO contactUsDTO) {
+        logger.info("Sending Mail to restaurant : {}", contactUsDTO.getRestaurantEmail());
+        String message = userService.contactUs(contactUsDTO);
+        logger.info("Sent Mail to restaurant : {}", contactUsDTO.getRestaurantEmail());
+        return new RequestSuccessOutDTO(message);
     }
 }
