@@ -47,8 +47,8 @@ public class CartItemOutDTO {
 
     /**
      * Compares this CartItemOutDTO object to the specified object for equality.
-     * Two CartItemOutDTO objects are considered equal if they have the same cartItemId, userId, restaurantName, foodName, quantity, and price.
-     *
+     * Two CartItemOutDTO objects are considered equal
+     * if they have the same cartItemId, userId, restaurantName, foodName, quantity, and price.
      * @param o the object to compare this CartItemOutDTO against.
      * @return true if the specified object is equal to this CartItemOutDTO; false otherwise.
      */
@@ -61,7 +61,12 @@ public class CartItemOutDTO {
             return false;
         }
         CartItemOutDTO that = (CartItemOutDTO) o;
-        return cartItemId == that.cartItemId && userId == that.userId && quantity == that.quantity && Double.compare(price, that.price) == 0 && Objects.equals(restaurantName, that.restaurantName) && Objects.equals(foodName, that.foodName);
+        return cartItemId == that.cartItemId
+                && userId == that.userId
+                && quantity == that.quantity
+                && Double.compare(price, that.price) == 0
+                && Objects.equals(restaurantName, that.restaurantName)
+                && Objects.equals(foodName, that.foodName);
     }
 
     /**

@@ -11,43 +11,70 @@ import javax.validation.constraints.Positive;
 import java.util.Objects;
 
 /**
- * DTO for Adding Food Item.
+ * Data Transfer Object (DTO) for representing a food item when adding or updating food items in the system.
+ * This class contains the necessary fields for food item details including owner ID, category ID, name, description,
+ * and price.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class FoodItemInDTO {
     /**
-     * Logged in Owner Info for validation.
+     * The ID of the logged-in owner performing the operation.
+     * <p>
+     * This field is required and must be a positive integer.
+     * </p>
      */
     @NotNull(message = "Valid Owner ID required")
     @Min(value = 1, message = "Valid Owner ID required")
     private long loggedInOwnerId;
+
     /**
-     * categoryId to map with categoryId field of entity.
+     * The ID of the category to which the food item belongs.
+     * <p>
+     * This field is required and must be a positive integer.
+     * </p>
      */
     @NotNull(message = "Valid Category ID required")
     @Min(value = 1, message = "Valid Category ID required")
     private long categoryId;
+
     /**
-     * name to map with name field of entity.
+     * The name of the food item.
+     * <p>
+     * This field is required and must be a non-blank string.
+     * </p>
      */
     @NotBlank(message = "Valid Name required")
     private String name;
+
     /**
-     * description to map with description field of entity.
+     * The description of the food item.
+     * <p>
+     * This field is optional and can be null or empty.
+     * </p>
      */
     private String description;
+
     /**
-     * price to map with price field of entity.
+     * The price of the food item.
+     * <p>
+     * This field is required and must be a positive number.
+     * </p>
      */
     @NotNull(message = "Valid Price required")
     @Positive(message = "Valid Price required")
     private double price;
+
     /**
-     * Override equals method.
-     * @param o
-     * @return boolean
+     * Compares this FoodItemInDTO object with another object for equality.
+     * <p>
+     * Two FoodItemInDTO objects are considered equal if their loggedInOwnerId, categoryId, name, description,
+     * and price fields are equal.
+     * </p>
+     *
+     * @param o the object to compare with
+     * @return {@code true} if the objects are equal; {@code false} otherwise
      */
     @Override
     public boolean equals(Object o) {
@@ -66,8 +93,12 @@ public class FoodItemInDTO {
     }
 
     /**
-     * Override hashcode method.
-     * @return Hashed object
+     * Returns a hash code value for this FoodItemInDTO object.
+     * <p>
+     * The hash code is computed based on the loggedInOwnerId, categoryId, name, description, and price fields.
+     * </p>
+     *
+     * @return the hash code value
      */
     @Override
     public int hashCode() {

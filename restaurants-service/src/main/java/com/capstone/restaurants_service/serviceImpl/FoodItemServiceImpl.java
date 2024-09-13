@@ -27,36 +27,54 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * FoodItemServiceImpl for implementing methods of FoodItemService.
+ * Implementation of the {@link FoodItemService} interface for managing {@link FoodItem} entities.
+ * <p>
+ * This service provides the business logic for creating, updating, retrieving, and deleting food items
+ * within the system. It interacts with the {@link FoodItemRepository}, {@link CategoryRepository}, and
+ * {@link RestaurantRepository} to perform these operations. It also uses the {@link UserClient} to validate
+ * user roles and permissions.
+ * </p>
  */
 @Service
 public class FoodItemServiceImpl implements FoodItemService {
 
     /**
-     * FoodItemRepository object.
+     * Repository for performing CRUD operations on {@link FoodItem} entities.
      */
     @Autowired
     private FoodItemRepository foodItemRepository;
+
     /**
-     * CategoryRepository object.
+     * Repository for performing CRUD operations on {@link Category} entities.
      */
     @Autowired
     private CategoryRepository categoryRepository;
+
     /**
-     * RestaurantRepository object.
+     * Repository for performing CRUD operations on {@link Restaurant} entities.
      */
     @Autowired
     private RestaurantRepository restaurantRepository;
+
     /**
-     * User Service communication object.
+     * Feign client for communicating with the user service to validate user roles and permissions.
      */
     @Autowired
     private UserClient userClient;
+
     /**
-     * Add new Food Item.
-     * @param foodItemInDTO
-     * @param image
-     * @return String message
+     * Adds a new food item to the system.
+     * <p>
+     * This method checks if the user has the appropriate role and verifies the existence of the category
+     * and restaurant associated with the food item. It then ensures that the food item does not already
+     * exist for the given category. If all checks pass, it saves the food item and returns a confirmation message.
+     * </p>
+     * @param foodItemInDTO the data transfer object containing the details of the food item to be added
+     * @param image the image file associated with the food item
+     * @return a confirmation message indicating the result of the addition operation
+     * @throws ResourceNotFoundException if the user, category, or restaurant is not found
+     * @throws ResourceNotValidException if the user does not have the correct role or cannot add the food item
+     * @throws ResourceAlreadyExistsException if the food item already exists for the given category
      */
     public String addFoodItem(FoodItemInDTO foodItemInDTO, MultipartFile image) {
         UserOutDTO user = userClient.getUserById(foodItemInDTO.getLoggedInOwnerId()).getBody();
@@ -81,7 +99,7 @@ public class FoodItemServiceImpl implements FoodItemService {
         FoodItem foodItemAlreadyExists = foodItemRepository.findByCategoryIdAndName(
                 foodItemInDTO.getCategoryId(), foodItemName);
         if (foodItemAlreadyExists != null) {
-           throw new ResourceAlreadyExistsException(Constants.FOOD_ALREADY_PRESENT);
+            throw new ResourceAlreadyExistsException(Constants.FOOD_ALREADY_PRESENT);
         }
         FoodItem foodItem = FoodItemConverters.foodItemInDTOToFoodItemEntity(foodItemInDTO);
         try {
@@ -98,10 +116,16 @@ public class FoodItemServiceImpl implements FoodItemService {
     }
 
     /**
-     * Delete Food Item.
-     * @param userId
-     * @param foodId
-     * @return String message
+     * Deletes an existing food item from the system.
+     * <p>
+     * This method checks if the user has the appropriate role and verifies the existence of the food item
+     * and its associated category and restaurant. It then deletes the food item and returns a confirmation message.
+     * </p>
+     * @param userId the ID of the user requesting the deletion
+     * @param foodId the ID of the food item to be deleted
+     * @return a confirmation message indicating the result of the deletion operation
+     * @throws ResourceNotFoundException if the user or food item is not found
+     * @throws ResourceNotValidException if the user does not have the correct role or cannot delete the food item
      */
     @Override
     public String deleteFoodItem(long userId, long foodId) {
@@ -130,10 +154,18 @@ public class FoodItemServiceImpl implements FoodItemService {
     }
 
     /**
-     * Update Food Item.
-     * @param foodItemId
-     * @param updateFoodItemInDTO
-     * @return String message
+     * Updates an existing food item.
+     * <p>
+     * This method validates the user's role and checks if the food item exists. It also ensures that
+     * the user owns the restaurant associated with the food item and verifies that the new category
+     * belongs to the same restaurant. It updates the food item details and returns a confirmation message.
+     * </p>
+     * @param foodItemId the ID of the food item to be updated
+     * @param updateFoodItemInDTO the data transfer object containing the updated details of the food item
+     * @param image the new image file associated with the food item
+     * @return a confirmation message indicating the result of the update operation
+     * @throws ResourceNotFoundException if the user, food item, or category is not found
+     * @throws ResourceNotValidException if the user does not have the correct role or cannot update the food item
      */
     @Override
     public String updateFoodItem(long foodItemId, UpdateFoodItemInDTO updateFoodItemInDTO, MultipartFile image) {
@@ -176,9 +208,15 @@ public class FoodItemServiceImpl implements FoodItemService {
     }
 
     /**
-     * Get Food Items Of Restaurant.
-     * @param restaurantId
-     * @return Food Items
+     * Retrieves all food items for a specified restaurant.
+     * <p>
+     * This method fetches the restaurant, checks if it exists, and then retrieves all categories associated
+     * with that restaurant. It then collects all food items from those categories and returns them. If no
+     * food items are found, it throws an exception.
+     * </p>
+     * @param restaurantId the ID of the restaurant for which to retrieve food items
+     * @return a list of {@link FoodItem} entities associated with the specified restaurant
+     * @throws ResourceNotFoundException if the restaurant or categories are not found, or if no food items are found
      */
     @Override
     public List<FoodItem> getAllFoodItemsOfRestaurant(long restaurantId) {
@@ -204,16 +242,21 @@ public class FoodItemServiceImpl implements FoodItemService {
     }
 
     /**
-     * Get Food Items By Category.
-     * @param categoryId
-     * @return Food Items
+     * Retrieves all food items for a specified category.
+     * <p>
+     * This method retrieves the food items associated with the given category ID. If no food items are found,
+     * it throws an exception.
+     * </p>
+     * @param categoryId the ID of the category for which to retrieve food items
+     * @return a list of {@link FoodItem} entities associated with the specified category
+     * @throws ResourceNotFoundException if no food items are found for the given category
      */
     @Override
     public List<FoodItem> getFoodItemsByCategory(long categoryId) {
         try {
             List<FoodItem> foodItems = foodItemRepository.findByCategoryId(categoryId);
-            if (foodItems == null) {
-               throw new ResourceNotFoundException(Constants.FOOD_NOT_FOUND);
+            if (foodItems == null || foodItems.isEmpty()) {
+                throw new ResourceNotFoundException(Constants.FOOD_NOT_FOUND);
             }
             return foodItems;
         } catch (Exception ex) {
@@ -221,6 +264,16 @@ public class FoodItemServiceImpl implements FoodItemService {
         }
     }
 
+    /**
+     * Retrieves a specific food item by its ID.
+     * <p>
+     * This method fetches the food item associated with the provided food ID. If the food item is not found,
+     * it throws an exception.
+     * </p>
+     * @param foodId the ID of the food item to retrieve
+     * @return the {@link FoodItem} entity with the specified ID
+     * @throws ResourceNotFoundException if the food item is not found
+     */
     @Override
     public FoodItem getByFoodId(long foodId) {
         FoodItem foodItem = foodItemRepository.findById(foodId);
@@ -230,3 +283,4 @@ public class FoodItemServiceImpl implements FoodItemService {
         return foodItem;
     }
 }
+

@@ -21,32 +21,46 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * CategoryServiceImpl for implementing methods of CategoryService.
+ * Implementation of the {@link CategoryService} interface for managing {@link Category} entities.
+ * <p>
+ * This service handles business logic for adding, updating, retrieving, and deleting categories
+ * within the system. It interacts with the {@link CategoryRepository} and {@link RestaurantRepository}
+ * to perform CRUD operations and uses {@link UserClient} to validate user roles.
+ * </p>
  */
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
     /**
-     * CategoryRepository Object.
+     * Repository for performing CRUD operations on {@link Category} entities.
      */
     @Autowired
     private CategoryRepository categoryRepository;
 
     /**
-     * Restaurant Repository Object.
+     * Repository for performing CRUD operations on {@link Restaurant} entities.
      */
     @Autowired
     private RestaurantRepository restaurantRepository;
+
     /**
-     * User Service Communication object.
+     * Feign client for communicating with the user service to validate user roles.
      */
     @Autowired
     private UserClient userClient;
 
     /**
-     * Add Category Implementation.
-     * @param categoryInDTO request parameter
-     * @return String message
+     * Adds a new category.
+     * <p>
+     * This method checks if the user has the correct role and validates that the restaurant exists and
+     * is owned by the user. It then checks if the category already exists for the restaurant and adds
+     * the category if it does not. It returns a confirmation message upon successful addition.
+     * </p>
+     * @param categoryInDTO the data transfer object containing the details of the category to be added
+     * @return a confirmation message indicating the result of the addition operation
+     * @throws ResourceNotFoundException if the user or restaurant is not found
+     * @throws ResourceNotValidException if the user does not have the correct role or cannot add the category
+     * @throws ResourceAlreadyExistsException if the category already exists for the restaurant
      */
     @Override
     public String addCategory(CategoryInDTO categoryInDTO) {
@@ -82,8 +96,14 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     /**
-     * Get all the categories.
-     * @return the list of all categories
+     * Retrieves all categories for a specific restaurant.
+     * <p>
+     * This method checks if the restaurant exists and then retrieves all categories associated with it.
+     * It returns a list of categories or throws an exception if no categories are found.
+     * </p>
+     * @param restaurantId the ID of the restaurant for which categories are to be retrieved
+     * @return a list of {@link Category} entities associated with the given restaurant ID
+     * @throws ResourceNotFoundException if the restaurant does not exist or if no categories are found
      */
     @Override
     public List<Category> getAllCategoriesOfRestaurant(long restaurantId) {
@@ -93,16 +113,25 @@ public class CategoryServiceImpl implements CategoryService {
         }
         List<Category> categories = categoryRepository.findByRestaurantId(restaurantId);
         if (categories.isEmpty()) {
-           throw new ResourceNotFoundException(Constants.NO_CATEGORIES_FOR_RESTAURANT);
+            throw new ResourceNotFoundException(Constants.NO_CATEGORIES_FOR_RESTAURANT);
         }
         return categories;
     }
 
     /**
-     * Update Category.
-     * @param categoryId
-     * @param updateCategoryDTO
-     * @return Message
+     * Updates an existing category.
+     * <p>
+     * This method validates the user's role and checks if the category exists. It also ensures that
+     * the user owns the restaurant associated with the category. If the category name is changed, it
+     * checks if the new name already exists for the restaurant. If all validations pass, it updates
+     * the category and returns a confirmation message.
+     * </p>
+     * @param categoryId the ID of the category to be updated
+     * @param updateCategoryDTO the data transfer object containing the updated details of the category
+     * @return a confirmation message indicating the result of the update operation
+     * @throws ResourceNotFoundException if the user or category is not found
+     * @throws ResourceNotValidException if the user does not have the correct role or cannot update the category
+     * @throws ResourceAlreadyExistsException if the updated category name already exists for the restaurant
      */
     @Override
     public String updateCategory(long categoryId, UpdateCategoryDTO updateCategoryDTO) {
@@ -141,10 +170,17 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     /**
-     * Delete Category.
-     * @param userId
-     * @param categoryId
-     * @return Message
+     * Deletes an existing category.
+     * <p>
+     * This method validates the user's role and ensures the category exists before attempting to delete it.
+     * It also verifies that the user owns the restaurant associated with the category. If all checks pass,
+     * it deletes the category and returns a confirmation message.
+     * </p>
+     * @param userId the ID of the user requesting the deletion
+     * @param categoryId the ID of the category to be deleted
+     * @return a confirmation message indicating the result of the deletion operation
+     * @throws ResourceNotFoundException if the user or category is not found
+     * @throws ResourceNotValidException if the user does not have the correct role or cannot delete the category
      */
     @Override
     public String deleteCategory(long userId, long categoryId) {
@@ -160,7 +196,7 @@ public class CategoryServiceImpl implements CategoryService {
             throw new ResourceNotFoundException(Constants.CATEGORY_NOT_FOUND);
         }
         if (restaurantRepository.findById(category.getRestaurantId()).getOwnerId() != userId) {
-           throw new ResourceNotValidException(Constants.YOU_CANNOT_DELETE_CATEGORY);
+            throw new ResourceNotValidException(Constants.YOU_CANNOT_DELETE_CATEGORY);
         }
         try {
             categoryRepository.deleteById(categoryId);
@@ -168,6 +204,5 @@ public class CategoryServiceImpl implements CategoryService {
         } catch (Exception ex) {
             throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + ex.getMessage());
         }
-
     }
 }

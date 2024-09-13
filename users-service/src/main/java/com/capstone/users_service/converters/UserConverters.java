@@ -5,13 +5,16 @@ import com.capstone.users_service.dto.LoginResponseOutDTO;
 import com.capstone.users_service.entity.User;
 
 /**
- * User In DTOs to Entity Converters and Vice Versa.
+ * Utility class for converting between User data transfer objects (DTOs) and User entities.
+ * Provides methods to convert {@link UserInDTO} to {@link User} entity and {@link User} entity to {@link LoginResponseOutDTO}.
  */
 public class UserConverters {
+
     /**
-     * Convert UserInDTO To User Entity.
-     * @param userInDTO Registration Request Body
-     * @return User Entity
+     * Converts a {@link UserInDTO} to a {@link User} entity.
+     *
+     * @param userInDTO The data transfer object containing user registration details.
+     * @return A {@link User} entity with values populated from the provided {@link UserInDTO}.
      */
     public static User registerUserInDTOToUserEntity(UserInDTO userInDTO) {
         User user = new User();
@@ -24,9 +27,10 @@ public class UserConverters {
     }
 
     /**
-     * User Entity to Login Response DTO.
-     * @param user entity
-     * @return Login Response DTO
+     * Converts a {@link User} entity to a {@link LoginResponseOutDTO}.
+     *
+     * @param user The {@link User} entity to be converted.
+     * @return A {@link LoginResponseOutDTO} containing user details and a success message.
      */
     public static LoginResponseOutDTO userEntityToLoginResponseOutDTO(User user) {
         return new LoginResponseOutDTO(
@@ -37,6 +41,4 @@ public class UserConverters {
                 user.getRole(),
                 "Login Successful");
     }
-
-
 }

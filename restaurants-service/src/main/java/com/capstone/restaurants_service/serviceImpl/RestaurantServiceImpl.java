@@ -17,33 +17,43 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
-
 import java.util.List;
 import java.util.Objects;
 
 /**
- * RestaurantServiceImpl for implementing methods of RestaurantService.
+ * Implementation of the {@link RestaurantService} interface.
+ * <p>
+ * This service handles the business logic related to restaurant operations,
+ * including adding, updating, retrieving, and managing restaurants.
+ * </p>
  */
 @Service
 public class RestaurantServiceImpl implements RestaurantService {
 
     /**
-     * restaurantRepository for connecting with address table in database.
+     * Repository for managing {@link Restaurant} entities.
      */
     @Autowired
     private RestaurantRepository restaurantRepository;
 
     /**
-     * User client for communicating with user service.
+     * Client for communicating with the user service.
      */
     @Autowired
     private UserClient userClient;
 
     /**
-     * Add restaurant.
-     * @param restaurantInDTO
-     * @param image
-     * @return String message
+     * Adds a new restaurant.
+     * <p>
+     * This method validates the user's role and ensures that the restaurant email
+     * is unique before saving the restaurant to the database. It also handles image uploads.
+     * </p>
+     * @param restaurantInDTO the DTO containing the details of the restaurant to be added
+     * @param image an optional image file associated with the restaurant
+     * @return a message indicating the result of the operation
+     * @throws ResourceNotFoundException if the user associated with the restaurant is not found
+     * @throws ResourceNotValidException if the user role is not valid for adding a restaurant
+     * @throws ResourceAlreadyExistsException if a restaurant with the given email already exists
      */
     @Override
     public String save(RestaurantInDTO restaurantInDTO, MultipartFile image) {
@@ -74,9 +84,18 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     /**
-     * Update Restaurant.
-     * @param updateRestaurantInDTO
-     * @return String message.
+     * Updates an existing restaurant.
+     * <p>
+     * This method validates the user's role and checks if the restaurant exists and if the
+     * user has the rights to update it. It also ensures that the restaurant email is unique
+     * before saving the updated details to the database.
+     * </p>
+     * @param updateRestaurantInDTO the DTO containing the updated details of the restaurant
+     * @param image an optional image file associated with the restaurant
+     * @return a message indicating the result of the operation
+     * @throws ResourceNotFoundException if the user or the restaurant is not found
+     * @throws ResourceNotValidException if the user role is not valid for updating the restaurant
+     * @throws ResourceAlreadyExistsException if a restaurant with the given email already exists
      */
     @Override
     public String updateRestaurant(UpdateRestaurantInDTO updateRestaurantInDTO, MultipartFile image) {
@@ -89,7 +108,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         }
         Restaurant restaurant = restaurantRepository.findById(updateRestaurantInDTO.getRestaurantId());
         if (restaurant == null) {
-           throw new ResourceNotFoundException(Constants.RESTAURANT_DOES_NOT_EXISTS);
+            throw new ResourceNotFoundException(Constants.RESTAURANT_DOES_NOT_EXISTS);
         }
         if (restaurant.getOwnerId() != updateRestaurantInDTO.getLoggedInOwnerId()) {
             throw new ResourceNotValidException(Constants.YOU_CANNOT_UPDATE_RESTAURANT);
@@ -118,8 +137,13 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     /**
-     * Get all restaurants.
-     * @return the list of all restaurants
+     * Retrieves all restaurants.
+     * <p>
+     * This method fetches the list of all restaurants from the database. If no restaurants are found,
+     * an exception is thrown.
+     * </p>
+     * @return a list of {@link Restaurant} entities
+     * @throws ResourceNotFoundException if no restaurants are found
      */
     @Override
     public List<Restaurant> findAll() {
@@ -131,9 +155,14 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     /**
-     * Get Restaurants by owner ID.
-     * @param ownerId
-     * @return restaurants list
+     * Retrieves restaurants by owner ID.
+     * <p>
+     * This method fetches all restaurants associated with the given owner ID. If no restaurants are found,
+     * an exception is thrown.
+     * </p>
+     * @param ownerId the ID of the owner whose restaurants are to be retrieved
+     * @return a list of {@link Restaurant} entities owned by the specified owner
+     * @throws ResourceNotFoundException if no restaurants are found for the given owner ID
      */
     @Override
     public List<Restaurant> findByOwnerId(long ownerId) {
@@ -145,9 +174,14 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     /**
-     * Get Restaurant By Id.
-     * @param restaurantId
-     * @return
+     * Retrieves a restaurant by its ID.
+     * <p>
+     * This method fetches a restaurant from the database using the provided restaurant ID. If the restaurant
+     * is not found, an exception is thrown.
+     * </p>
+     * @param restaurantId the ID of the restaurant to retrieve
+     * @return the {@link Restaurant} entity with the specified ID
+     * @throws ResourceNotFoundException if the restaurant with the given ID does not exist
      */
     @Override
     public Restaurant findById(long restaurantId) {

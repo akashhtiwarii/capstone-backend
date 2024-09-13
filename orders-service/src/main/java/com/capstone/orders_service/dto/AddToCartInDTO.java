@@ -66,7 +66,10 @@ public class AddToCartInDTO {
             return false;
         }
         AddToCartInDTO that = (AddToCartInDTO) o;
-        return userId == that.userId && restaurantId == that.restaurantId && foodId == that.foodId && quantity == that.quantity;
+        return userId == that.userId
+                && restaurantId == that.restaurantId
+                && foodId == that.foodId
+                && quantity == that.quantity;
     }
 
     /**

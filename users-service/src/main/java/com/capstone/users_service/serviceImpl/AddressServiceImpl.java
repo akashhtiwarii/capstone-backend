@@ -4,7 +4,6 @@ import com.capstone.users_service.dto.AddressInDTO;
 import com.capstone.users_service.dto.UpdateAddressInDTO;
 import com.capstone.users_service.entity.Address;
 import com.capstone.users_service.entity.User;
-import com.capstone.users_service.exceptions.ResourceAlreadyExistsException;
 import com.capstone.users_service.exceptions.ResourceNotFoundException;
 import com.capstone.users_service.exceptions.ResourceNotValidException;
 import com.capstone.users_service.repository.AddressRepository;
@@ -16,26 +15,31 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * AddressServiceImpl for implementing methods of AddressService.
+ * Implementation of {@link AddressService} for managing address-related operations.
+ * This service provides methods for adding, updating, retrieving, and deleting addresses.
  */
 @Service
 public class AddressServiceImpl implements AddressService {
 
     /**
-     * addressRepository for connecting with address table in database.
+     * Repository for performing CRUD operations on the {@link Address} entity.
      */
     @Autowired
     private AddressRepository addressRepository;
+
     /**
-     * userRepository for connecting with address table in database.
+     * Repository for performing CRUD operations on the {@link User} entity.
      */
     @Autowired
     private UserRepository userRepository;
 
     /**
-     * Add new address.
-     * @param addressInDTO request parameter
-     * @return a string message
+     * Adds a new address based on the provided {@link AddressInDTO}.
+     *
+     * @param addressInDTO the DTO containing the details of the address to be added
+     * @return a {@link String} message indicating the result of the operation
+     * @throws ResourceNotFoundException if the user associated with the address does not exist
+     * @throws RuntimeException if an unexpected error occurs while saving the address
      */
     @Override
     public String addAddress(AddressInDTO addressInDTO) {
@@ -57,15 +61,29 @@ public class AddressServiceImpl implements AddressService {
         }
     }
 
+    /**
+     * Retrieves a list of addresses associated with a specific user ID.
+     *
+     * @param userId the ID of the user whose addresses are to be retrieved
+     * @return a {@link List} of {@link Address} entities associated with the specified user ID
+     * @throws ResourceNotFoundException if no addresses are found for the specified user ID
+     */
     @Override
     public List<Address> getAddressByUserId(long userId) {
         List<Address> addresses = addressRepository.findByUserId(userId);
         if (addresses.isEmpty()) {
-           throw new ResourceNotFoundException("Address Not Found");
+            throw new ResourceNotFoundException("Address Not Found");
         }
         return addresses;
     }
 
+    /**
+     * Retrieves an address by its ID.
+     *
+     * @param addressId the ID of the address to be retrieved
+     * @return the {@link Address} entity with the specified ID
+     * @throws ResourceNotFoundException if no address is found with the specified ID
+     */
     @Override
     public Address getAddressById(long addressId) {
         Address address = addressRepository.findById(addressId);
@@ -75,6 +93,14 @@ public class AddressServiceImpl implements AddressService {
         return address;
     }
 
+    /**
+     * Updates an existing address based on the provided {@link UpdateAddressInDTO}.
+     *
+     * @param updateAddressInDTO the DTO containing the updated details of the address
+     * @return a {@link String} message indicating the result of the update operation
+     * @throws ResourceNotFoundException if the user or address to be updated is not found
+     * @throws ResourceNotValidException if the user ID associated with the address does not match the provided user ID
+     */
     @Override
     public String updateAddress(UpdateAddressInDTO updateAddressInDTO) {
         User user = userRepository.findById(updateAddressInDTO.getUserId());
@@ -96,6 +122,15 @@ public class AddressServiceImpl implements AddressService {
         return "Address Updated Successfully";
     }
 
+    /**
+     * Deletes an address based on the specified user ID and address ID.
+     *
+     * @param userId the ID of the user who owns the address
+     * @param addressId the ID of the address to be deleted
+     * @return a {@link String} message indicating the result of the delete operation
+     * @throws ResourceNotFoundException if the user or address to be deleted is not found
+     * @throws ResourceNotValidException if the user ID associated with the address does not match the provided user ID
+     */
     @Override
     public String deleteAddress(long userId, long addressId) {
         User user = userRepository.findById(userId);

@@ -2,11 +2,22 @@ package com.capstone.orders_service.serviceImpl;
 
 import com.capstone.orders_service.Enum.Status;
 import com.capstone.orders_service.converters.OrderConverter;
-import com.capstone.orders_service.dto.*;
+import com.capstone.orders_service.dto.AddressOutDTO;
+import com.capstone.orders_service.dto.FoodItemOutDTO;
+import com.capstone.orders_service.dto.OrderDetailOutDTO;
+import com.capstone.orders_service.dto.OrderOutDTO;
+import com.capstone.orders_service.dto.RestaurantOrderDetailsOutDTO;
+import com.capstone.orders_service.dto.RestaurantOutDTO;
+import com.capstone.orders_service.dto.UserFoodItemOutDTO;
+import com.capstone.orders_service.dto.UserOrderDetailsOutDTO;
+import com.capstone.orders_service.dto.UserOutDTO;
+import com.capstone.orders_service.dto.WalletOutDTO;
 import com.capstone.orders_service.entity.CartItem;
 import com.capstone.orders_service.entity.Order;
 import com.capstone.orders_service.entity.OrderDetail;
-import com.capstone.orders_service.exceptions.*;
+import com.capstone.orders_service.exceptions.InsufficientAmountException;
+import com.capstone.orders_service.exceptions.ResourceNotFoundException;
+import com.capstone.orders_service.exceptions.ResourceNotValidException;
 import com.capstone.orders_service.feignClient.RestaurantFeignClient;
 import com.capstone.orders_service.feignClient.UsersFeignClient;
 import com.capstone.orders_service.repository.CartItemRepository;
@@ -22,28 +33,53 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implementation of the {@link OrderService} interface. This service handles operations related to
+ * orders including creating, updating, retrieving, and deleting orders. It communicates with external services
+ * like the user and restaurant services using Feign clients.
+ */
 @Service
 public class OrderServiceImpl implements OrderService {
 
+    /**
+     * Repository for managing {@link Order} entities in the database.
+     */
     @Autowired
     private OrderRepository orderRepository;
 
+    /**
+     * Repository for managing {@link OrderDetail} entities in the database.
+     */
     @Autowired
     private OrderDetailRepository orderDetailRepository;
 
+    /**
+     * Repository for managing {@link CartItem} entities in the database.
+     */
     @Autowired
     private CartItemRepository cartItemRepository;
 
+    /**
+     * Feign client for communicating with the restaurant microservice.
+     */
     @Autowired
     private RestaurantFeignClient restaurantFeignClient;
 
+    /**
+     * Feign client for communicating with the user microservice.
+     */
     @Autowired
     private UsersFeignClient usersFeignClient;
 
     /**
-     * @param loggedInUserId
-     * @param restaurantId
-     * @return list of orders
+     * Retrieves all orders for a specific restaurant, provided that the user making the request is the owner of
+     * the restaurant.
+     *
+     * @param loggedInUserId the ID of the user making the request
+     * @param restaurantId   the ID of the restaurant whose orders are being retrieved
+     * @return a list of {@link OrderOutDTO} representing the orders of the restaurant
+     * @throws ResourceNotFoundException   if no orders are found or if the restaurant or user does not exist
+     * @throws ResourceNotValidException   if the user does not own the restaurant
      */
     @Override
     public List<OrderOutDTO> getOrders(long loggedInUserId, long restaurantId) {
@@ -68,8 +104,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * @param userId
-     * @return String message
+     * Adds an order for the given user and address, deducting the price from the user's wallet. If the user has
+     * insufficient funds or no items in the cart, appropriate exceptions are thrown.
+     *
+     * @param userId    the ID of the user making the order
+     * @param addressId the ID of the address for delivery
+     * @return a success message indicating the order was added successfully
+     * @throws ResourceNotFoundException   if the user, address, or wallet is not found
+     * @throws InsufficientAmountException if the user's wallet does not have enough funds for the order
      */
     @Override
     public String addOrder(long userId, long addressId) {
@@ -130,8 +172,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * @param orderId
-     * @return
+     * Deletes an order and its associated details from the database.
+     *
+     * @param orderId the ID of the order to delete
+     * @return a success message indicating the order was deleted successfully
+     * @throws ResourceNotFoundException if the order is not found
      */
     @Override
     public String deleteOrder(long orderId) {
@@ -148,9 +193,13 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * @param orderId
-     * @param userId
-     * @return
+     * Updates the status of an order.
+     *
+     * @param orderId the ID of the order to update
+     * @param userId  the ID of the user making the request
+     * @param status  the new status to set for the order
+     * @return a success message indicating the order was updated successfully
+     * @throws ResourceNotFoundException if the order or restaurant is not found
      */
     @Override
     public String updateOrder(long userId, long orderId, Status status) {
@@ -170,8 +219,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * @param restaurantId
-     * @return
+     * Retrieves the details of all orders for a specific restaurant.
+     *
+     * @param restaurantId the ID of the restaurant whose orders are being retrieved
+     * @return a list of {@link RestaurantOrderDetailsOutDTO} representing the order details for the restaurant
+     * @throws ResourceNotFoundException if no orders are found
      */
     @Override
     public List<RestaurantOrderDetailsOutDTO> getOrderDetails(long restaurantId) {
@@ -195,7 +247,9 @@ public class OrderServiceImpl implements OrderService {
             for (OrderDetail orderDetail : orderDetails) {
                 OrderDetailOutDTO orderDetailOutDTO = new OrderDetailOutDTO();
                 try {
-                    FoodItemOutDTO foodItemOutDTO = restaurantFeignClient.getFoodItemById(orderDetail.getFoodId()).getBody();
+                    FoodItemOutDTO foodItemOutDTO = restaurantFeignClient.getFoodItemById(
+                            orderDetail.getFoodId()
+                    ).getBody();
                     orderDetailOutDTO.setFoodName(foodItemOutDTO.getName());
                     orderDetailOutDTO.setQuantity(orderDetail.getQuantity());
                     orderDetailOutDTO.setPrice(orderDetail.getPrice());
@@ -219,8 +273,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * @param userId
-     * @return
+     * Retrieves all orders placed by a specific user.
+     *
+     * @param userId the ID of the user whose orders are being retrieved
+     * @return a list of {@link UserOrderDetailsOutDTO} representing the user's orders
+     * @throws ResourceNotFoundException if no orders are found for the user or if the user does not exist
      */
     @Override
     public List<UserOrderDetailsOutDTO> getUserOrders(long userId) {
@@ -233,7 +290,9 @@ public class OrderServiceImpl implements OrderService {
             List<UserOrderDetailsOutDTO> userOrderDetailsOutDTOS = new ArrayList<>();
             for (Order order : orders) {
                 try {
-                    RestaurantOutDTO restaurant = restaurantFeignClient.getRestaurantById(order.getRestaurantId()).getBody();
+                    RestaurantOutDTO restaurant = restaurantFeignClient.getRestaurantById(
+                            order.getRestaurantId()
+                    ).getBody();
                     List<OrderDetail> orderDetails = orderDetailRepository.findByOrderId(order.getOrderId());
                     UserOrderDetailsOutDTO userOrderDetailsOutDTO = new UserOrderDetailsOutDTO();
                     userOrderDetailsOutDTO.setOrderId(order.getOrderId());
@@ -242,7 +301,9 @@ public class OrderServiceImpl implements OrderService {
                     userOrderDetailsOutDTO.setStatus(order.getStatus());
                     List<UserFoodItemOutDTO> foodItemOutDTOS = new ArrayList<>();
                     for (OrderDetail orderDetail : orderDetails) {
-                        FoodItemOutDTO foodItem = restaurantFeignClient.getFoodItemById(orderDetail.getFoodId()).getBody();
+                        FoodItemOutDTO foodItem = restaurantFeignClient.getFoodItemById(
+                                orderDetail.getFoodId()
+                        ).getBody();
                         UserFoodItemOutDTO userFoodItemOutDTO = new UserFoodItemOutDTO();
                         userFoodItemOutDTO.setFoodId(foodItem.getFoodId());
                         userFoodItemOutDTO.setName(foodItem.getName());
@@ -264,8 +325,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * @param orderId
-     * @return
+     * Cancels an order, provided that the cancellation request is made within 30 seconds of placing the order.
+     *
+     * @param orderId the ID of the order to cancel
+     * @return a success message indicating the order was cancelled successfully
+     * @throws ResourceNotFoundException   if the order is not found
+     * @throws ResourceNotValidException   if the cancellation time exceeds the allowed limit
      */
     @Override
     public String cancelOrder(long orderId) {

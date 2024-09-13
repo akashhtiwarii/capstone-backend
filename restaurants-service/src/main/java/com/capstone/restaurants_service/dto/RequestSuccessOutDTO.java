@@ -7,21 +7,33 @@ import lombok.NoArgsConstructor;
 import java.util.Objects;
 
 /**
- * Success Response.
+ * Data Transfer Object (DTO) for representing a successful request response.
+ * <p>
+ * This class is used to encapsulate a success message that is returned to the client upon
+ * the successful execution of an operation.
+ * </p>
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class RequestSuccessOutDTO {
     /**
-     * Success Message.
+     * A message indicating the success of the request.
+     * <p>
+     * This field contains a descriptive message that provides information about the successful
+     * completion of the request.
+     * </p>
      */
     private String message;
 
     /**
-     * Override equals.
-     * @param o
-     * @return boolean
+     * Compares this RequestSuccessOutDTO object with another object for equality.
+     * <p>
+     * Two RequestSuccessOutDTO objects are considered equal if their message fields are equal.
+     * </p>
+     *
+     * @param o the object to compare with
+     * @return {@code true} if the objects are equal; {@code false} otherwise
      */
     @Override
     public boolean equals(Object o) {
@@ -36,8 +48,12 @@ public class RequestSuccessOutDTO {
     }
 
     /**
-     * Override Hashcode.
-     * @return hashed object
+     * Returns a hash code value for this RequestSuccessOutDTO object.
+     * <p>
+     * The hash code is computed based on the message field.
+     * </p>
+     *
+     * @return the hash code value
      */
     @Override
     public int hashCode() {

@@ -1,6 +1,5 @@
 package com.capstone.orders_service.exceptions;
 
-import com.capstone.orders_service.Enum.Status;
 import feign.FeignException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -8,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -17,18 +15,31 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Global exception handler for managing different types of exceptions thrown in the application.
+ * <p>
+ * This class provides centralized exception handling and custom error responses for various exceptions
+ * that may occur during request processing.
+ * </p>
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
     /**
-     * Error Response Creation.
-     * @param ex
-     * @param status
-     * @return ErrorResponse Object
+     * Builds a simple error response with the given exception and HTTP status.
+     * @param ex The exception that occurred.
+     * @param status The HTTP status code to be returned.
+     * @return An {@link ErrorResponse} object containing the error details.
      */
     private ErrorResponse buildSimpleErrorResponse(Exception ex, HttpStatus status) {
         return new ErrorResponse(status.value(), ex.getMessage());
     }
 
+    /**
+     * Handles exceptions thrown when there is a type mismatch in method arguments.
+     * @param ex The exception that occurred.
+     * @return A {@link ResponseEntity} containing an {@link ErrorResponse} with a bad request status.
+     */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> handleTypeMismatchException(MethodArgumentTypeMismatchException ex) {
         if (ex.getRequiredType() != null && ex.getRequiredType().isEnum()) {
@@ -41,6 +52,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 
+    /**
+     * Handles {@link InsufficientAmountException} exceptions.
+     * @param ex The exception that occurred.
+     * @return A {@link ResponseEntity} containing an {@link ErrorResponse} with a bad request status.
+     */
     @ExceptionHandler(InsufficientAmountException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponse> handleInsufficientAmountException(InsufficientAmountException ex) {
@@ -49,9 +65,9 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Constraint Violation.
-     * @param ex
-     * @return Error message
+     * Handles {@link ConstraintViolationException} exceptions.
+     * @param ex The exception that occurred.
+     * @return A {@link ResponseEntity} containing a map with error details and a bad request status.
      */
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -62,10 +78,11 @@ public class GlobalExceptionHandler {
         response.put("message", "Invalid Request. Try Again!");
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+
     /**
-     * Request Body not found.
-     * @param ex
-     * @return Error message and status
+     * Handles {@link HttpMessageNotReadableException} exceptions.
+     * @param ex The exception that occurred.
+     * @return A {@link ResponseEntity} containing a map with error details and a bad request status.
      */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -78,9 +95,9 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Handle Resource Not Found Exception.
-     * @param ex
-     * @return ErrorResponse Object
+     * Handles {@link ResourceNotValidException} exceptions.
+     * @param ex The exception that occurred.
+     * @return A {@link ResponseEntity} containing an {@link ErrorResponse} with a bad request status.
      */
     @ExceptionHandler(ResourceNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -90,9 +107,9 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Handle Resource Not Found Exception.
-     * @param ex
-     * @return ErrorResponse Object
+     * Handles {@link ResourceNotFoundException} exceptions.
+     * @param ex The exception that occurred.
+     * @return A {@link ResponseEntity} containing an {@link ErrorResponse} with a not found status.
      */
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -101,18 +118,22 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
+    /**
+     * Handles {@link FeignException} exceptions.
+     * @param ex The exception that occurred.
+     * @return A {@link ResponseEntity} containing an error message and appropriate HTTP status.
+     */
     @ExceptionHandler(FeignException.class)
     public ResponseEntity<String> handleFeignStatusException(FeignException ex) {
-        // Custom error response
         String errorMessage = "Error occurred while communicating with another service: " + ex.getMessage();
         HttpStatus status = HttpStatus.resolve(ex.status());
         return new ResponseEntity<>(errorMessage, status != null ? status : HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
-     * Restaurant Conflict Exception.
-     * @param ex
-     * @return Error Response Object
+     * Handles {@link RestaurantConflictException} exceptions.
+     * @param ex The exception that occurred.
+     * @return A {@link ResponseEntity} containing an {@link ErrorResponse} with a bad request status.
      */
     @ExceptionHandler(RestaurantConflictException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -120,10 +141,11 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = buildSimpleErrorResponse(ex, HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
     /**
-     * Handle Validation Errors.
-     * @param ex Exception object
-     * @return all the errors
+     * Handles validation errors when request parameters or bodies are invalid.
+     * @param ex The exception that occurred.
+     * @return A map containing field-specific error messages with a bad request status.
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -138,9 +160,9 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Handle Runtime Exception.
-     * @param ex Runtime exception object
-     * @return Error message with an error code.
+     * Handles general runtime exceptions that are not explicitly handled elsewhere.
+     * @param ex The runtime exception that occurred.
+     * @return A {@link ResponseEntity} containing an {@link ErrorResponse} with an internal server error status.
      */
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -150,9 +172,9 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Handle General Exception.
-     * @param ex exception object
-     * @return Error message with an error code.
+     * Handles all other exceptions not explicitly handled by other methods.
+     * @param ex The exception that occurred.
+     * @return A {@link ResponseEntity} containing an {@link ErrorResponse} with an internal server error status.
      */
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
