@@ -10,7 +10,8 @@ import java.util.Objects;
 
 /**
  * Data Transfer Object for representing details of an order from the perspective of a restaurant.
- * This class is used to transfer comprehensive order details, including user information and order specifics, from the server to the client.
+ * This class is used to transfer comprehensive order details,
+ * including user information and order specifics, from the server to the client.
  */
 @Data
 @AllArgsConstructor
@@ -49,7 +50,8 @@ public class RestaurantOrderDetailsOutDTO {
 
     /**
      * Compares this RestaurantOrderDetailsOutDTO object to the specified object for equality.
-     * Two RestaurantOrderDetailsOutDTO objects are considered equal if they have the same userId, userName, orderId, orderDetailOutDTOS, status, and address.
+     * Two RestaurantOrderDetailsOutDTO objects are considered equal
+     * if they have the same userId, userName, orderId, orderDetailOutDTOS, status, and address.
      *
      * @param o the object to compare this RestaurantOrderDetailsOutDTO against.
      * @return true if the specified object is equal to this RestaurantOrderDetailsOutDTO; false otherwise.
@@ -63,7 +65,11 @@ public class RestaurantOrderDetailsOutDTO {
             return false;
         }
         RestaurantOrderDetailsOutDTO that = (RestaurantOrderDetailsOutDTO) o;
-        return userId == that.userId && orderId == that.orderId && Objects.equals(userName, that.userName) && Objects.equals(orderDetailOutDTOS, that.orderDetailOutDTOS) && status == that.status && Objects.equals(address, that.address);
+        return userId == that.userId
+                && orderId == that.orderId
+                && Objects.equals(userName, that.userName)
+                && Objects.equals(orderDetailOutDTOS, that.orderDetailOutDTOS)
+                && status == that.status && Objects.equals(address, that.address);
     }
 
     /**

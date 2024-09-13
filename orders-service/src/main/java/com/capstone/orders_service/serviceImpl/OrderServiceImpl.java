@@ -24,6 +24,7 @@ import com.capstone.orders_service.repository.CartItemRepository;
 import com.capstone.orders_service.repository.OrderDetailRepository;
 import com.capstone.orders_service.repository.OrderRepository;
 import com.capstone.orders_service.service.OrderService;
+import com.capstone.orders_service.utils.Constants;
 import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -340,7 +341,7 @@ public class OrderServiceImpl implements OrderService {
         }
         LocalDateTime currentTime = LocalDateTime.now();
         Duration timeDifference = Duration.between(order.getOrderTime(), currentTime);
-        if (timeDifference.getSeconds() > 30) {
+        if (timeDifference.getSeconds() > Constants.TIME_TO_CANCEL_ORDER) {
             throw new ResourceNotValidException("Cannot Cancel the order Now " + timeDifference.getSeconds());
         }
         order.setStatus(Status.CANCELLED);

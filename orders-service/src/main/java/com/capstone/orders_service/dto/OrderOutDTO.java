@@ -54,7 +54,8 @@ public class OrderOutDTO {
 
     /**
      * Compares this OrderOutDTO object to the specified object for equality.
-     * Two OrderOutDTO objects are considered equal if they have the same orderId, userId, restaurantId, price, status, orderTime, and addressId.
+     * Two OrderOutDTO objects are considered equal if they have the same orderId
+     * , userId, restaurantId, price, status, orderTime, and addressId.
      *
      * @param o the object to compare this OrderOutDTO against.
      * @return true if the specified object is equal to this OrderOutDTO; false otherwise.

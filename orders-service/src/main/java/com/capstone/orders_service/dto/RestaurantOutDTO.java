@@ -49,17 +49,27 @@ public class RestaurantOutDTO {
 
     /**
      * Compares this RestaurantOutDTO object to the specified object for equality.
-     * Two RestaurantOutDTO objects are considered equal if they have the same restaurantId, ownerId, name, email, phone, and image.
+     * Two RestaurantOutDTO objects are considered equal
+     * if they have the same restaurantId, ownerId, name, email, phone, and image.
      *
      * @param o the object to compare this RestaurantOutDTO against.
      * @return true if the specified object is equal to this RestaurantOutDTO; false otherwise.
      */
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         RestaurantOutDTO that = (RestaurantOutDTO) o;
-        return restaurantId == that.restaurantId && ownerId == that.ownerId && Objects.equals(name, that.name) && Objects.equals(email, that.email) && Objects.equals(phone, that.phone) && Objects.deepEquals(image, that.image);
+        return restaurantId == that.restaurantId
+                && ownerId == that.ownerId
+                && Objects.equals(name, that.name)
+                && Objects.equals(email, that.email)
+                && Objects.equals(phone, that.phone)
+                && Objects.deepEquals(image, that.image);
     }
 
     /**

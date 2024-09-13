@@ -68,7 +68,8 @@ public interface UsersFeignClient {
      *
      * @param userId The unique identifier of the user whose wallet balance is to be updated.
      * @param amount The amount to be updated in the user's wallet.
-     * @return A {@link ResponseEntity} containing a {@link String} message indicating the result of the update operation.
+     * @return A {@link ResponseEntity} containing
+     * a {@link String} message indicating the result of the update operation.
      */
     @PutMapping("/wallet/update")
     ResponseEntity<String> updateUserWallet(@RequestParam long userId, @RequestParam double amount);

@@ -1,11 +1,9 @@
 package com.capstone.restaurants_service.dtoTest;
 
 import com.capstone.restaurants_service.dto.FoodItemInDTO;
-import com.capstone.restaurants_service.dto.FoodItemWithImageInDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.multipart.MultipartFile;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 public class FoodItemWithImageInDTOTest {

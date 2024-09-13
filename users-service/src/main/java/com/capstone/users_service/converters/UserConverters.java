@@ -6,7 +6,8 @@ import com.capstone.users_service.entity.User;
 
 /**
  * Utility class for converting between User data transfer objects (DTOs) and User entities.
- * Provides methods to convert {@link UserInDTO} to {@link User} entity and {@link User} entity to {@link LoginResponseOutDTO}.
+ * Provides methods to convert {@link UserInDTO}
+ * to {@link User} entity and {@link User} entity to {@link LoginResponseOutDTO}.
  */
 public class UserConverters {
 
