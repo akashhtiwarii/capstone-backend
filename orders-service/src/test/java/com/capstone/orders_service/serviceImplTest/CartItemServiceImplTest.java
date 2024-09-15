@@ -1,14 +1,18 @@
 package com.capstone.orders_service.serviceImplTest;
 
-import com.capstone.orders_service.converters.CartConverter;
-import com.capstone.orders_service.dto.*;
+import com.capstone.orders_service.dto.AddToCartInDTO;
+import com.capstone.orders_service.dto.CartItemOutDTO;
+import com.capstone.orders_service.dto.FoodItemOutDTO;
+import com.capstone.orders_service.dto.RestaurantOutDTO;
+import com.capstone.orders_service.dto.UserOutDTO;
 import com.capstone.orders_service.entity.CartItem;
 import com.capstone.orders_service.exceptions.ResourceNotFoundException;
-import com.capstone.orders_service.exceptions.RestaurantConflictException;
 import com.capstone.orders_service.feignClient.RestaurantFeignClient;
 import com.capstone.orders_service.feignClient.UsersFeignClient;
 import com.capstone.orders_service.repository.CartItemRepository;
 import com.capstone.orders_service.serviceImpl.CartItemServiceImpl;
+import com.capstone.orders_service.utils.Constants;
+import feign.FeignException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -17,17 +21,14 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 class CartItemServiceImplTest {
-
-    @InjectMocks
-    private CartItemServiceImpl cartItemService;
 
     @Mock
     private CartItemRepository cartItemRepository;
@@ -38,81 +39,102 @@ class CartItemServiceImplTest {
     @Mock
     private RestaurantFeignClient restaurantFeignClient;
 
+    @InjectMocks
+    private CartItemServiceImpl cartItemService;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    void addToCart_userNotFound() {
+    void testAddToCartUserNotFound() {
         AddToCartInDTO addToCartInDTO = new AddToCartInDTO();
         addToCartInDTO.setUserId(1L);
-        when(usersFeignClient.getUserById(anyLong())).thenThrow(new ResourceNotFoundException("User Not Found"));
-
-        assertThrows(ResourceNotFoundException.class, () -> cartItemService.addToCart(addToCartInDTO));
+        when(usersFeignClient.getUserById(anyLong())).thenThrow(FeignException.NotFound.class);
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            cartItemService.addToCart(addToCartInDTO);
+        });
+        assertEquals(Constants.USER_NOT_FOUND, exception.getMessage());
     }
 
     @Test
-    void deleteCartItem_itemFound() {
-        CartItem cartItem = new CartItem();
-        cartItem.setCartItemId(1L);
-        when(cartItemRepository.findById(1L)).thenReturn(cartItem);
+    void testAddToCartFoodItemNotFound() {
+        AddToCartInDTO addToCartInDTO = new AddToCartInDTO();
+        addToCartInDTO.setUserId(1L);
+        when(usersFeignClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(new UserOutDTO()));
+        when(restaurantFeignClient.getFoodItemById(anyLong())).thenThrow(FeignException.NotFound.class);
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            cartItemService.addToCart(addToCartInDTO);
+        });
+        assertEquals(Constants.FOOD_ITEM_NOT_FOUND, exception.getMessage());
+    }
 
+    @Test
+    void testDeleteCartItemItemNotFound() {
+        when(cartItemRepository.findById(anyLong())).thenReturn(null);
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            cartItemService.deleteCartItem(1L);
+        });
+        assertEquals(Constants.CART_ITEM_NOT_FOUND, exception.getMessage());
+    }
+
+    @Test
+    void testDeleteCartItemSuccess() {
+        CartItem cartItem = new CartItem();
+        when(cartItemRepository.findById(anyLong())).thenReturn(cartItem);
         String result = cartItemService.deleteCartItem(1L);
-
-        assertEquals("Cart Item Deleted", result);
-        verify(cartItemRepository, times(1)).deleteById(1L);
+        assertEquals(Constants.CART_ITEM_DELETED_SUCCESSFULLY, result);
+        verify(cartItemRepository).deleteById(1L);
     }
 
     @Test
-    void deleteCartItem_itemNotFound() {
-        when(cartItemRepository.findById(1L)).thenReturn(null);
-
-        assertThrows(ResourceNotFoundException.class, () -> cartItemService.deleteCartItem(1L));
+    void testGetCartItemsUserHasNoCartItems() {
+        when(cartItemRepository.findByUserId(anyLong())).thenReturn(new ArrayList<>());
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            cartItemService.getCartItems(1L);
+        });
+        assertEquals(Constants.CART_ITEM_NOT_FOUND, exception.getMessage());
     }
 
     @Test
-    void getCartItems_successful() {
-        List<CartItem> cartItems = new ArrayList<>();
+    void testGetCartItemsSuccess() {
         CartItem cartItem = new CartItem();
         cartItem.setCartItemId(1L);
+        cartItem.setUserId(1L);
         cartItem.setFoodId(1L);
         cartItem.setRestaurantId(1L);
-        cartItems.add(cartItem);
+        cartItem.setQuantity(2);
+        cartItem.setPrice(100.0);
 
-        when(cartItemRepository.findByUserId(1L)).thenReturn(cartItems);
+        when(cartItemRepository.findByUserId(anyLong())).thenReturn(Arrays.asList(cartItem));
         when(restaurantFeignClient.getFoodItemById(anyLong())).thenReturn(ResponseEntity.ok(new FoodItemOutDTO()));
         when(restaurantFeignClient.getRestaurantById(anyLong())).thenReturn(ResponseEntity.ok(new RestaurantOutDTO()));
 
         List<CartItemOutDTO> result = cartItemService.getCartItems(1L);
-
-        assertFalse(result.isEmpty());
-        verify(cartItemRepository, times(1)).findByUserId(1L);
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(1L, result.get(0).getCartItemId());
     }
 
     @Test
-    void getCartItems_noItems() {
-        when(cartItemRepository.findByUserId(1L)).thenReturn(new ArrayList<>());
-
-        assertThrows(ResourceNotFoundException.class, () -> cartItemService.getCartItems(1L));
+    void testUpdateCartItemItemNotFound() {
+        when(cartItemRepository.findById(anyLong())).thenReturn(null);
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            cartItemService.updateCartItem(1L, 1);
+        });
+        assertEquals(Constants.FOOD_ITEM_NOT_FOUND, exception.getMessage());
     }
 
     @Test
-    void updateCartItem_successful() {
+    void testUpdateCartItem_Success() {
         CartItem cartItem = new CartItem();
-        cartItem.setQuantity(1);
-        when(cartItemRepository.findById(1L)).thenReturn(cartItem);
+        cartItem.setQuantity(2);
 
+        when(cartItemRepository.findById(anyLong())).thenReturn(cartItem);
         String result = cartItemService.updateCartItem(1L, 1);
-
-        assertEquals("Cart Updated Successfully", result);
-        verify(cartItemRepository, times(1)).save(any(CartItem.class));
-    }
-
-    @Test
-    void updateCartItem_itemNotFound() {
-        when(cartItemRepository.findById(1L)).thenReturn(null);
-
-        assertThrows(ResourceNotFoundException.class, () -> cartItemService.updateCartItem(1L, 1));
+        assertEquals(Constants.CART_ITEM_UPDATED_SUCCESSFULLY, result);
+        verify(cartItemRepository).save(cartItem);
+        assertEquals(3, cartItem.getQuantity());
     }
 }

@@ -168,7 +168,7 @@ public class OrderServiceImpl implements OrderService {
             }
             return Constants.ORDER_ADDED_SUCCESSFULLY;
         } catch (Exception e) {
-            throw new RuntimeException(Constants.UNEXPECTED_ERROR);
+            throw new RuntimeException(Constants.UNEXPECTED_ERROR + e.getMessage());
         }
     }
 
