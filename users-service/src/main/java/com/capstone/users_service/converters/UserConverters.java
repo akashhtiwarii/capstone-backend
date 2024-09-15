@@ -19,11 +19,11 @@ public class UserConverters {
      */
     public static User registerUserInDTOToUserEntity(UserInDTO userInDTO) {
         User user = new User();
-        user.setName(userInDTO.getName());
-        user.setPassword(userInDTO.getPassword());
-        user.setEmail(userInDTO.getEmail());
+        user.setName(userInDTO.getName().trim());
+        user.setPassword(userInDTO.getPassword().trim());
+        user.setEmail(userInDTO.getEmail().trim().toLowerCase());
         user.setRole(userInDTO.getRole());
-        user.setPhone(userInDTO.getPhone());
+        user.setPhone(userInDTO.getPhone().trim());
         return user;
     }
 

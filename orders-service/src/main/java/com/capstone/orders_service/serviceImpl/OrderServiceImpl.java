@@ -235,40 +235,42 @@ public class OrderServiceImpl implements OrderService {
         }
         List<RestaurantOrderDetailsOutDTO> restaurantOrderDetailsOutDTOS = new ArrayList<>();
         for (Order order : orders) {
-            RestaurantOrderDetailsOutDTO restaurantOrderDetailsOutDTO = new RestaurantOrderDetailsOutDTO();
-            restaurantOrderDetailsOutDTO.setOrderId(order.getOrderId());
-            try {
-                UserOutDTO user = usersFeignClient.getUserById(order.getUserId()).getBody();
-                restaurantOrderDetailsOutDTO.setUserName(user.getName());
-            } catch (FeignException.NotFound e) {
-                throw new ResourceNotFoundException("User Not Found");
-            }
-            List<OrderDetail> orderDetails = orderDetailRepository.findByOrderId(order.getOrderId());
-            List<OrderDetailOutDTO> orderDetailOutDTOS = new ArrayList<>();
-            for (OrderDetail orderDetail : orderDetails) {
-                OrderDetailOutDTO orderDetailOutDTO = new OrderDetailOutDTO();
+            if (order.getStatus() != Status.CANCELLED) {
+                RestaurantOrderDetailsOutDTO restaurantOrderDetailsOutDTO = new RestaurantOrderDetailsOutDTO();
+                restaurantOrderDetailsOutDTO.setOrderId(order.getOrderId());
                 try {
-                    FoodItemOutDTO foodItemOutDTO = restaurantFeignClient.getFoodItemById(
-                            orderDetail.getFoodId()
-                    ).getBody();
-                    orderDetailOutDTO.setFoodName(foodItemOutDTO.getName());
-                    orderDetailOutDTO.setQuantity(orderDetail.getQuantity());
-                    orderDetailOutDTO.setPrice(orderDetail.getPrice());
+                    UserOutDTO user = usersFeignClient.getUserById(order.getUserId()).getBody();
+                    restaurantOrderDetailsOutDTO.setUserName(user.getName());
                 } catch (FeignException.NotFound e) {
-                    throw new ResourceNotFoundException("No Food Item Present");
+                    throw new ResourceNotFoundException("User Not Found");
                 }
-                orderDetailOutDTOS.add(orderDetailOutDTO);
+                List<OrderDetail> orderDetails = orderDetailRepository.findByOrderId(order.getOrderId());
+                List<OrderDetailOutDTO> orderDetailOutDTOS = new ArrayList<>();
+                for (OrderDetail orderDetail : orderDetails) {
+                    OrderDetailOutDTO orderDetailOutDTO = new OrderDetailOutDTO();
+                    try {
+                        FoodItemOutDTO foodItemOutDTO = restaurantFeignClient.getFoodItemById(
+                                orderDetail.getFoodId()
+                        ).getBody();
+                        orderDetailOutDTO.setFoodName(foodItemOutDTO.getName());
+                        orderDetailOutDTO.setQuantity(orderDetail.getQuantity());
+                        orderDetailOutDTO.setPrice(orderDetail.getPrice());
+                    } catch (FeignException.NotFound e) {
+                        throw new ResourceNotFoundException("No Food Item Present");
+                    }
+                    orderDetailOutDTOS.add(orderDetailOutDTO);
+                }
+                try {
+                    address = usersFeignClient.getAddressByUserId(order.getUserId()).getBody().toString();
+                } catch (FeignException.NotFound e) {
+                    throw new ResourceNotFoundException("No Address Present for an Order");
+                }
+                restaurantOrderDetailsOutDTO.setUserId(order.getUserId());
+                restaurantOrderDetailsOutDTO.setOrderDetailOutDTOS(orderDetailOutDTOS);
+                restaurantOrderDetailsOutDTO.setAddress(address);
+                restaurantOrderDetailsOutDTO.setStatus(order.getStatus());
+                restaurantOrderDetailsOutDTOS.add(restaurantOrderDetailsOutDTO);
             }
-            try {
-                address = usersFeignClient.getAddressByUserId(order.getUserId()).getBody().toString();
-            } catch (FeignException.NotFound e) {
-                throw new ResourceNotFoundException("No Address Present for an Order");
-            }
-            restaurantOrderDetailsOutDTO.setUserId(order.getUserId());
-            restaurantOrderDetailsOutDTO.setOrderDetailOutDTOS(orderDetailOutDTOS);
-            restaurantOrderDetailsOutDTO.setAddress(address);
-            restaurantOrderDetailsOutDTO.setStatus(order.getStatus());
-            restaurantOrderDetailsOutDTOS.add(restaurantOrderDetailsOutDTO);
         }
         return restaurantOrderDetailsOutDTOS;
     }

@@ -1,72 +1,94 @@
 package com.capstone.restaurants_service.dtoTest;
 
 import com.capstone.restaurants_service.dto.UpdateRestaurantInDTO;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 
 public class UpdateRestaurantInDTOTest {
 
-    private final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-    private final Validator validator = factory.getValidator();
+    private Validator validator;
 
-    @Test
-    public void testSettersAndGetters() {
-        UpdateRestaurantInDTO dto = new UpdateRestaurantInDTO();
-        MultipartFile image = mock(MultipartFile.class);
-
-        dto.setLoggedInOwnerId(1L);
-        dto.setRestaurantId(2L);
-        dto.setName("Test Restaurant");
-        dto.setEmail("test@gmail.com");
-        dto.setPhone("9876543210");
-        dto.setAddress("Test Address");
-        dto.setImage(image);
-
-        assertEquals(1L, dto.getLoggedInOwnerId());
-        assertEquals(2L, dto.getRestaurantId());
-        assertEquals("Test Restaurant", dto.getName());
-        assertEquals("test@gmail.com", dto.getEmail());
-        assertEquals("9876543210", dto.getPhone());
-        assertEquals("Test Address", dto.getAddress());
-        assertEquals(image, dto.getImage());
+    @BeforeEach
+    public void setUp() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
     }
 
     @Test
-    public void testValidation_Success() {
-        MultipartFile image = mock(MultipartFile.class);
-        UpdateRestaurantInDTO dto = new UpdateRestaurantInDTO(1L, 2L, "Test Restaurant", "test@gmail.com", "9876543210", "Test Address", image);
-
-        Set<javax.validation.ConstraintViolation<UpdateRestaurantInDTO>> violations = validator.validate(dto);
-        assertTrue(violations.isEmpty());
+    public void testValidUpdateRestaurantInDTO() {
+        UpdateRestaurantInDTO dto = new UpdateRestaurantInDTO(
+                1L, 1L, "Test Restaurant", "test@gmail.com", "9876543210", "123 Test Address"
+        );
+        Set<ConstraintViolation<UpdateRestaurantInDTO>> violations = validator.validate(dto);
+        assertTrue(violations.isEmpty(), "There should be no validation violations");
     }
 
     @Test
-    public void testValidation_Failure() {
-        UpdateRestaurantInDTO dto = new UpdateRestaurantInDTO(-1L, -2L, "", "invalidemail", "12345", "", null);
-
-        Set<javax.validation.ConstraintViolation<UpdateRestaurantInDTO>> violations = validator.validate(dto);
-        assertFalse(violations.isEmpty());
-        assertEquals(7, violations.size());
+    public void testInvalidLoggedInOwnerId() {
+        UpdateRestaurantInDTO dto = new UpdateRestaurantInDTO(
+                0L, 1L, "Test Restaurant", "test@gmail.com", "9876543210", "123 Test Address"
+        );
+        Set<ConstraintViolation<UpdateRestaurantInDTO>> violations = validator.validate(dto);
+        assertFalse(violations.isEmpty(), "There should be validation violations for loggedInOwnerId");
+        assertEquals("Valid User ID Required", violations.iterator().next().getMessage());
     }
 
     @Test
-    public void testEqualsAndHashCode() {
-        MultipartFile image = mock(MultipartFile.class);
-        UpdateRestaurantInDTO dto1 = new UpdateRestaurantInDTO(1L, 2L, "Test Restaurant", "test@gmail.com", "9876543210", "Test Address", image);
-        UpdateRestaurantInDTO dto2 = new UpdateRestaurantInDTO(1L, 2L, "Test Restaurant", "test@gmail.com", "9876543210", "Test Address", image);
-        UpdateRestaurantInDTO dto3 = new UpdateRestaurantInDTO(1L, 2L, "Another Restaurant", "another@gmail.com", "8765432109", "Another Address", null);
+    public void testInvalidRestaurantId() {
+        UpdateRestaurantInDTO dto = new UpdateRestaurantInDTO(
+                1L, 0L, "Test Restaurant", "test@gmail.com", "9876543210", "123 Test Address"
+        );
+        Set<ConstraintViolation<UpdateRestaurantInDTO>> violations = validator.validate(dto);
+        assertFalse(violations.isEmpty(), "There should be validation violations for restaurantId");
+        assertEquals("Valid Restaurant ID Required", violations.iterator().next().getMessage());
+    }
 
-        assertEquals(dto1, dto2);
-        assertNotEquals(dto1, dto3);
-        assertEquals(dto1.hashCode(), dto2.hashCode());
-        assertNotEquals(dto1.hashCode(), dto3.hashCode());
+    @Test
+    public void testInvalidRestaurantName() {
+        UpdateRestaurantInDTO dto = new UpdateRestaurantInDTO(
+                1L, 1L, "", "test@gmail.com", "9876543210", "123 Test Address"
+        );
+        Set<ConstraintViolation<UpdateRestaurantInDTO>> violations = validator.validate(dto);
+        assertFalse(violations.isEmpty(), "There should be validation violations for name");
+        assertEquals("Enter a valid name for restaurant", violations.iterator().next().getMessage());
+    }
+
+    @Test
+    public void testInvalidEmail() {
+        UpdateRestaurantInDTO dto = new UpdateRestaurantInDTO(
+                1L, 1L, "Test Restaurant", "invalid_email", "9876543210", "123 Test Address"
+        );
+        Set<ConstraintViolation<UpdateRestaurantInDTO>> violations = validator.validate(dto);
+        assertFalse(violations.isEmpty(), "There should be validation violations for email");
+        assertEquals("Enter a valid email ID for restaurant", violations.iterator().next().getMessage());
+    }
+
+    @Test
+    public void testInvalidPhoneNumber() {
+        UpdateRestaurantInDTO dto = new UpdateRestaurantInDTO(
+                1L, 1L, "Test Restaurant", "test@gmail.com", "12345", "123 Test Address"
+        );
+        Set<ConstraintViolation<UpdateRestaurantInDTO>> violations = validator.validate(dto);
+        assertFalse(violations.isEmpty(), "There should be validation violations for phone");
+        assertEquals("Phone number should be valid", violations.iterator().next().getMessage());
+    }
+
+    @Test
+    public void testInvalidAddress() {
+        UpdateRestaurantInDTO dto = new UpdateRestaurantInDTO(
+                1L, 1L, "Test Restaurant", "test@gmail.com", "9876543210", ""
+        );
+        Set<ConstraintViolation<UpdateRestaurantInDTO>> violations = validator.validate(dto);
+        assertFalse(violations.isEmpty(), "There should be validation violations for address");
+        assertEquals("Address for restaurant cannot be empty", violations.iterator().next().getMessage());
     }
 }

@@ -1,23 +1,24 @@
 package com.capstone.restaurants_service.convertersTest;
 
-import com.capstone.restaurants_service.dto.CategoryInDTO;
 import com.capstone.restaurants_service.converters.CategoryConverters;
+import com.capstone.restaurants_service.dto.CategoryInDTO;
 import com.capstone.restaurants_service.entity.Category;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-class CategoryConvertersTest {
+public class CategoryConvertersTest {
 
     @Test
-    void testCategoryInDTOToCategoryEntity() {
+    public void testCategoryInDTOToCategoryEntity() {
         CategoryInDTO categoryInDTO = new CategoryInDTO();
-        categoryInDTO.setRestaurantId(1L);
-        categoryInDTO.setName("test category");
+        categoryInDTO.setRestaurantId(1);
+        categoryInDTO.setName("testCategory");
 
         Category category = CategoryConverters.categoryInDTOToCategoryEntity(categoryInDTO);
 
-        assertEquals(1L, category.getRestaurantId());
-        assertEquals("TEST CATEGORY", category.getName());
+        assertNotNull(category);
+        assertEquals(1, category.getRestaurantId());
+        assertEquals("TESTCATEGORY", category.getName());
     }
 }

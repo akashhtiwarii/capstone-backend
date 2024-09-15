@@ -1,7 +1,5 @@
 package com.capstone.orders_service.dtoTest;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.capstone.orders_service.Enum.Status;
 import com.capstone.orders_service.dto.UserFoodItemOutDTO;
 import com.capstone.orders_service.dto.UserOrderDetailsOutDTO;
@@ -9,85 +7,88 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
-public class UserOrderDetailsOutDTOTest {
+import static org.junit.jupiter.api.Assertions.*;
+
+class UserOrderDetailsOutDTOTest {
 
     @Test
-    public void testGetterAndSetter() {
-        UserOrderDetailsOutDTO userOrderDetailsOutDTO = new UserOrderDetailsOutDTO();
+    void testEqualsAndHashCode() {
+        UserFoodItemOutDTO foodItem1 = new UserFoodItemOutDTO();
+        foodItem1.setFoodId(1L);
+        foodItem1.setName("Pizza");
+        foodItem1.setQuantity(2);
+        foodItem1.setPrice(20.0);
 
-        assertNull(userOrderDetailsOutDTO.getRestaurantName());
-        String restaurantName = "Test Restaurant";
-        userOrderDetailsOutDTO.setRestaurantName(restaurantName);
-        assertEquals(restaurantName, userOrderDetailsOutDTO.getRestaurantName());
+        UserFoodItemOutDTO foodItem2 = new UserFoodItemOutDTO();
+        foodItem2.setFoodId(2L);
+        foodItem2.setName("Burger");
+        foodItem2.setQuantity(1);
+        foodItem2.setPrice(10.0);
 
-        assertNull(userOrderDetailsOutDTO.getFoodItemOutDTOS());
-        List<UserFoodItemOutDTO> foodItemOutDTOS = Collections.singletonList(new UserFoodItemOutDTO());
-        userOrderDetailsOutDTO.setFoodItemOutDTOS(foodItemOutDTOS);
-        assertEquals(foodItemOutDTOS, userOrderDetailsOutDTO.getFoodItemOutDTOS());
+        List<UserFoodItemOutDTO> foodItems = Arrays.asList(foodItem1, foodItem2);
 
-        assertNull(userOrderDetailsOutDTO.getStatus());
-        Status status = Status.PENDING;
-        userOrderDetailsOutDTO.setStatus(status);
-        assertEquals(status, userOrderDetailsOutDTO.getStatus());
+        UserOrderDetailsOutDTO order1 = new UserOrderDetailsOutDTO();
+        order1.setRestaurantName("Best Restaurant");
+        order1.setRestaurantEmail("contact@restaurant.com");
+        order1.setOrderId(100L);
+        order1.setFoodItemOutDTOS(foodItems);
+        order1.setStatus(Status.PENDING);
+        order1.setOrderTime(LocalDateTime.now());
 
-        assertNull(userOrderDetailsOutDTO.getOrderTime());
-        LocalDateTime orderTime = LocalDateTime.now();
-        userOrderDetailsOutDTO.setOrderTime(orderTime);
-        assertEquals(orderTime, userOrderDetailsOutDTO.getOrderTime());
+        UserOrderDetailsOutDTO order2 = new UserOrderDetailsOutDTO();
+        order2.setRestaurantName("Best Restaurant");
+        order2.setRestaurantEmail("contact@restaurant.com");
+        order2.setOrderId(100L);
+        order2.setFoodItemOutDTOS(foodItems);
+        order2.setStatus(Status.PENDING);
+        order2.setOrderTime(order1.getOrderTime());
+
+        UserOrderDetailsOutDTO order3 = new UserOrderDetailsOutDTO();
+        order3.setRestaurantName("Another Restaurant");
+        order3.setRestaurantEmail("contact@anotherrestaurant.com");
+        order3.setOrderId(101L);
+        order3.setFoodItemOutDTOS(foodItems);
+        order3.setStatus(Status.COMPLETED);
+        order3.setOrderTime(order1.getOrderTime().minusDays(1));
+
+        assertEquals(order1, order2);
+        assertEquals(order1.hashCode(), order2.hashCode());
+        assertNotEquals(order1, order3);
+        assertNotEquals(order1.hashCode(), order3.hashCode());
     }
 
     @Test
-    public void testEqualsAndHashcode() {
-        String restaurantName = "Test Restaurant";
-        List<UserFoodItemOutDTO> foodItemOutDTOS = Collections.singletonList(new UserFoodItemOutDTO());
-        Status status = Status.PENDING;
-        LocalDateTime orderTime = LocalDateTime.now();
+    void testGettersAndSetters() {
+        UserOrderDetailsOutDTO order = new UserOrderDetailsOutDTO();
+        order.setRestaurantName("My Restaurant");
+        order.setRestaurantEmail("info@restaurant.com");
+        order.setOrderId(1L);
+        order.setStatus(Status.COMPLETED);
+        order.setOrderTime(LocalDateTime.of(2024, 1, 1, 12, 0));
 
-        UserOrderDetailsOutDTO dto1 = buildUserOrderDetailsOutDTO(restaurantName, foodItemOutDTOS, status, orderTime);
+        UserFoodItemOutDTO foodItem1 = new UserFoodItemOutDTO();
+        foodItem1.setFoodId(1L);
+        foodItem1.setName("Pizza");
+        foodItem1.setQuantity(2);
+        foodItem1.setPrice(20.0);
 
-        assertEquals(dto1, dto1);
-        assertEquals(dto1.hashCode(), dto1.hashCode());
+        UserFoodItemOutDTO foodItem2 = new UserFoodItemOutDTO();
+        foodItem2.setFoodId(2L);
+        foodItem2.setName("Burger");
+        foodItem2.setQuantity(1);
+        foodItem2.setPrice(10.0);
 
-        assertNotEquals(dto1, new Object());
+        order.setFoodItemOutDTOS(Arrays.asList(foodItem1, foodItem2));
 
-        UserOrderDetailsOutDTO dto2 = buildUserOrderDetailsOutDTO(restaurantName, foodItemOutDTOS, status, orderTime);
-        assertEquals(dto1, dto2);
-        assertEquals(dto1.hashCode(), dto2.hashCode());
-
-        dto2 = buildUserOrderDetailsOutDTO(restaurantName + " Updated", foodItemOutDTOS, status, orderTime);
-        assertNotEquals(dto1, dto2);
-        assertNotEquals(dto1.hashCode(), dto2.hashCode());
-
-        dto2 = buildUserOrderDetailsOutDTO(restaurantName, Arrays.asList(new UserFoodItemOutDTO()), status, orderTime);
-        assertNotEquals(dto1, dto2);
-        assertNotEquals(dto1.hashCode(), dto2.hashCode());
-
-        dto2 = buildUserOrderDetailsOutDTO(restaurantName, foodItemOutDTOS, Status.COMPLETED, orderTime);
-        assertNotEquals(dto1, dto2);
-        assertNotEquals(dto1.hashCode(), dto2.hashCode());
-
-        dto2 = buildUserOrderDetailsOutDTO(restaurantName, foodItemOutDTOS, status, LocalDateTime.now().minusDays(1));
-        assertNotEquals(dto1, dto2);
-        assertNotEquals(dto1.hashCode(), dto2.hashCode());
-
-        dto1 = new UserOrderDetailsOutDTO();
-        dto2 = new UserOrderDetailsOutDTO();
-        assertEquals(dto1, dto2);
-        assertEquals(dto1.hashCode(), dto2.hashCode());
-    }
-
-    private UserOrderDetailsOutDTO buildUserOrderDetailsOutDTO(String restaurantName, List<UserFoodItemOutDTO> foodItemOutDTOS, Status status, LocalDateTime orderTime) {
-        UserOrderDetailsOutDTO dto = new UserOrderDetailsOutDTO();
-
-        dto.setRestaurantName(restaurantName);
-        dto.setFoodItemOutDTOS(foodItemOutDTOS);
-        dto.setStatus(status);
-        dto.setOrderTime(orderTime);
-
-        return dto;
+        assertEquals("My Restaurant", order.getRestaurantName());
+        assertEquals("info@restaurant.com", order.getRestaurantEmail());
+        assertEquals(1L, order.getOrderId());
+        assertEquals(Status.COMPLETED, order.getStatus());
+        assertEquals(LocalDateTime.of(2024, 1, 1, 12, 0), order.getOrderTime());
+        assertEquals(2, order.getFoodItemOutDTOS().size());
+        assertEquals("Pizza", order.getFoodItemOutDTOS().get(0).getName());
+        assertEquals("Burger", order.getFoodItemOutDTOS().get(1).getName());
     }
 }

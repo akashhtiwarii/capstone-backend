@@ -1,23 +1,24 @@
 package com.capstone.users_service.exceptionsTest;
 
-import com.capstone.users_service.exceptions.GlobalExceptionHandler;
+import com.capstone.users_service.exceptions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import java.util.Collections;
-import java.util.HashMap;
+import org.hibernate.exception.ConstraintViolationException;
+
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 
 class GlobalExceptionHandlerTest {
 
@@ -30,69 +31,58 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    void testHandleUserNotFoundException() {
-        UserNotFoundException exception = new UserNotFoundException("User not found");
-
-        ResponseEntity<String> response = globalExceptionHandler.handleUserNotFoundException(exception);
-
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("User not found", response.getBody());
+    void handleConstraintViolationException() {
+        ConstraintViolationException ex = mock(ConstraintViolationException.class);
+        ResponseEntity<Map<String, String>> response = globalExceptionHandler.handleConstraintViolationException(ex);
+        assertEquals(400, response.getStatusCodeValue());
+        assertEquals("Invalid Request. Try Again!", response.getBody().get("message"));
     }
 
     @Test
-    void testHandleAddressNotFoundException() {
-        AddressNotFoundException exception = new AddressNotFoundException("Address not found");
-
-        ResponseEntity<String> response = globalExceptionHandler.handleAddressNotFoundException(exception);
-
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("Address not found", response.getBody());
+    void handleHttpMessageNotReadableException() {
+        HttpMessageNotReadableException ex = mock(HttpMessageNotReadableException.class);
+        ResponseEntity<Map<String, String>> response = globalExceptionHandler.handleHttpMessageNotReadableException(ex);
+        assertEquals(400, response.getStatusCodeValue());
+        assertEquals("Invalid Request. Try Again!", response.getBody().get("message"));
     }
 
     @Test
-    void testHandleEmailAlreadyExistsException() {
-        EmailAlreadyExistsException exception = new EmailAlreadyExistsException("Email already exists");
-
-        ResponseEntity<String> response = globalExceptionHandler.handleEmailAlreadyExistsException(exception);
-
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Email already exists", response.getBody());
+    void handleResourceAlreadyExistsException() {
+        ResourceAlreadyExistsException ex = new ResourceAlreadyExistsException("Resource already exists");
+        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleResourceAlreadyExistsException(ex);
+        assertEquals(400, response.getStatusCodeValue());
+        assertEquals("Resource already exists", response.getBody().getMessage());
     }
 
     @Test
-    void testHandleRuntimeException() {
-        RuntimeException exception = new RuntimeException("Internal error occurred");
-
-        ResponseEntity<String> response = globalExceptionHandler.handleRuntimeException(exception);
-
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertEquals("Internal error occurred", response.getBody());
+    void handleResourceNotValidException() {
+        ResourceNotValidException ex = new ResourceNotValidException("Invalid resource");
+        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleResourceNotValidException(ex);
+        assertEquals(401, response.getStatusCodeValue());
+        assertEquals("Invalid resource", response.getBody().getMessage());
     }
 
     @Test
-    void testHandleGeneralException() {
-        Exception exception = new Exception("General error occurred");
-
-        ResponseEntity<String> response = globalExceptionHandler.handleGeneralException(exception);
-
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertEquals("General error occurred", response.getBody());
+    void handleResourceNotFoundException() {
+        ResourceNotFoundException ex = new ResourceNotFoundException("Resource not found");
+        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleResourceNotFoundException(ex);
+        assertEquals(404, response.getStatusCodeValue());
+        assertEquals("Resource not found", response.getBody().getMessage());
     }
 
     @Test
-    void testHandleValidationException() {
-        FieldError fieldError = new FieldError("objectName", "fieldName", "Validation failed");
-        BindingResult bindingResult = mock(BindingResult.class);
-        when(bindingResult.getAllErrors()).thenReturn(Collections.singletonList(fieldError));
+    void handleRuntimeException() {
+        RuntimeException ex = new RuntimeException("Unexpected error");
+        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleRuntimeException(ex);
+        assertEquals(500, response.getStatusCodeValue());
+        assertEquals("Unexpected error", response.getBody().getMessage());
+    }
 
-        MethodArgumentNotValidException exception = new MethodArgumentNotValidException(null, bindingResult);
-
-        Map<String, String> expectedErrors = new HashMap<>();
-        expectedErrors.put("fieldName", "Validation failed");
-
-        Map<String, String> errors = globalExceptionHandler.handleValidationException(exception);
-
-        assertEquals(expectedErrors, errors);
+    @Test
+    void handleGeneralException() {
+        Exception ex = new Exception("General exception");
+        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleGeneralException(ex);
+        assertEquals(500, response.getStatusCodeValue());
+        assertEquals("General exception", response.getBody().getMessage());
     }
 }
-

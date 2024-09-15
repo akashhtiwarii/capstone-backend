@@ -1,6 +1,6 @@
-package com.capstone.restaurants_service.exceptionsTest;
+package com.capstone.users_service.exceptionsTest;
 
-import com.capstone.restaurants_service.exceptions.ErrorResponse;
+import com.capstone.users_service.exceptions.ErrorResponse;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

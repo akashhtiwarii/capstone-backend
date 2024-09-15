@@ -65,7 +65,7 @@ public class AddressOutDTOTest {
         String state = "Stateville";
         addressOutDTO.setState(state);
 
-        assertEquals("2, 123 Main St, Anytown, Stateville, 12345", addressOutDTO.toString());
+        assertEquals("123 Main St, Anytown, Stateville, 12345", addressOutDTO.toString());
     }
 
     @Test

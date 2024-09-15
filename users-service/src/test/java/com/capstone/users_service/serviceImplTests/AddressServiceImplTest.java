@@ -1,16 +1,18 @@
 package com.capstone.users_service.serviceImplTests;
 
 import com.capstone.users_service.dto.AddressInDTO;
-import com.capstone.users_service.dto.AddressRequestInDTO;
+import com.capstone.users_service.dto.UpdateAddressInDTO;
 import com.capstone.users_service.entity.Address;
 import com.capstone.users_service.entity.User;
+import com.capstone.users_service.exceptions.ResourceNotFoundException;
+import com.capstone.users_service.exceptions.ResourceNotValidException;
 import com.capstone.users_service.repository.AddressRepository;
 import com.capstone.users_service.repository.UserRepository;
 import com.capstone.users_service.serviceImpl.AddressServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
@@ -18,14 +20,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 
-class AddressServiceImplTest {
-
-    @InjectMocks
-    private AddressServiceImpl addressService;
+public class AddressServiceImplTest {
 
     @Mock
     private AddressRepository addressRepository;
@@ -33,83 +29,27 @@ class AddressServiceImplTest {
     @Mock
     private UserRepository userRepository;
 
-    @BeforeEach
-    void setUp() {
+    @InjectMocks
+    private AddressServiceImpl addressService;
+
+    public AddressServiceImplTest() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    void testFindUserAddressesUserNotFound() {
-        AddressRequestInDTO addressRequestInDTO = new AddressRequestInDTO();
-        addressRequestInDTO.setEmail("nonexistent@gmail.com");
-
-        when(userRepository.findByEmail(anyString())).thenReturn(null);
-
-        assertThrows(UserNotFoundException.class, () -> {
-            addressService.findUserAddresses(addressRequestInDTO);
-        });
-    }
-
-    @Test
-    void testFindUserAddressesAddressNotFound() {
-        AddressRequestInDTO addressRequestInDTO = new AddressRequestInDTO();
-        addressRequestInDTO.setEmail("test@gmail.com");
-
-        User user = new User();
-        user.setUserId(1);
-
-        when(userRepository.findByEmail(anyString())).thenReturn(user);
-        when(addressRepository.findByUserId(user.getUserId())).thenReturn(new ArrayList<>());
-
-        assertThrows(AddressNotFoundException.class, () -> {
-            addressService.findUserAddresses(addressRequestInDTO);
-        });
-    }
-
-    @Test
-    void testFindUserAddressesSuccess() {
-        AddressRequestInDTO addressRequestInDTO = new AddressRequestInDTO();
-        addressRequestInDTO.setEmail("test@gmail.com");
-
-        User user = new User();
-        user.setUserId(1);
-
-        List<Address> addresses = new ArrayList<>();
-        addresses.add(new Address());
-
-        when(userRepository.findByEmail(anyString())).thenReturn(user);
-        when(addressRepository.findByUserId(user.getUserId())).thenReturn(addresses);
-
-        List<Address> result = addressService.findUserAddresses(addressRequestInDTO);
-
-        assertEquals(1, result.size());
-    }
-
-    @Test
-    void testAddAddressUserNotFound() {
+    public void testAddAddressSuccess() {
         AddressInDTO addressInDTO = new AddressInDTO();
-        addressInDTO.setEmail("nonexistent@gmail.com");
-
-        when(userRepository.findByEmail(anyString())).thenReturn(null);
-
-        assertThrows(UserNotFoundException.class, () -> {
-            addressService.addAddress(addressInDTO);
-        });
-    }
-
-    @Test
-    void testAddAddressSuccess() {
-        AddressInDTO addressInDTO = new AddressInDTO();
-        addressInDTO.setEmail("test@gmail.com");
-        addressInDTO.setAddress("ABC Address");
-        addressInDTO.setPincode(12345L);
-        addressInDTO.setCity("Test City");
-        addressInDTO.setState("Test State");
+        addressInDTO.setUserId(1L);
+        addressInDTO.setAddress("123 Main St");
+        addressInDTO.setPincode(12345);
+        addressInDTO.setCity("City");
+        addressInDTO.setState("State");
 
         User user = new User();
-        user.setUserId(1);
+        user.setUserId(1L);
 
-        when(userRepository.findByEmail(anyString())).thenReturn(user);
+        Mockito.when(userRepository.findById(1L)).thenReturn(user);
+        Mockito.when(addressRepository.save(Mockito.any(Address.class))).thenReturn(new Address());
 
         String result = addressService.addAddress(addressInDTO);
 
@@ -117,22 +57,152 @@ class AddressServiceImplTest {
     }
 
     @Test
-    void testAddAddressException() {
+    public void testAddAddressUserNotFound() {
         AddressInDTO addressInDTO = new AddressInDTO();
-        addressInDTO.setEmail("test@gmail.com");
-        addressInDTO.setAddress("ABC Address");
-        addressInDTO.setPincode(12345L);
-        addressInDTO.setCity("Test City");
-        addressInDTO.setState("Test State");
+        addressInDTO.setUserId(1L);
+
+        Mockito.when(userRepository.findById(1L)).thenReturn(null);
+
+        assertThrows(ResourceNotFoundException.class, () -> addressService.addAddress(addressInDTO));
+    }
+
+    @Test
+    public void testGetAddressByUserIdSuccess() {
+        List<Address> addresses = new ArrayList<>();
+        addresses.add(new Address());
+
+        Mockito.when(addressRepository.findByUserId(1L)).thenReturn(addresses);
+
+        List<Address> result = addressService.getAddressByUserId(1L);
+
+        assertEquals(addresses, result);
+    }
+
+    @Test
+    public void testGetAddressByUserIdNotFound() {
+        Mockito.when(addressRepository.findByUserId(1L)).thenReturn(new ArrayList<>());
+
+        assertThrows(ResourceNotFoundException.class, () -> addressService.getAddressByUserId(1L));
+    }
+
+    @Test
+    public void testGetAddressByIdSuccess() {
+        Address address = new Address();
+
+        Mockito.when(addressRepository.findById(1L)).thenReturn(address);
+
+        Address result = addressService.getAddressById(1L);
+
+        assertEquals(address, result);
+    }
+
+    @Test
+    public void testGetAddressByIdNotFound() {
+        Mockito.when(addressRepository.findById(1L)).thenReturn(null);
+
+        assertThrows(ResourceNotFoundException.class, () -> addressService.getAddressById(1L));
+    }
+
+    @Test
+    public void testUpdateAddressSuccess() {
+        UpdateAddressInDTO updateAddressInDTO = new UpdateAddressInDTO();
+        updateAddressInDTO.setUserId(1L);
+        updateAddressInDTO.setAddressId(1L);
+        updateAddressInDTO.setAddress("456 New St");
+        updateAddressInDTO.setPincode(678907);
+        updateAddressInDTO.setCity("New City");
+        updateAddressInDTO.setState("New State");
 
         User user = new User();
-        user.setUserId(1);
+        user.setUserId(1L);
 
-        when(userRepository.findByEmail(anyString())).thenReturn(user);
-        when(addressRepository.save(any())).thenThrow(new RuntimeException("Database error"));
+        Address address = new Address();
+        address.setUserId(1L);
 
-        assertThrows(RuntimeException.class, () -> {
-            addressService.addAddress(addressInDTO);
-        });
+        Mockito.when(userRepository.findById(1L)).thenReturn(user);
+        Mockito.when(addressRepository.findById(1L)).thenReturn(address);
+        Mockito.when(addressRepository.save(Mockito.any(Address.class))).thenReturn(new Address());
+
+        String result = addressService.updateAddress(updateAddressInDTO);
+
+        assertEquals("Address Updated Successfully", result);
+    }
+
+    @Test
+    public void testUpdateAddressUserNotFound() {
+        UpdateAddressInDTO updateAddressInDTO = new UpdateAddressInDTO();
+        updateAddressInDTO.setUserId(1L);
+
+        Mockito.when(userRepository.findById(1L)).thenReturn(null);
+
+        assertThrows(ResourceNotFoundException.class, () -> addressService.updateAddress(updateAddressInDTO));
+    }
+
+    @Test
+    public void testUpdateAddressAddressNotFound() {
+        UpdateAddressInDTO updateAddressInDTO = new UpdateAddressInDTO();
+        updateAddressInDTO.setAddressId(1L);
+
+        Mockito.when(userRepository.findById(1L)).thenReturn(new User());
+        Mockito.when(addressRepository.findById(1L)).thenReturn(null);
+
+        assertThrows(ResourceNotFoundException.class, () -> addressService.updateAddress(updateAddressInDTO));
+    }
+
+    @Test
+    public void testUpdateAddressUserNotValid() {
+        UpdateAddressInDTO updateAddressInDTO = new UpdateAddressInDTO();
+        updateAddressInDTO.setUserId(1L);
+        updateAddressInDTO.setAddressId(1L);
+
+        User user = new User();
+        user.setUserId(2L);
+
+        Address address = new Address();
+        address.setUserId(1L);
+
+        Mockito.when(userRepository.findById(1L)).thenReturn(user);
+        Mockito.when(addressRepository.findById(1L)).thenReturn(address);
+
+        assertThrows(ResourceNotValidException.class, () -> addressService.updateAddress(updateAddressInDTO));
+    }
+
+    @Test
+    public void testDeleteAddressSuccess() {
+        Mockito.when(userRepository.findById(1L)).thenReturn(new User());
+        Mockito.when(addressRepository.findById(1L)).thenReturn(new Address());
+
+        String result = addressService.deleteAddress(1L, 1L);
+
+        assertEquals("Address Deleted Successfully", result);
+    }
+
+    @Test
+    public void testDeleteAddressUserNotFound() {
+        Mockito.when(userRepository.findById(1L)).thenReturn(null);
+
+        assertThrows(ResourceNotFoundException.class, () -> addressService.deleteAddress(1L, 1L));
+    }
+
+    @Test
+    public void testDeleteAddressAddressNotFound() {
+        Mockito.when(userRepository.findById(1L)).thenReturn(new User());
+        Mockito.when(addressRepository.findById(1L)).thenReturn(null);
+
+        assertThrows(ResourceNotFoundException.class, () -> addressService.deleteAddress(1L, 1L));
+    }
+
+    @Test
+    public void testDeleteAddressUserNotValid() {
+        User user = new User();
+        user.setUserId(2L);
+
+        Address address = new Address();
+        address.setUserId(1L);
+
+        Mockito.when(userRepository.findById(1L)).thenReturn(user);
+        Mockito.when(addressRepository.findById(1L)).thenReturn(address);
+
+        assertThrows(ResourceNotValidException.class, () -> addressService.deleteAddress(1L, 1L));
     }
 }

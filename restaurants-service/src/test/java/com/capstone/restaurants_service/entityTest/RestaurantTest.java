@@ -2,66 +2,119 @@ package com.capstone.restaurants_service.entityTest;
 
 import com.capstone.restaurants_service.entity.Restaurant;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-class RestaurantTest {
+public class RestaurantTest {
 
     @Test
-    void testGettersAndSetters() {
+    public void testGetterAndSetter() {
         Restaurant restaurant = new Restaurant();
-        byte[] image = {1, 2, 3, 4, 5};
 
-        restaurant.setRestaurantId(1L);
-        restaurant.setOwnerId(10L);
-        restaurant.setName("The Culinary Place");
-        restaurant.setEmail("culinary@example.com");
-        restaurant.setPhone("1234567890");
-        restaurant.setAddress("123 Food Street");
+        assertEquals(0, restaurant.getRestaurantId());
+        restaurant.setRestaurantId(1);
+        assertEquals(1, restaurant.getRestaurantId());
+
+        assertEquals(0, restaurant.getOwnerId());
+        restaurant.setOwnerId(2);
+        assertEquals(2, restaurant.getOwnerId());
+
+        assertNull(restaurant.getName());
+        restaurant.setName("Restaurant Name");
+        assertEquals("Restaurant Name", restaurant.getName());
+
+        assertNull(restaurant.getEmail());
+        restaurant.setEmail("email@example.com");
+        assertEquals("email@example.com", restaurant.getEmail());
+
+        assertNull(restaurant.getPhone());
+        restaurant.setPhone("123-456-7890");
+        assertEquals("123-456-7890", restaurant.getPhone());
+
+        assertNull(restaurant.getAddress());
+        restaurant.setAddress("123 Restaurant St");
+        assertEquals("123 Restaurant St", restaurant.getAddress());
+
+        assertNull(restaurant.getImage());
+        byte[] image = {1, 2, 3};
         restaurant.setImage(image);
-
-        assertEquals(1L, restaurant.getRestaurantId());
-        assertEquals(10L, restaurant.getOwnerId());
-        assertEquals("The Culinary Place", restaurant.getName());
-        assertEquals("culinary@example.com", restaurant.getEmail());
-        assertEquals("1234567890", restaurant.getPhone());
-        assertEquals("123 Food Street", restaurant.getAddress());
         assertArrayEquals(image, restaurant.getImage());
     }
 
     @Test
-    void testEqualsMethod() {
-        byte[] image1 = {1, 2, 3};
-        byte[] image2 = {1, 2, 3};
-        byte[] image3 = {4, 5, 6};
+    public void testToString() {
+        Restaurant restaurant = new Restaurant();
 
-        Restaurant restaurant1 = new Restaurant(1L, 10L, "Gourmet Kitchen", "gourmet@example.com", "9876543210", "45 Chef Lane", image1);
-        Restaurant restaurant2 = new Restaurant(1L, 10L, "Gourmet Kitchen", "gourmet@example.com", "9876543210", "45 Chef Lane", image2);
-        Restaurant restaurant3 = new Restaurant(2L, 11L, "Tasty Bites", "tasty@example.com", "1234567890", "67 Delicious Road", image3);
+        restaurant.setRestaurantId(1);
+        restaurant.setOwnerId(2);
+        restaurant.setName("Restaurant Name");
+        restaurant.setEmail("email@example.com");
+        restaurant.setPhone("123-456-7890");
+        restaurant.setAddress("123 Restaurant St");
+        restaurant.setImage(new byte[]{1, 2, 3});
 
+        assertEquals("Restaurant(restaurantId=1, ownerId=2, name=Restaurant Name, email=email@example.com, " +
+                "phone=123-456-7890, address=123 Restaurant St, image=[1, 2, 3])", restaurant.toString());
+    }
+
+    @Test
+    public void testEqualsAndHashcode() {
+        Restaurant restaurant1 = buildRestaurant(1, 2, "Restaurant Name", "email@example.com", "123-456-7890", "123 Restaurant St", new byte[]{1, 2, 3});
+
+        assertEquals(restaurant1, restaurant1);
+        assertEquals(restaurant1.hashCode(), restaurant1.hashCode());
+
+        assertNotEquals(restaurant1, new Object());
+
+        Restaurant restaurant2 = buildRestaurant(1, 2, "Restaurant Name", "email@example.com", "123-456-7890", "123 Restaurant St", new byte[]{1, 2, 3});
         assertEquals(restaurant1, restaurant2);
-        assertNotEquals(restaurant1, restaurant3);
-    }
-
-    @Test
-    void testEqualsMethodWithDifferentObjects() {
-        Restaurant restaurant = new Restaurant(1L, 10L, "Urban Eats", "urban@example.com", "1112223333", "321 Flavor Avenue", new byte[]{1, 2, 3});
-
-        assertNotEquals(null, restaurant);
-        assertNotEquals(restaurant, new Object());
-    }
-
-    @Test
-    void testHashCodeMethod() {
-        byte[] image1 = {1, 2, 3};
-        byte[] image2 = {1, 2, 3};
-        byte[] image3 = {4, 5, 6};
-
-        Restaurant restaurant1 = new Restaurant(1L, 10L, "Fusion Feast", "fusion@example.com", "5556667777", "88 Tasty Street", image1);
-        Restaurant restaurant2 = new Restaurant(1L, 10L, "Fusion Feast", "fusion@example.com", "5556667777", "88 Tasty Street", image2);
-        Restaurant restaurant3 = new Restaurant(3L, 12L, "Sweet Treats", "sweet@example.com", "4445556666", "99 Dessert Boulevard", image3);
-
         assertEquals(restaurant1.hashCode(), restaurant2.hashCode());
-        assertNotEquals(restaurant1.hashCode(), restaurant3.hashCode());
+
+        restaurant2 = buildRestaurant(2, 2, "Restaurant Name", "email@example.com", "123-456-7890", "123 Restaurant St", new byte[]{1, 2, 3});
+        assertNotEquals(restaurant1, restaurant2);
+        assertNotEquals(restaurant1.hashCode(), restaurant2.hashCode());
+
+        restaurant2 = buildRestaurant(1, 3, "Restaurant Name", "email@example.com", "123-456-7890", "123 Restaurant St", new byte[]{1, 2, 3});
+        assertNotEquals(restaurant1, restaurant2);
+        assertNotEquals(restaurant1.hashCode(), restaurant2.hashCode());
+
+        restaurant2 = buildRestaurant(1, 2, "Different Name", "email@example.com", "123-456-7890", "123 Restaurant St", new byte[]{1, 2, 3});
+        assertNotEquals(restaurant1, restaurant2);
+        assertNotEquals(restaurant1.hashCode(), restaurant2.hashCode());
+
+        restaurant2 = buildRestaurant(1, 2, "Restaurant Name", "different@example.com", "123-456-7890", "123 Restaurant St", new byte[]{1, 2, 3});
+        assertNotEquals(restaurant1, restaurant2);
+        assertNotEquals(restaurant1.hashCode(), restaurant2.hashCode());
+
+        restaurant2 = buildRestaurant(1, 2, "Restaurant Name", "email@example.com", "987-654-3210", "123 Restaurant St", new byte[]{1, 2, 3});
+        assertNotEquals(restaurant1, restaurant2);
+        assertNotEquals(restaurant1.hashCode(), restaurant2.hashCode());
+
+        restaurant2 = buildRestaurant(1, 2, "Restaurant Name", "email@example.com", "123-456-7890", "Different Address", new byte[]{1, 2, 3});
+        assertNotEquals(restaurant1, restaurant2);
+        assertNotEquals(restaurant1.hashCode(), restaurant2.hashCode());
+
+        restaurant2 = buildRestaurant(1, 2, "Restaurant Name", "email@example.com", "123-456-7890", "123 Restaurant St", new byte[]{4, 5, 6});
+        assertNotEquals(restaurant1, restaurant2);
+        assertNotEquals(restaurant1.hashCode(), restaurant2.hashCode());
+
+        Restaurant restaurant3 = new Restaurant();
+        Restaurant restaurant4 = new Restaurant();
+        assertEquals(restaurant3, restaurant4);
+        assertEquals(restaurant3.hashCode(), restaurant4.hashCode());
+    }
+
+    private Restaurant buildRestaurant(long restaurantId, long ownerId, String name, String email, String phone, String address, byte[] image) {
+        Restaurant restaurant = new Restaurant();
+
+        restaurant.setRestaurantId(restaurantId);
+        restaurant.setOwnerId(ownerId);
+        restaurant.setName(name);
+        restaurant.setEmail(email);
+        restaurant.setPhone(phone);
+        restaurant.setAddress(address);
+        restaurant.setImage(image);
+
+        return restaurant;
     }
 }
-

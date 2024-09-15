@@ -55,14 +55,6 @@ public class CategoryInDTO {
     private String name;
 
     /**
-     * Optional image data associated with the category.
-     * <p>
-     * This field can be null and represents image bytes for the category.
-     * </p>
-     */
-    private byte[] image;
-
-    /**
      * Compares this CategoryInDTO object with another object for equality.
      * <p>
      * Two CategoryInDTO objects are considered equal if their userId, restaurantId, name, and image byte arrays are
@@ -82,7 +74,7 @@ public class CategoryInDTO {
         }
         CategoryInDTO that = (CategoryInDTO) o;
         return userId == that.userId && restaurantId == that.restaurantId
-                && Objects.equals(name, that.name) && Objects.deepEquals(image, that.image);
+                && Objects.equals(name, that.name);
     }
 
     /**
@@ -95,6 +87,6 @@ public class CategoryInDTO {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(userId, restaurantId, name, Arrays.hashCode(image));
+        return Objects.hash(userId, restaurantId, name);
     }
 }

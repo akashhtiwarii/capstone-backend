@@ -1,27 +1,50 @@
 package com.capstone.restaurants_service.convertersTest;
 
 import com.capstone.restaurants_service.converters.RestaurantConverters;
-import com.capstone.restaurants_service.entity.Restaurant;
 import com.capstone.restaurants_service.dto.RestaurantInDTO;
+import com.capstone.restaurants_service.entity.Restaurant;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class RestaurantConvertersTest {
 
     @Test
-    void testRestaurantInDTOTORestaurant() {
+    public void testRestaurantInDTOTORestaurant() {
+
         RestaurantInDTO restaurantInDTO = new RestaurantInDTO();
         restaurantInDTO.setOwnerId(1L);
         restaurantInDTO.setName("Test Restaurant");
         restaurantInDTO.setEmail("test@example.com");
         restaurantInDTO.setPhone("123-456-7890");
         restaurantInDTO.setAddress("123 Test St");
+
         Restaurant restaurant = RestaurantConverters.restaurantInDTOTORestaurant(restaurantInDTO);
-        assertEquals(restaurantInDTO.getOwnerId(), restaurant.getOwnerId());
-        assertEquals(restaurantInDTO.getName(), restaurant.getName());
-        assertEquals(restaurantInDTO.getEmail(), restaurant.getEmail());
-        assertEquals(restaurantInDTO.getPhone(), restaurant.getPhone());
-        assertEquals(restaurantInDTO.getAddress(), restaurant.getAddress());
+
+        assertNotNull(restaurant);
+        assertEquals(1L, restaurant.getOwnerId());
+        assertEquals("Test Restaurant", restaurant.getName());
+        assertEquals("test@example.com", restaurant.getEmail());
+        assertEquals("123-456-7890", restaurant.getPhone());
+        assertEquals("123 Test St", restaurant.getAddress());
+    }
+
+    @Test
+    public void testRestaurantInDTOTORestaurantWithPartialFields() {
+        RestaurantInDTO restaurantInDTO = new RestaurantInDTO();
+        restaurantInDTO.setOwnerId(2L);
+        restaurantInDTO.setName("Another Restaurant");
+        restaurantInDTO.setEmail(null);
+        restaurantInDTO.setPhone("987-654-3210");
+        restaurantInDTO.setAddress(null);
+
+        Restaurant restaurant = RestaurantConverters.restaurantInDTOTORestaurant(restaurantInDTO);
+
+        assertNotNull(restaurant);
+        assertEquals(2L, restaurant.getOwnerId());
+        assertEquals("Another Restaurant", restaurant.getName());
+        assertNull(restaurant.getEmail());
+        assertEquals("987-654-3210", restaurant.getPhone());
+        assertNull(restaurant.getAddress());
     }
 }

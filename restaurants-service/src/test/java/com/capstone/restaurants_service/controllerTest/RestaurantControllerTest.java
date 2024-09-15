@@ -8,7 +8,7 @@ import com.capstone.restaurants_service.entity.Restaurant;
 import com.capstone.restaurants_service.service.CategoryService;
 import com.capstone.restaurants_service.service.FoodItemService;
 import com.capstone.restaurants_service.service.RestaurantService;
-import com.capstone.restaurants_service.dto.RequestSuccessOutDTO;
+import com.capstone.restaurants_service.utils.Constants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -18,7 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,157 +38,190 @@ public class RestaurantControllerTest {
     @Mock
     private FoodItemService foodItemService;
 
+    @Mock
+    private MultipartFile image;
+
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    void testAddRestaurant() {
-        RestaurantInDTO restaurantInDTO = new RestaurantInDTO();
-        MultipartFile image = mock(MultipartFile.class);
-        RestaurantWithImageInDTO dto = new RestaurantWithImageInDTO(restaurantInDTO, image);
-        when(restaurantService.save(any(RestaurantInDTO.class), any(MultipartFile.class))).thenReturn("Restaurant added successfully");
+    public void testAddRestaurant() {
+        RestaurantInDTO restaurantInDTO = new RestaurantInDTO(1L, "Test Restaurant", "test@gmail.com", "9876543210", "Test Address");
+        when(restaurantService.save(restaurantInDTO, image)).thenReturn("Restaurant added successfully");
 
-        ResponseEntity<RequestSuccessOutDTO> response = restaurantController.addRestaurant(dto);
+        ResponseEntity<RequestSuccessOutDTO> response = restaurantController.addRestaurant(restaurantInDTO, image);
+
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Restaurant added successfully", response.getBody().getMessage());
     }
 
     @Test
-    void testGetRestaurantById() {
-        long restaurantId = 1L;
-        Restaurant restaurant = new Restaurant();
-        when(restaurantService.findById(restaurantId)).thenReturn(restaurant);
+    public void testGetRestaurantById() {
+        Restaurant restaurant = new Restaurant(1L, 1L, "Test Restaurant", "test@gmail.com", "9876543210", "Test Address", new byte[0]);
+        when(restaurantService.findById(1L)).thenReturn(restaurant);
 
-        ResponseEntity<Restaurant> response = restaurantController.getRestaurantById(restaurantId);
+        ResponseEntity<Restaurant> response = restaurantController.getRestaurantById(1L);
+
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(restaurant, response.getBody());
     }
 
     @Test
-    void testGetOwnerRestaurants() {
-        GetOwnerRestaurantsInDTO dto = new GetOwnerRestaurantsInDTO();
-        List<Restaurant> restaurants = new ArrayList<>();
-        when(restaurantService.findByOwnerId(dto)).thenReturn(restaurants);
+    public void testGetOwnerRestaurants() {
+        List<Restaurant> restaurants = Arrays.asList(
+                new Restaurant(1L, 1L, "Restaurant 1", "test1@gmail.com", "9876543210", "Address 1", new byte[0]),
+                new Restaurant(2L, 2L, "Restaurant 2", "test2@gmail.com", "9876543211", "Address 2", new byte[0])
+        );
+        when(restaurantService.findByOwnerId(1L)).thenReturn(restaurants);
 
-        ResponseEntity<List<Restaurant>> response = restaurantController.getOwnerRestaurants(dto);
+        ResponseEntity<List<Restaurant>> response = restaurantController.getOwnerRestaurants(1L);
+
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(restaurants, response.getBody());
     }
 
     @Test
-    void testGetRestaurants() {
-        List<Restaurant> restaurants = new ArrayList<>();
+    public void testGetRestaurants() {
+        List<Restaurant> restaurants = Arrays.asList(
+                new Restaurant(1L, 1L, "Restaurant 1", "test1@gmail.com", "9876543210", "Address 1", new byte[0]),
+                new Restaurant(2L, 2L, "Restaurant 2", "test2@gmail.com", "9876543211", "Address 2", new byte[0])
+        );
         when(restaurantService.findAll()).thenReturn(restaurants);
 
         ResponseEntity<List<Restaurant>> response = restaurantController.getRestaurants();
+
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(restaurants, response.getBody());
     }
 
     @Test
-    void testAddCategory() {
-        CategoryInDTO categoryInDTO = new CategoryInDTO();
+    public void testAddCategory() {
+        CategoryInDTO categoryInDTO = new CategoryInDTO(1L, 1L, "Test Category");
         when(categoryService.addCategory(categoryInDTO)).thenReturn("Category added successfully");
 
         ResponseEntity<RequestSuccessOutDTO> response = restaurantController.addCategory(categoryInDTO);
+
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Category added successfully", response.getBody().getMessage());
     }
 
     @Test
-    void testUpdateRestaurant() {
-        UpdateRestaurantInDTO dto = new UpdateRestaurantInDTO();
-        when(restaurantService.updateRestaurant(dto)).thenReturn("Restaurant updated successfully");
+    public void testUpdateRestaurant() {
+        UpdateRestaurantInDTO updateRestaurantInDTO = new UpdateRestaurantInDTO(1L, 1L, "Updated Restaurant", "test@gmail.com", "9876543210", "Updated Address");
+        when(restaurantService.updateRestaurant(updateRestaurantInDTO, image)).thenReturn("Restaurant updated successfully");
 
-        ResponseEntity<RequestSuccessOutDTO> response = restaurantController.updateRestaurant(dto);
+        ResponseEntity<RequestSuccessOutDTO> response = restaurantController.updateRestaurant(updateRestaurantInDTO, image);
+
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Restaurant updated successfully", response.getBody().getMessage());
     }
 
     @Test
-    void testGetCategories() {
-        long restaurantId = 1L;
-        List<Category> categories = new ArrayList<>();
-        when(categoryService.getAllCategoriesOfRestaurant(restaurantId)).thenReturn(categories);
+    public void testGetCategories() {
+        List<Category> categories = Arrays.asList(
+                new Category(1L, 1L, "Category 1"),
+                new Category(2L, 1L, "Category 2")
+        );
+        when(categoryService.getAllCategoriesOfRestaurant(1L)).thenReturn(categories);
 
-        ResponseEntity<List<Category>> response = restaurantController.getCategories(restaurantId);
+        ResponseEntity<List<Category>> response = restaurantController.getCategories(1L);
+
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(categories, response.getBody());
     }
 
     @Test
-    void testDeleteCategory() {
-        when(categoryService.deleteCategory(1L,1L)).thenReturn("Category deleted successfully");
+    public void testDeleteCategory() {
+        when(categoryService.deleteCategory(1L, 1L)).thenReturn("Category deleted successfully");
 
-        ResponseEntity<RequestSuccessOutDTO> response = restaurantController.deleteCategory(1L,1L);
+        ResponseEntity<RequestSuccessOutDTO> response = restaurantController.deleteCategory(1L, 1L);
+
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Category deleted successfully", response.getBody().getMessage());
     }
 
     @Test
-    void testUpdateCategory() {
-        long categoryId = 1L;
-        UpdateCategoryDTO dto = new UpdateCategoryDTO();
-        when(categoryService.updateCategory(categoryId, dto)).thenReturn("Category updated successfully");
+    public void testUpdateCategory() {
+        UpdateCategoryDTO updateCategoryDTO = new UpdateCategoryDTO();
+        updateCategoryDTO.setName("Updated Category");
+        when(categoryService.updateCategory(1L, updateCategoryDTO)).thenReturn("Category updated successfully");
 
-        ResponseEntity<RequestSuccessOutDTO> response = restaurantController.updateCategory(categoryId, dto);
+        ResponseEntity<RequestSuccessOutDTO> response = restaurantController.updateCategory(1L, updateCategoryDTO);
+
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Category updated successfully", response.getBody().getMessage());
     }
 
     @Test
-    void testAddFoodItem() {
-        FoodItemInDTO foodItemInDTO = new FoodItemInDTO();
-        MultipartFile image = mock(MultipartFile.class);
-        FoodItemWithImageInDTO dto = new FoodItemWithImageInDTO(foodItemInDTO, image);
-        when(foodItemService.addFoodItem(any(FoodItemInDTO.class), any(MultipartFile.class))).thenReturn("Food item added successfully");
+    public void testAddFoodItem() {
+        FoodItemInDTO foodItemInDTO = new FoodItemInDTO(1L, 1L, "Test Food", "Description", 100.0);
+        when(foodItemService.addFoodItem(foodItemInDTO, image)).thenReturn("Food item added successfully");
 
-        ResponseEntity<RequestSuccessOutDTO> response = restaurantController.addFoodItem(dto);
+        ResponseEntity<RequestSuccessOutDTO> response = restaurantController.addFoodItem(foodItemInDTO, image);
+
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Food item added successfully", response.getBody().getMessage());
     }
 
     @Test
-    void testUpdateFoodItem() {
-        long foodItemId = 1L;
-        UpdateFoodItemInDTO dto = new UpdateFoodItemInDTO();
-        when(foodItemService.updateFoodItem(foodItemId, dto)).thenReturn("Food item updated successfully");
+    public void testUpdateFoodItem() {
+        UpdateFoodItemInDTO updateFoodItemInDTO = new UpdateFoodItemInDTO(1L, 1L, "Updated Food", "description", 120.0);
+        when(foodItemService.updateFoodItem(1L, updateFoodItemInDTO, image)).thenReturn("Food item updated successfully");
 
-        ResponseEntity<RequestSuccessOutDTO> response = restaurantController.updateFoodItem(foodItemId, dto);
+        ResponseEntity<RequestSuccessOutDTO> response = restaurantController.updateFoodItem(1L, updateFoodItemInDTO, image);
+
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Food item updated successfully", response.getBody().getMessage());
     }
 
     @Test
-    void testDeleteFoodItem() {
-        when(foodItemService.deleteFoodItem(1L,1L)).thenReturn("Food item deleted successfully");
+    public void testDeleteFoodItem() {
+        when(foodItemService.deleteFoodItem(1L, 1L)).thenReturn("Food item deleted successfully");
 
-        ResponseEntity<RequestSuccessOutDTO> response = restaurantController.deleteFoodItem(1L,1L);
+        ResponseEntity<RequestSuccessOutDTO> response = restaurantController.deleteFoodItem(1L, 1L);
+
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Food item deleted successfully", response.getBody().getMessage());
     }
 
     @Test
-    void testGetFoodItemsByRestaurant() {
-        long restaurantId = 1L;
-        List<FoodItem> foodItems = new ArrayList<>();
-        when(foodItemService.getAllFoodItemsOfRestaurant(restaurantId)).thenReturn(foodItems);
+    public void testGetFoodItemsByRestaurant() {
+        List<FoodItem> foodItems = Arrays.asList(
+                new FoodItem(1L, 1L, "Food 1", "description", 100.0, new byte[0]),
+                new FoodItem(2L, 1L, "Food 1", "description", 100.0, new byte[0])
+        );
+        when(foodItemService.getAllFoodItemsOfRestaurant(1L)).thenReturn(foodItems);
 
-        ResponseEntity<List<FoodItem>> response = restaurantController.getFoodItemsByRestaurant(restaurantId);
+        ResponseEntity<List<FoodItem>> response = restaurantController.getFoodItemsByRestaurant(1L);
+
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(foodItems, response.getBody());
     }
 
     @Test
-    void testGetFoodItemsByCategory() {
-        long categoryId = 1L;
-        List<FoodItem> foodItems = new ArrayList<>();
-        when(foodItemService.getFoodItemsByCategory(categoryId)).thenReturn(foodItems);
+    public void testGetFoodItemsByCategory() {
+        List<FoodItem> foodItems = Arrays.asList(
+                new FoodItem(1L, 1L, "Food 1", "description", 100.0, new byte[0]),
+                new FoodItem(2L, 1L, "Food 1", "description", 100.0, new byte[0])
+        );
+        when(foodItemService.getFoodItemsByCategory(1L)).thenReturn(foodItems);
 
-        ResponseEntity<List<FoodItem>> response = restaurantController.getFoodItemsByCategory(categoryId);
+        ResponseEntity<List<FoodItem>> response = restaurantController.getFoodItemsByCategory(1L);
+
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(foodItems, response.getBody());
+    }
+
+    @Test
+    public void testGetFoodItemById() {
+        FoodItem foodItem = new FoodItem(1L, 1L, "Food 1", "description", 100.0, new byte[0]);
+        when(foodItemService.getByFoodId(1L)).thenReturn(foodItem);
+
+        ResponseEntity<FoodItem> response = restaurantController.getFoodItemById(1L);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(foodItem, response.getBody());
     }
 }

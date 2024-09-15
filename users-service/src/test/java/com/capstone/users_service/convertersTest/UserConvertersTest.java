@@ -9,41 +9,42 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class UserConvertersTest {
+public class UserConvertersTest {
 
     @Test
-    void testRegisterUserInDTOToUserEntity() {
-        UserInDTO userInDTO = new UserInDTO(
-                "Akash Tiwari",
-                "Password123!",
-                "akash@gmail.com",
-                "1234567890",
-                Role.USER
-        );
+    public void testRegisterUserInDTOToUserEntity() {
+        UserInDTO userInDTO = new UserInDTO();
+        userInDTO.setName("John Doe ");
+        userInDTO.setPassword("password123 ");
+        userInDTO.setEmail("JohnDoe@example.com ");
+        userInDTO.setRole(Role.USER);
+        userInDTO.setPhone("1234567890 ");
+
         User user = UserConverters.registerUserInDTOToUserEntity(userInDTO);
-        assertNotNull(user);
-        assertEquals(userInDTO.getName(), user.getName());
-        assertEquals(userInDTO.getPassword(), user.getPassword());
-        assertEquals(userInDTO.getEmail(), user.getEmail());
-        assertEquals(userInDTO.getRole(), user.getRole());
-        assertEquals(userInDTO.getPhone(), user.getPhone());
+
+        assertEquals("John Doe", user.getName());
+        assertEquals("password123", user.getPassword());
+        assertEquals("johndoe@example.com", user.getEmail());
+        assertEquals(Role.USER, user.getRole());
+        assertEquals("1234567890", user.getPhone());
     }
 
     @Test
-    void testUserEntityToLoginResponseOutDTO() {
+    public void testUserEntityToLoginResponseOutDTO() {
         User user = new User();
         user.setUserId(1L);
-        user.setName("Akash Tiwari");
-        user.setEmail("akash@gmail.com");
+        user.setName("John Doe");
+        user.setEmail("johndoe@example.com");
         user.setPhone("1234567890");
         user.setRole(Role.USER);
-        LoginResponseOutDTO loginResponse = UserConverters.userEntityToLoginResponseOutDTO(user);
-        assertNotNull(loginResponse);
-        assertEquals(user.getUserId(), loginResponse.getUserId());
-        assertEquals(user.getEmail(), loginResponse.getEmail());
-        assertEquals(user.getName(), loginResponse.getName());
-        assertEquals(user.getPhone(), loginResponse.getPhone());
-        assertEquals(user.getRole(), loginResponse.getRole());
-        assertEquals("Login Successful", loginResponse.getMessage());
+
+        LoginResponseOutDTO loginResponseOutDTO = UserConverters.userEntityToLoginResponseOutDTO(user);
+
+        assertEquals(1L, loginResponseOutDTO.getUserId());
+        assertEquals("johndoe@example.com", loginResponseOutDTO.getEmail());
+        assertEquals("John Doe", loginResponseOutDTO.getName());
+        assertEquals("1234567890", loginResponseOutDTO.getPhone());
+        assertEquals(Role.USER, loginResponseOutDTO.getRole());
+        assertEquals("Login Successful", loginResponseOutDTO.getMessage());
     }
 }
