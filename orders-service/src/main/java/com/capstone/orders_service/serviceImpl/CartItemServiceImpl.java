@@ -13,6 +13,7 @@ import com.capstone.orders_service.feignClient.RestaurantFeignClient;
 import com.capstone.orders_service.feignClient.UsersFeignClient;
 import com.capstone.orders_service.repository.CartItemRepository;
 import com.capstone.orders_service.service.CartItemService;
+import com.capstone.orders_service.utils.Constants;
 import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,32 +62,32 @@ public class CartItemServiceImpl implements CartItemService {
         try {
             UserOutDTO user = usersFeignClient.getUserById(addToCartInDTO.getUserId()).getBody();
         } catch (FeignException.NotFound e) {
-            throw new ResourceNotFoundException("User Not Found");
+            throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
         }
         try {
             FoodItemOutDTO foodItemOutDTO = restaurantFeignClient.getFoodItemById(cartItem.getFoodId()).getBody();
             cartItem.setPrice(cartItem.getQuantity() * foodItemOutDTO.getPrice());
         } catch (FeignException.NotFound e) {
-            throw new ResourceNotFoundException("Food Item Not Found");
+            throw new ResourceNotFoundException(Constants.FOOD_ITEM_NOT_FOUND);
         }
         try {
             List<FoodItemOutDTO> foodItemOutDTOS = restaurantFeignClient.getFoodItemsByRestaurant(
                     addToCartInDTO.getRestaurantId()
             ).getBody();
             if (foodItemOutDTOS.isEmpty()) {
-                throw new ResourceNotFoundException("Food Item Not Present");
+                throw new ResourceNotFoundException(Constants.FOOD_ITEM_NOT_FOUND);
             }
             List<Long> foodIds = foodItemOutDTOS.stream().map(FoodItemOutDTO::getFoodId).collect(Collectors.toList());
             if (!foodIds.contains(addToCartInDTO.getFoodId())) {
-                throw new ResourceNotFoundException("Food Item Not Present");
+                throw new ResourceNotFoundException(Constants.FOOD_ITEM_NOT_FOUND);
             }
         } catch (FeignException.NotFound e) {
-            throw new ResourceNotFoundException("Food Item Not Present");
+            throw new ResourceNotFoundException(Constants.FOOD_ITEM_NOT_FOUND);
         }
         List<CartItem> cartItemList = cartItemRepository.findByUserId(addToCartInDTO.getUserId());
         if (!cartItemList.isEmpty()) {
             if (addToCartInDTO.getRestaurantId() != cartItemList.get(0).getRestaurantId()) {
-                throw new RestaurantConflictException("You cannot order from 2 restaurants");
+                throw new RestaurantConflictException(Constants.RESTAURANT_CONFLICT);
             }
             CartItem cartItemItemAlreadyPresent = cartItemRepository.findByRestaurantIdAndUserIdAndFoodId(
                     addToCartInDTO.getRestaurantId(), addToCartInDTO.getUserId(), addToCartInDTO.getFoodId()
@@ -94,11 +95,11 @@ public class CartItemServiceImpl implements CartItemService {
             if (cartItemItemAlreadyPresent != null) {
                 cartItemItemAlreadyPresent.setQuantity(cartItemItemAlreadyPresent.getQuantity() + 1);
                 cartItemRepository.save(cartItemItemAlreadyPresent);
-                return "Added To Cart";
+                return Constants.CART_ITEM_ADDED_SUCCESSFULLY;
             }
         }
         cartItemRepository.save(cartItem);
-        return "Added To Cart";
+        return Constants.CART_ITEM_ADDED_SUCCESSFULLY;
     }
 
     /**
@@ -112,10 +113,10 @@ public class CartItemServiceImpl implements CartItemService {
     public String deleteCartItem(long cartItemId) {
         CartItem cartItem = cartItemRepository.findById(cartItemId);
         if (cartItem == null) {
-            throw new ResourceNotFoundException("Item Not Found");
+            throw new ResourceNotFoundException(Constants.CART_ITEM_NOT_FOUND);
         }
         cartItemRepository.deleteById(cartItemId);
-        return "Cart Item Deleted";
+        return Constants.CART_ITEM_DELETED_SUCCESSFULLY;
     }
 
     /**
@@ -129,7 +130,7 @@ public class CartItemServiceImpl implements CartItemService {
     public List<CartItemOutDTO> getCartItems(long userId) {
         List<CartItem> cartItems = cartItemRepository.findByUserId(userId);
         if (cartItems.isEmpty()) {
-            throw new ResourceNotFoundException("No Items in Cart");
+            throw new ResourceNotFoundException(Constants.CART_ITEM_NOT_FOUND);
         }
         List<CartItemOutDTO> cartItemOutDTOS = new ArrayList<>();
         for (CartItem cartItem: cartItems) {
@@ -147,7 +148,7 @@ public class CartItemServiceImpl implements CartItemService {
                 cartItemOutDTO.setPrice(cartItem.getPrice());
                 cartItemOutDTOS.add(cartItemOutDTO);
             } catch (FeignException.NotFound e) {
-                throw new ResourceNotFoundException("Food Item Not Found");
+                throw new ResourceNotFoundException(Constants.FOOD_ITEM_NOT_FOUND);
             }
         }
         return cartItemOutDTOS;
@@ -165,10 +166,10 @@ public class CartItemServiceImpl implements CartItemService {
     public String updateCartItem(long cartItemId, int index) {
         CartItem cartItem = cartItemRepository.findById(cartItemId);
         if (cartItem == null) {
-            throw new ResourceNotFoundException("Cart Item is not present");
+            throw new ResourceNotFoundException(Constants.FOOD_ITEM_NOT_FOUND);
         }
         cartItem.setQuantity(cartItem.getQuantity() + index);
         cartItemRepository.save(cartItem);
-        return "Cart Updated Successfully";
+        return Constants.CART_ITEM_UPDATED_SUCCESSFULLY;
     }
 }

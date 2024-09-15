@@ -23,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -212,4 +213,21 @@ class FoodItemServiceImplTest {
         assertNotNull(result);
         assertEquals(1L, result.getFoodId());
     }
+
+    @Test
+    public void testGetFoodItemsByCategorySuccessMultipleItems() {
+        long categoryId = 1L;
+        List<FoodItem> foodItems = Arrays.asList(
+                new FoodItem(1L, categoryId, "Pizza", "Delicious pizza", 10.99, new byte[0]),
+                new FoodItem(2L, categoryId, "Pizza", "Delicious pizza", 10.99, new byte[0])
+        );
+        when(foodItemRepository.findByCategoryId(categoryId)).thenReturn(foodItems);
+
+        List<FoodItem> result = foodItemServiceImpl.getFoodItemsByCategory(categoryId);
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        verify(foodItemRepository, times(1)).findByCategoryId(categoryId);
+    }
+
 }
