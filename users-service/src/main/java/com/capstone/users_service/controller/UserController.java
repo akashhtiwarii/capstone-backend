@@ -22,9 +22,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
+
 import com.capstone.users_service.utils.Constants;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -101,6 +105,25 @@ public class UserController {
             logger.info("User logged in successfully: {}", loginRequestInDTO.getEmail());
             return ResponseEntity.status(HttpStatus.OK).body(response);
         }
+    }
+
+    /**
+     * Sends user password through email.
+     * @param email of the user
+     * @return String message
+     */
+    @PostMapping(Constants.FORGOT_PASSWORD)
+    public ResponseEntity<RequestSuccessOutDTO> forgotPassword(
+            @Email(message = "Valid Email not found")
+            @NotBlank(message = "Valid Email not found")
+            @Pattern(
+                    regexp = "^[\\w.%+-]+@gmail\\.com$",
+                    message = "Valid Email not found"
+            ) @RequestParam String email) {
+        logger.info("Sending Password through email");
+        String response = userService.forgotPassword(email);
+        logger.info("Sent Password through email");
+        return ResponseEntity.status(HttpStatus.OK).body(new RequestSuccessOutDTO(response));
     }
 
     /**

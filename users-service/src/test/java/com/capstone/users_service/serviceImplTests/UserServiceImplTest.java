@@ -253,4 +253,45 @@ public class UserServiceImplTest {
 
         Mockito.verify(javaMailSender).send(mimeMessage);
     }
+
+    @Test
+    public void testForgotPasswordSuccess() throws MessagingException {
+        String email = "john.doe@example.com";
+
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword("encodedPassword");
+
+        Mockito.when(userRepository.findByEmail(email)).thenReturn(user);
+
+        MimeMessage mimeMessage = Mockito.mock(MimeMessage.class);
+        Mockito.when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
+
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+        Mockito.when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
+
+        userService.forgotPassword(email);
+
+        Mockito.verify(javaMailSender).send(mimeMessage);
+    }
+
+    @Test
+    public void testSendPasswordEmailSuccess() throws MessagingException {
+        String email = "john.doe@example.com";
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword("cGFzc3dvcmQ=");
+
+        Mockito.when(userRepository.findByEmail(email)).thenReturn(user);
+
+        MimeMessage mimeMessage = Mockito.mock(MimeMessage.class);
+        Mockito.when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
+
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+        Mockito.when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
+
+        userService.forgotPassword(email);
+
+        Mockito.verify(javaMailSender).send(mimeMessage);
+    }
 }

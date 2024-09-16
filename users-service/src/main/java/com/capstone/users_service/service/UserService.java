@@ -71,4 +71,11 @@ public interface UserService {
      * @return a {@link String} message indicating the result of the contact request operation
      */
     String contactUs(ContactUsInDTO contactUsInDTO);
+
+    /**
+     * Handles forgot password.
+     * @param email of the user
+     * @return a string message
+     */
+    String forgotPassword(String email);
 }

@@ -16,6 +16,7 @@ import com.capstone.users_service.exceptions.ResourceNotValidException;
 import com.capstone.users_service.repository.UserRepository;
 import com.capstone.users_service.repository.WalletRepository;
 import com.capstone.users_service.service.UserService;
+import com.capstone.users_service.utils.PasswordDecoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -215,6 +216,21 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * Handles forgot password.
+     * @param email of the user
+     * @return a string message
+     */
+    @Override
+    public String forgotPassword(String email) {
+        try {
+            sendPasswordEmail(email);
+            return "Your Password has been sent successfully!";
+        } catch (MessagingException e) {
+            throw new RuntimeException("Error while sending email: " + e.getMessage());
+        }
+    }
+
+    /**
      * Sends an email using the {@link JavaMailSender}.
      *
      * @param contactUsDTO the DTO containing the email details (subject, message, from email, etc.)
@@ -228,6 +244,26 @@ public class UserServiceImpl implements UserService {
         helper.setTo(contactUsDTO.getRestaurantEmail());
         helper.setSubject(contactUsDTO.getSubject());
         helper.setText(contactUsDTO.getMessage(), true);
+
+        javaMailSender.send(message);
+    }
+
+    /**
+     * Sends an email using the {@link JavaMailSender}.
+     *
+     * @param email the email ID of the user
+     * @throws MessagingException if an error occurs while creating or sending the email
+     */
+    private void sendPasswordEmail(String email) throws MessagingException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
+        }
+        helper.setTo(email);
+        helper.setSubject(Constants.PASSWORD_RESET);
+        helper.setText(PasswordDecoder.decodeBase64Password(user.getPassword()), true);
 
         javaMailSender.send(message);
     }
