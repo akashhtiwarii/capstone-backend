@@ -101,6 +101,8 @@ public class OrderServiceImpl implements OrderService {
             return orderOutDTOS;
         } catch (FeignException.NotFound e) {
             throw new ResourceNotFoundException(Constants.DATA_NOT_FOUND);
+        } catch (FeignException e) {
+            throw new RuntimeException(Constants.SERVICE_DOWN);
         }
     }
 
@@ -123,11 +125,15 @@ public class OrderServiceImpl implements OrderService {
             user = usersFeignClient.getUserById(userId).getBody();
         } catch (FeignException.NotFound e) {
             throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
+        } catch (FeignException e) {
+            throw new RuntimeException(Constants.USER_SERVICE_DOWN);
         }
         try {
             addressOutDTO = usersFeignClient.getAddressById(addressId).getBody();
         } catch (FeignException.NotFound e) {
             throw new ResourceNotFoundException(Constants.ADDRESS_NOT_FOUND);
+        } catch (FeignException e) {
+            throw new RuntimeException(Constants.USER_SERVICE_DOWN);
         }
         List<CartItem> cartItems = cartItemRepository.findByUserId(userId);
         if (cartItems.isEmpty()) {
@@ -146,6 +152,8 @@ public class OrderServiceImpl implements OrderService {
             String message = usersFeignClient.updateUserWallet(userId, updatedAmount).getBody();
         } catch (FeignException.NotFound e) {
             throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
+        } catch (FeignException e) {
+            throw new RuntimeException(Constants.USER_SERVICE_DOWN);
         }
         Order order = new Order();
         order.setUserId(userId);
@@ -213,6 +221,8 @@ public class OrderServiceImpl implements OrderService {
             long restaurantId = order.getRestaurantId();
         } catch (FeignException.NotFound e) {
             throw new ResourceNotFoundException(Constants.RESTAURANT_NOT_FOUND);
+        } catch (FeignException e) {
+            throw new RuntimeException(Constants.RESTAURANT_SERVICE_DOWN);
         }
         order.setStatus(status);
         orderRepository.save(order);
@@ -243,6 +253,8 @@ public class OrderServiceImpl implements OrderService {
                     restaurantOrderDetailsOutDTO.setUserName(user.getName());
                 } catch (FeignException.NotFound e) {
                     throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
+                } catch (FeignException e) {
+                    throw new RuntimeException(Constants.USER_SERVICE_DOWN);
                 }
                 List<OrderDetail> orderDetails = orderDetailRepository.findByOrderId(order.getOrderId());
                 List<OrderDetailOutDTO> orderDetailOutDTOS = new ArrayList<>();
@@ -257,6 +269,8 @@ public class OrderServiceImpl implements OrderService {
                         orderDetailOutDTO.setPrice(orderDetail.getPrice());
                     } catch (FeignException.NotFound e) {
                         throw new ResourceNotFoundException(Constants.FOOD_ITEM_NOT_FOUND);
+                    } catch (FeignException e) {
+                        throw new RuntimeException(Constants.RESTAURANT_SERVICE_DOWN);
                     }
                     orderDetailOutDTOS.add(orderDetailOutDTO);
                 }
@@ -264,6 +278,8 @@ public class OrderServiceImpl implements OrderService {
                     address = usersFeignClient.getAddressByUserId(order.getUserId()).getBody().toString();
                 } catch (FeignException.NotFound e) {
                     throw new ResourceNotFoundException(Constants.ADDRESS_NOT_FOUND);
+                } catch (FeignException e) {
+                    throw new RuntimeException(Constants.USER_SERVICE_DOWN);
                 }
                 restaurantOrderDetailsOutDTO.setUserId(order.getUserId());
                 restaurantOrderDetailsOutDTO.setOrderDetailOutDTOS(orderDetailOutDTOS);
@@ -324,6 +340,8 @@ public class OrderServiceImpl implements OrderService {
             return userOrderDetailsOutDTOS;
         } catch (FeignException.NotFound e) {
             throw new ResourceNotFoundException(Constants.DATA_NOT_FOUND);
+        } catch (FeignException e) {
+            throw new RuntimeException(Constants.USER_SERVICE_DOWN);
         }
     }
 

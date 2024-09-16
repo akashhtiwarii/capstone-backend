@@ -18,7 +18,7 @@ public class CategoryConverters {
     public static Category categoryInDTOToCategoryEntity(CategoryInDTO categoryInDTO) {
         Category category = new Category();
         category.setRestaurantId(categoryInDTO.getRestaurantId());
-        category.setName(categoryInDTO.getName().toUpperCase());
+        category.setName(categoryInDTO.getName().trim().toUpperCase());
         return category;
     }
 }

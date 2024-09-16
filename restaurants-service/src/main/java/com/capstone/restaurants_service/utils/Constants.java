@@ -218,4 +218,5 @@ public class Constants {
      * Message indicating that the category is invalid.
      */
     public static final String INVALID_CATEGORY = "Invalid Category";
+    public static final String USER_SERVICE_DOWN = "Unable to communicate with User Service";
 }

@@ -49,10 +49,10 @@ public class AddressServiceImpl implements AddressService {
         }
         Address address = new Address();
         address.setUserId(addressInDTO.getUserId());
-        address.setAddress(addressInDTO.getAddress());
+        address.setAddress(addressInDTO.getAddress().trim());
         address.setPincode(addressInDTO.getPincode());
-        address.setCity(addressInDTO.getCity());
-        address.setState(addressInDTO.getState());
+        address.setCity(addressInDTO.getCity().trim());
+        address.setState(addressInDTO.getState().trim());
         try {
             addressRepository.save(address);
             return "Address added successfully";
@@ -114,10 +114,10 @@ public class AddressServiceImpl implements AddressService {
         if (user.getUserId() != address.getUserId()) {
             throw new ResourceNotValidException("You cannot update this address");
         }
-        address.setAddress(updateAddressInDTO.getAddress());
-        address.setCity(updateAddressInDTO.getCity());
+        address.setAddress(updateAddressInDTO.getAddress().trim());
+        address.setCity(updateAddressInDTO.getCity().trim());
         address.setPincode(updateAddressInDTO.getPincode());
-        address.setState(updateAddressInDTO.getState());
+        address.setState(updateAddressInDTO.getState().trim());
         addressRepository.save(address);
         return "Address Updated Successfully";
     }

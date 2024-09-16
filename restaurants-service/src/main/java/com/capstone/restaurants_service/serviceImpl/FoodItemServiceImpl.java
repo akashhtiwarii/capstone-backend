@@ -18,6 +18,7 @@ import com.capstone.restaurants_service.repository.FoodItemRepository;
 import com.capstone.restaurants_service.repository.RestaurantRepository;
 import com.capstone.restaurants_service.service.FoodItemService;
 import com.capstone.restaurants_service.utils.StringUtils;
+import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -77,41 +78,45 @@ public class FoodItemServiceImpl implements FoodItemService {
      * @throws ResourceAlreadyExistsException if the food item already exists for the given category
      */
     public String addFoodItem(FoodItemInDTO foodItemInDTO, MultipartFile image) {
-        UserOutDTO user = userClient.getUserById(foodItemInDTO.getLoggedInOwnerId()).getBody();
-        if (user == null) {
-            throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
-        }
-        if (user.getRole() != Role.OWNER) {
-            throw new ResourceNotValidException(Constants.YOU_CANNOT_ADD_FOOD);
-        }
-        String foodItemName = StringUtils.capitalizeFirstLetter(foodItemInDTO.getName());
-        Category category = categoryRepository.findById(foodItemInDTO.getCategoryId());
-        if (category == null) {
-            throw new ResourceNotFoundException(Constants.CATEGORY_NOT_FOUND);
-        }
-        Restaurant restaurant = restaurantRepository.findById(category.getRestaurantId());
-        if (restaurant == null) {
-            throw new ResourceNotFoundException(Constants.RESTAURANT_NOT_FOUND);
-        }
-        if (restaurant.getOwnerId() != user.getUserId()) {
-            throw new ResourceNotValidException(Constants.YOU_CANNOT_ADD_FOOD);
-        }
-        FoodItem foodItemAlreadyExists = foodItemRepository.findByCategoryIdAndName(
-                foodItemInDTO.getCategoryId(), foodItemName);
-        if (foodItemAlreadyExists != null) {
-            throw new ResourceAlreadyExistsException(Constants.FOOD_ALREADY_PRESENT);
-        }
-        FoodItem foodItem = FoodItemConverters.foodItemInDTOToFoodItemEntity(foodItemInDTO);
         try {
-            if (image != null && !image.isEmpty()) {
-                foodItem.setImage(image.getBytes());
+            UserOutDTO user = userClient.getUserById(foodItemInDTO.getLoggedInOwnerId()).getBody();
+            if (user == null) {
+                throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
             }
-            foodItemRepository.save(foodItem);
-            return Constants.FOOD_ADDED_SUCCESSFULLY;
-        } catch (IOException e) {
-            throw new RuntimeException(Constants.FAILED_TO_UPLOAD_IMAGE + e.getMessage());
-        } catch (Exception ex) {
-            throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + ex.getMessage());
+            if (user.getRole() != Role.OWNER) {
+                throw new ResourceNotValidException(Constants.YOU_CANNOT_ADD_FOOD);
+            }
+            String foodItemName = StringUtils.capitalizeFirstLetter(foodItemInDTO.getName());
+            Category category = categoryRepository.findById(foodItemInDTO.getCategoryId());
+            if (category == null) {
+                throw new ResourceNotFoundException(Constants.CATEGORY_NOT_FOUND);
+            }
+            Restaurant restaurant = restaurantRepository.findById(category.getRestaurantId());
+            if (restaurant == null) {
+                throw new ResourceNotFoundException(Constants.RESTAURANT_NOT_FOUND);
+            }
+            if (restaurant.getOwnerId() != user.getUserId()) {
+                throw new ResourceNotValidException(Constants.YOU_CANNOT_ADD_FOOD);
+            }
+            FoodItem foodItemAlreadyExists = foodItemRepository.findByCategoryIdAndName(
+                    foodItemInDTO.getCategoryId(), foodItemName);
+            if (foodItemAlreadyExists != null) {
+                throw new ResourceAlreadyExistsException(Constants.FOOD_ALREADY_PRESENT);
+            }
+            FoodItem foodItem = FoodItemConverters.foodItemInDTOToFoodItemEntity(foodItemInDTO);
+            try {
+                if (image != null && !image.isEmpty()) {
+                    foodItem.setImage(image.getBytes());
+                }
+                foodItemRepository.save(foodItem);
+                return Constants.FOOD_ADDED_SUCCESSFULLY;
+            } catch (IOException e) {
+                throw new RuntimeException(Constants.FAILED_TO_UPLOAD_IMAGE + e.getMessage());
+            } catch (Exception ex) {
+                throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + ex.getMessage());
+            }
+        } catch (FeignException e) {
+            throw new RuntimeException(Constants.USER_SERVICE_DOWN);
         }
     }
 
@@ -129,27 +134,31 @@ public class FoodItemServiceImpl implements FoodItemService {
      */
     @Override
     public String deleteFoodItem(long userId, long foodId) {
-        UserOutDTO user = userClient.getUserById(userId).getBody();
-        if (user == null) {
-            throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
-        }
-        if (user.getRole() != Role.OWNER) {
-            throw new ResourceNotValidException(Constants.YOU_CANNOT_DELETE_FOOD);
-        }
-        FoodItem foodItem = foodItemRepository.findById(foodId);
-        if (foodItem == null) {
-            throw new ResourceNotFoundException(Constants.FOOD_NOT_FOUND);
-        }
-        Category category = categoryRepository.findById(foodItem.getCategoryId());
-        Restaurant restaurant = restaurantRepository.findById(category.getRestaurantId());
-        if (restaurant.getOwnerId() != user.getUserId()) {
-            throw new ResourceNotValidException(Constants.YOU_CANNOT_DELETE_FOOD);
-        }
         try {
-            foodItemRepository.deleteById(foodId);
-            return Constants.FOOD_DELETED_SUCCESSFULLY;
-        } catch (Exception ex) {
-            throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + ex.getMessage());
+            UserOutDTO user = userClient.getUserById(userId).getBody();
+            if (user == null) {
+                throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
+            }
+            if (user.getRole() != Role.OWNER) {
+                throw new ResourceNotValidException(Constants.YOU_CANNOT_DELETE_FOOD);
+            }
+            FoodItem foodItem = foodItemRepository.findById(foodId);
+            if (foodItem == null) {
+                throw new ResourceNotFoundException(Constants.FOOD_NOT_FOUND);
+            }
+            Category category = categoryRepository.findById(foodItem.getCategoryId());
+            Restaurant restaurant = restaurantRepository.findById(category.getRestaurantId());
+            if (restaurant.getOwnerId() != user.getUserId()) {
+                throw new ResourceNotValidException(Constants.YOU_CANNOT_DELETE_FOOD);
+            }
+            try {
+                foodItemRepository.deleteById(foodId);
+                return Constants.FOOD_DELETED_SUCCESSFULLY;
+            } catch (Exception ex) {
+                throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + ex.getMessage());
+            }
+        } catch (FeignException e) {
+            throw new RuntimeException(Constants.USER_SERVICE_DOWN);
         }
     }
 
@@ -169,41 +178,45 @@ public class FoodItemServiceImpl implements FoodItemService {
      */
     @Override
     public String updateFoodItem(long foodItemId, UpdateFoodItemInDTO updateFoodItemInDTO, MultipartFile image) {
-        UserOutDTO user = userClient.getUserById(updateFoodItemInDTO.getLoggedInOwnerId()).getBody();
-        if (user == null) {
-            throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
-        }
-        if (user.getRole() != Role.OWNER) {
-            throw new ResourceNotValidException(Constants.YOU_CANNOT_UPDATE_FOOD);
-        }
-        FoodItem foodItem = foodItemRepository.findById(foodItemId);
-        if (foodItem == null) {
-            throw new ResourceNotFoundException(Constants.FOOD_NOT_FOUND);
-        }
-        Category category = categoryRepository.findById(foodItem.getCategoryId());
-        Restaurant restaurant = restaurantRepository.findById(category.getRestaurantId());
-        if (restaurant.getOwnerId() != user.getUserId()) {
-            throw new ResourceNotValidException(Constants.YOU_CANNOT_UPDATE_FOOD);
-        }
-        Category foodItemCategory = categoryRepository.findById(updateFoodItemInDTO.getCategoryId());
-        Restaurant foodItemRestaurant = restaurantRepository.findById(foodItemCategory.getRestaurantId());
-        if (foodItemRestaurant != restaurant) {
-            throw new ResourceNotValidException(Constants.INVALID_CATEGORY);
-        }
-        foodItem.setCategoryId(updateFoodItemInDTO.getCategoryId());
-        foodItem.setName(updateFoodItemInDTO.getName());
-        foodItem.setDescription(updateFoodItemInDTO.getDescription());
-        foodItem.setPrice(updateFoodItemInDTO.getPrice());
         try {
-            if (image != null && !image.isEmpty()) {
-                foodItem.setImage(image.getBytes());
+            UserOutDTO user = userClient.getUserById(updateFoodItemInDTO.getLoggedInOwnerId()).getBody();
+            if (user == null) {
+                throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
             }
-            foodItemRepository.save(foodItem);
-            return Constants.FOOD_UPDATED_SUCCESSFULLY;
-        } catch (IOException e) {
-            throw new RuntimeException(Constants.FAILED_TO_UPLOAD_IMAGE + e.getMessage());
-        } catch (Exception ex) {
-            throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + ex.getMessage());
+            if (user.getRole() != Role.OWNER) {
+                throw new ResourceNotValidException(Constants.YOU_CANNOT_UPDATE_FOOD);
+            }
+            FoodItem foodItem = foodItemRepository.findById(foodItemId);
+            if (foodItem == null) {
+                throw new ResourceNotFoundException(Constants.FOOD_NOT_FOUND);
+            }
+            Category category = categoryRepository.findById(foodItem.getCategoryId());
+            Restaurant restaurant = restaurantRepository.findById(category.getRestaurantId());
+            if (restaurant.getOwnerId() != user.getUserId()) {
+                throw new ResourceNotValidException(Constants.YOU_CANNOT_UPDATE_FOOD);
+            }
+            Category foodItemCategory = categoryRepository.findById(updateFoodItemInDTO.getCategoryId());
+            Restaurant foodItemRestaurant = restaurantRepository.findById(foodItemCategory.getRestaurantId());
+            if (foodItemRestaurant != restaurant) {
+                throw new ResourceNotValidException(Constants.INVALID_CATEGORY);
+            }
+            foodItem.setCategoryId(updateFoodItemInDTO.getCategoryId());
+            foodItem.setName(StringUtils.capitalizeFirstLetter(updateFoodItemInDTO.getName().trim()));
+            foodItem.setDescription(updateFoodItemInDTO.getDescription());
+            foodItem.setPrice(updateFoodItemInDTO.getPrice());
+            try {
+                if (image != null && !image.isEmpty()) {
+                    foodItem.setImage(image.getBytes());
+                }
+                foodItemRepository.save(foodItem);
+                return Constants.FOOD_UPDATED_SUCCESSFULLY;
+            } catch (IOException e) {
+                throw new RuntimeException(Constants.FAILED_TO_UPLOAD_IMAGE + e.getMessage());
+            } catch (Exception ex) {
+                throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + ex.getMessage());
+            }
+        } catch (FeignException e) {
+            throw new RuntimeException(Constants.USER_SERVICE_DOWN);
         }
     }
 

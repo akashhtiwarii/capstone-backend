@@ -204,4 +204,19 @@ public final class Constants {
      * Error message when an order cannot be canceled.
      */
     public static final String CANNOT_CANCEL_ORDER = "Order Cannot Be Cancelled Now";
+
+    /**
+     * Error message when user service is down.
+     */
+    public static final String USER_SERVICE_DOWN = "Failed to communicate with User service";
+
+    /**
+     * Error message when Restaurant service is down.
+     */
+    public static final String RESTAURANT_SERVICE_DOWN = "Failed to communicate with Restaurant service";
+
+    /**
+     * Error message when service is down.
+     */
+    public static final String SERVICE_DOWN = "Failed to communicate service";
 }

@@ -13,6 +13,7 @@ import com.capstone.restaurants_service.entity.Restaurant;
 import com.capstone.restaurants_service.feignClient.UserClient;
 import com.capstone.restaurants_service.repository.RestaurantRepository;
 import com.capstone.restaurants_service.service.RestaurantService;
+import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -57,29 +58,33 @@ public class RestaurantServiceImpl implements RestaurantService {
      */
     @Override
     public String save(RestaurantInDTO restaurantInDTO, MultipartFile image) {
-        UserOutDTO user = userClient.getUserById(restaurantInDTO.getOwnerId()).getBody();
-        if (user == null) {
-            throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
-        }
-        if (user.getRole() == Role.USER) {
-            throw new ResourceNotValidException(Constants.YOU_CANNOT_ADD_RESTAURANT);
-        }
-        Restaurant restaurantAlreadyExists = restaurantRepository.findByEmail(restaurantInDTO.getEmail());
-        if (restaurantAlreadyExists != null) {
-            throw new ResourceAlreadyExistsException(Constants.EMAIL_ALREADY_EXISTS);
-        }
-
-        Restaurant restaurant = RestaurantConverters.restaurantInDTOTORestaurant(restaurantInDTO);
         try {
-            if (image != null && !image.isEmpty()) {
-                restaurant.setImage(image.getBytes());
+            UserOutDTO user = userClient.getUserById(restaurantInDTO.getOwnerId()).getBody();
+            if (user == null) {
+                throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
             }
-            restaurantRepository.save(restaurant);
-            return Constants.RESTAURANT_ADDED_SUCCESSFULLY;
-        } catch (IOException e) {
-            throw new RuntimeException(Constants.FAILED_TO_UPLOAD_IMAGE + e.getMessage());
-        } catch (Exception e) {
-            throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + e.getMessage());
+            if (user.getRole() == Role.USER) {
+                throw new ResourceNotValidException(Constants.YOU_CANNOT_ADD_RESTAURANT);
+            }
+            Restaurant restaurantAlreadyExists = restaurantRepository.findByEmail(restaurantInDTO.getEmail());
+            if (restaurantAlreadyExists != null) {
+                throw new ResourceAlreadyExistsException(Constants.EMAIL_ALREADY_EXISTS);
+            }
+
+            Restaurant restaurant = RestaurantConverters.restaurantInDTOTORestaurant(restaurantInDTO);
+            try {
+                if (image != null && !image.isEmpty()) {
+                    restaurant.setImage(image.getBytes());
+                }
+                restaurantRepository.save(restaurant);
+                return Constants.RESTAURANT_ADDED_SUCCESSFULLY;
+            } catch (IOException e) {
+                throw new RuntimeException(Constants.FAILED_TO_UPLOAD_IMAGE + e.getMessage());
+            } catch (Exception e) {
+                throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + e.getMessage());
+            }
+        } catch (FeignException e) {
+            throw new RuntimeException(Constants.USER_SERVICE_DOWN);
         }
     }
 
@@ -99,40 +104,44 @@ public class RestaurantServiceImpl implements RestaurantService {
      */
     @Override
     public String updateRestaurant(UpdateRestaurantInDTO updateRestaurantInDTO, MultipartFile image) {
-        UserOutDTO user = userClient.getUserById(updateRestaurantInDTO.getLoggedInOwnerId()).getBody();
-        if (user == null) {
-            throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
-        }
-        if (user.getRole() == Role.USER) {
-            throw new ResourceNotValidException(Constants.YOU_CANNOT_UPDATE_RESTAURANT);
-        }
-        Restaurant restaurant = restaurantRepository.findById(updateRestaurantInDTO.getRestaurantId());
-        if (restaurant == null) {
-            throw new ResourceNotFoundException(Constants.RESTAURANT_DOES_NOT_EXISTS);
-        }
-        if (restaurant.getOwnerId() != updateRestaurantInDTO.getLoggedInOwnerId()) {
-            throw new ResourceNotValidException(Constants.YOU_CANNOT_UPDATE_RESTAURANT);
-        }
-        if (!Objects.equals(restaurant.getEmail(), updateRestaurantInDTO.getEmail())) {
-            Restaurant restaurantAlreadyExists = restaurantRepository.findByEmail(updateRestaurantInDTO.getEmail());
-            if (restaurantAlreadyExists != null) {
-                throw new ResourceAlreadyExistsException(Constants.EMAIL_ALREADY_EXISTS);
-            }
-        }
-        restaurant.setName(updateRestaurantInDTO.getName());
-        restaurant.setEmail(updateRestaurantInDTO.getEmail());
-        restaurant.setPhone(updateRestaurantInDTO.getPhone());
-        restaurant.setAddress(updateRestaurantInDTO.getAddress());
         try {
-            if (image != null && !image.isEmpty()) {
-                restaurant.setImage(image.getBytes());
+            UserOutDTO user = userClient.getUserById(updateRestaurantInDTO.getLoggedInOwnerId()).getBody();
+            if (user == null) {
+                throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
             }
-            restaurantRepository.save(restaurant);
-            return Constants.RESTAURANT_UPDATED_SUCCESSFULLY;
-        } catch (IOException e) {
-            throw new RuntimeException(Constants.FAILED_TO_UPLOAD_IMAGE + e.getMessage());
-        } catch (Exception e) {
-            throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + e.getMessage());
+            if (user.getRole() == Role.USER) {
+                throw new ResourceNotValidException(Constants.YOU_CANNOT_UPDATE_RESTAURANT);
+            }
+            Restaurant restaurant = restaurantRepository.findById(updateRestaurantInDTO.getRestaurantId());
+            if (restaurant == null) {
+                throw new ResourceNotFoundException(Constants.RESTAURANT_DOES_NOT_EXISTS);
+            }
+            if (restaurant.getOwnerId() != updateRestaurantInDTO.getLoggedInOwnerId()) {
+                throw new ResourceNotValidException(Constants.YOU_CANNOT_UPDATE_RESTAURANT);
+            }
+            if (!Objects.equals(restaurant.getEmail(), updateRestaurantInDTO.getEmail())) {
+                Restaurant restaurantAlreadyExists = restaurantRepository.findByEmail(updateRestaurantInDTO.getEmail());
+                if (restaurantAlreadyExists != null) {
+                    throw new ResourceAlreadyExistsException(Constants.EMAIL_ALREADY_EXISTS);
+                }
+            }
+            restaurant.setName(updateRestaurantInDTO.getName());
+            restaurant.setEmail(updateRestaurantInDTO.getEmail());
+            restaurant.setPhone(updateRestaurantInDTO.getPhone());
+            restaurant.setAddress(updateRestaurantInDTO.getAddress());
+            try {
+                if (image != null && !image.isEmpty()) {
+                    restaurant.setImage(image.getBytes());
+                }
+                restaurantRepository.save(restaurant);
+                return Constants.RESTAURANT_UPDATED_SUCCESSFULLY;
+            } catch (IOException e) {
+                throw new RuntimeException(Constants.FAILED_TO_UPLOAD_IMAGE + e.getMessage());
+            } catch (Exception e) {
+                throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + e.getMessage());
+            }
+        } catch (FeignException e) {
+            throw new RuntimeException(Constants.USER_SERVICE_DOWN);
         }
     }
 

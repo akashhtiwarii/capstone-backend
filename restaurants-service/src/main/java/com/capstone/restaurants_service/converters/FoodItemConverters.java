@@ -31,7 +31,7 @@ public class FoodItemConverters {
     public static FoodItem foodItemInDTOToFoodItemEntity(FoodItemInDTO foodItemInDTO) {
         FoodItem foodItem = new FoodItem();
         foodItem.setCategoryId(foodItemInDTO.getCategoryId());
-        foodItem.setName(StringUtils.capitalizeFirstLetter(foodItemInDTO.getName()));
+        foodItem.setName(StringUtils.capitalizeFirstLetter(foodItemInDTO.getName().trim()));
         foodItem.setDescription(
                 foodItemInDTO.getDescription() == null || Objects.equals(foodItemInDTO.getDescription(), "")
                         ? "" : foodItemInDTO.getDescription());

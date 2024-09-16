@@ -28,7 +28,7 @@ public class RestaurantConverters {
     public static Restaurant restaurantInDTOTORestaurant(RestaurantInDTO restaurantInDTO) {
         Restaurant restaurant = new Restaurant();
         restaurant.setOwnerId(restaurantInDTO.getOwnerId());
-        restaurant.setName(restaurantInDTO.getName());
+        restaurant.setName(restaurantInDTO.getName().trim());
         restaurant.setEmail(restaurantInDTO.getEmail());
         restaurant.setPhone(restaurantInDTO.getPhone());
         restaurant.setAddress(restaurantInDTO.getAddress());

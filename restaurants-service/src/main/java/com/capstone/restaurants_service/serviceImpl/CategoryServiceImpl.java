@@ -15,6 +15,7 @@ import com.capstone.restaurants_service.feignClient.UserClient;
 import com.capstone.restaurants_service.repository.CategoryRepository;
 import com.capstone.restaurants_service.repository.RestaurantRepository;
 import com.capstone.restaurants_service.service.CategoryService;
+import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -64,34 +65,39 @@ public class CategoryServiceImpl implements CategoryService {
      */
     @Override
     public String addCategory(CategoryInDTO categoryInDTO) {
-        UserOutDTO user = userClient.getUserById(categoryInDTO.getUserId()).getBody();
-        if (user == null) {
-            throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
-        }
-        if (user.getRole() != Role.OWNER) {
-            throw new ResourceNotValidException(Constants.YOU_CANNOT_ADD_A_CATEGORY);
-        }
-        String categoryName = categoryInDTO.getName().toUpperCase();
-        Restaurant restaurant = restaurantRepository.findById(categoryInDTO.getRestaurantId());
-        if (restaurant == null) {
-            throw new ResourceNotFoundException(Constants.RESTAURANT_DOES_NOT_EXISTS);
-        }
-        if (restaurant.getOwnerId() != categoryInDTO.getUserId()) {
-            throw new ResourceNotValidException(Constants.YOU_CANNOT_ADD_A_CATEGORY);
-        }
-        Category categoryAlreadyExists = categoryRepository.findByNameAndRestaurantId(
-                categoryName,
-                restaurant.getRestaurantId()
-        );
-        if (categoryAlreadyExists != null) {
-            throw new ResourceAlreadyExistsException(Constants.CATEGORY_ALREADY_PRESENT);
-        }
-        Category category = CategoryConverters.categoryInDTOToCategoryEntity(categoryInDTO);
         try {
-            categoryRepository.save(category);
-            return Constants.CATEGORY_ADDED_SUCCESSFULLY;
-        } catch (Exception ex) {
-            throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + ex.getMessage());
+            UserOutDTO user = userClient.getUserById(categoryInDTO.getUserId()).getBody();
+
+            if (user == null) {
+                throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
+            }
+            if (user.getRole() != Role.OWNER) {
+                throw new ResourceNotValidException(Constants.YOU_CANNOT_ADD_A_CATEGORY);
+            }
+            String categoryName = categoryInDTO.getName().toUpperCase();
+            Restaurant restaurant = restaurantRepository.findById(categoryInDTO.getRestaurantId());
+            if (restaurant == null) {
+                throw new ResourceNotFoundException(Constants.RESTAURANT_DOES_NOT_EXISTS);
+            }
+            if (restaurant.getOwnerId() != categoryInDTO.getUserId()) {
+                throw new ResourceNotValidException(Constants.YOU_CANNOT_ADD_A_CATEGORY);
+            }
+            Category categoryAlreadyExists = categoryRepository.findByNameAndRestaurantId(
+                    categoryName,
+                    restaurant.getRestaurantId()
+            );
+            if (categoryAlreadyExists != null) {
+                throw new ResourceAlreadyExistsException(Constants.CATEGORY_ALREADY_PRESENT);
+            }
+            Category category = CategoryConverters.categoryInDTOToCategoryEntity(categoryInDTO);
+            try {
+                categoryRepository.save(category);
+                return Constants.CATEGORY_ADDED_SUCCESSFULLY;
+            } catch (Exception ex) {
+                throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + ex.getMessage());
+            }
+        } catch (FeignException e) {
+            throw new RuntimeException(Constants.USER_SERVICE_DOWN);
         }
     }
 
@@ -135,37 +141,41 @@ public class CategoryServiceImpl implements CategoryService {
      */
     @Override
     public String updateCategory(long categoryId, UpdateCategoryDTO updateCategoryDTO) {
-        UserOutDTO user = userClient.getUserById(updateCategoryDTO.getUserId()).getBody();
-        String categoryToBeAdded = updateCategoryDTO.getName().toUpperCase();
-        if (user == null) {
-            throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
-        }
-        if (user.getRole() != Role.OWNER) {
-            throw new ResourceNotValidException(Constants.YOU_CANNOT_UPDATE_CATEGORY);
-        }
-        Category category = categoryRepository.findById(categoryId);
-        if (category == null) {
-            throw new ResourceNotFoundException(Constants.CATEGORY_NOT_FOUND);
-        }
-        Restaurant restaurant = restaurantRepository.findById(category.getRestaurantId());
-        if (restaurant.getOwnerId() != updateCategoryDTO.getUserId()) {
-            throw new ResourceNotValidException(Constants.YOU_CANNOT_UPDATE_CATEGORY);
-        }
-        if (!categoryToBeAdded.equals(category.getName())) {
-            Category categoryAlreadyExists = categoryRepository.findByNameAndRestaurantId(
-                    categoryToBeAdded,
-                    restaurant.getRestaurantId()
-            );
-            if (categoryAlreadyExists != null) {
-                throw new ResourceAlreadyExistsException(Constants.CATEGORY_ALREADY_PRESENT);
-            }
-        }
         try {
-            category.setName(updateCategoryDTO.getName().toUpperCase());
-            categoryRepository.save(category);
-            return Constants.CATEGORY_UPDATED_SUCCESSFULLY;
-        } catch (Exception ex) {
-            throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + ex.getMessage());
+            UserOutDTO user = userClient.getUserById(updateCategoryDTO.getUserId()).getBody();
+            String categoryToBeAdded = updateCategoryDTO.getName().toUpperCase();
+            if (user == null) {
+                throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
+            }
+            if (user.getRole() != Role.OWNER) {
+                throw new ResourceNotValidException(Constants.YOU_CANNOT_UPDATE_CATEGORY);
+            }
+            Category category = categoryRepository.findById(categoryId);
+            if (category == null) {
+                throw new ResourceNotFoundException(Constants.CATEGORY_NOT_FOUND);
+            }
+            Restaurant restaurant = restaurantRepository.findById(category.getRestaurantId());
+            if (restaurant.getOwnerId() != updateCategoryDTO.getUserId()) {
+                throw new ResourceNotValidException(Constants.YOU_CANNOT_UPDATE_CATEGORY);
+            }
+            if (!categoryToBeAdded.equals(category.getName())) {
+                Category categoryAlreadyExists = categoryRepository.findByNameAndRestaurantId(
+                        categoryToBeAdded,
+                        restaurant.getRestaurantId()
+                );
+                if (categoryAlreadyExists != null) {
+                    throw new ResourceAlreadyExistsException(Constants.CATEGORY_ALREADY_PRESENT);
+                }
+            }
+            try {
+                category.setName(updateCategoryDTO.getName().trim().toUpperCase());
+                categoryRepository.save(category);
+                return Constants.CATEGORY_UPDATED_SUCCESSFULLY;
+            } catch (Exception ex) {
+                throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + ex.getMessage());
+            }
+        } catch (FeignException e) {
+            throw new RuntimeException(Constants.USER_SERVICE_DOWN);
         }
     }
 
@@ -184,25 +194,29 @@ public class CategoryServiceImpl implements CategoryService {
      */
     @Override
     public String deleteCategory(long userId, long categoryId) {
-        UserOutDTO user = userClient.getUserById(userId).getBody();
-        if (user == null) {
-            throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
-        }
-        if (user.getRole() != Role.OWNER) {
-            throw new ResourceNotValidException(Constants.YOU_CANNOT_DELETE_CATEGORY);
-        }
-        Category category = categoryRepository.findById(categoryId);
-        if (category == null) {
-            throw new ResourceNotFoundException(Constants.CATEGORY_NOT_FOUND);
-        }
-        if (restaurantRepository.findById(category.getRestaurantId()).getOwnerId() != userId) {
-            throw new ResourceNotValidException(Constants.YOU_CANNOT_DELETE_CATEGORY);
-        }
         try {
-            categoryRepository.deleteById(categoryId);
-            return Constants.CATEGORY_DELETED;
-        } catch (Exception ex) {
-            throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + ex.getMessage());
+            UserOutDTO user = userClient.getUserById(userId).getBody();
+            if (user == null) {
+                throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
+            }
+            if (user.getRole() != Role.OWNER) {
+                throw new ResourceNotValidException(Constants.YOU_CANNOT_DELETE_CATEGORY);
+            }
+            Category category = categoryRepository.findById(categoryId);
+            if (category == null) {
+                throw new ResourceNotFoundException(Constants.CATEGORY_NOT_FOUND);
+            }
+            if (restaurantRepository.findById(category.getRestaurantId()).getOwnerId() != userId) {
+                throw new ResourceNotValidException(Constants.YOU_CANNOT_DELETE_CATEGORY);
+            }
+            try {
+                categoryRepository.deleteById(categoryId);
+                return Constants.CATEGORY_DELETED;
+            } catch (Exception ex) {
+                throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + ex.getMessage());
+            }
+        } catch (FeignException e) {
+            throw new RuntimeException(Constants.USER_SERVICE_DOWN);
         }
     }
 }
