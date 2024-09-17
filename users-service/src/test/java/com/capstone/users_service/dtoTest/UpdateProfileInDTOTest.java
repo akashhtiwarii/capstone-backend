@@ -12,12 +12,12 @@ public class UpdateProfileInDTOTest {
         UpdateProfileInDTO updateProfileInDTO = new UpdateProfileInDTO();
 
         assertNull(updateProfileInDTO.getName());
-        String name = "John Doe";
+        String name = "name";
         updateProfileInDTO.setName(name);
         assertEquals(name, updateProfileInDTO.getName());
 
         assertNull(updateProfileInDTO.getEmail());
-        String email = "john.doe@gmail.com";
+        String email = "email@gmail.com";
         updateProfileInDTO.setEmail(email);
         assertEquals(email, updateProfileInDTO.getEmail());
 
@@ -29,8 +29,8 @@ public class UpdateProfileInDTOTest {
 
     @Test
     public void testEqualsAndHashcode() {
-        String name = "John Doe";
-        String email = "john.doe@gmail.com";
+        String name = "name";
+        String email = "email@gmail.com";
         String phone = "9876543210";
 
         UpdateProfileInDTO dto1 = buildUpdateProfileInDTO(name, email, phone);
@@ -65,11 +65,11 @@ public class UpdateProfileInDTOTest {
     @Test
     public void testToString() {
         UpdateProfileInDTO dto = new UpdateProfileInDTO();
-        dto.setName("John Doe");
-        dto.setEmail("john.doe@gmail.com");
+        dto.setName("name");
+        dto.setEmail("email@gmail.com");
         dto.setPhone("9876543210");
 
-        assertEquals("UpdateProfileInDTO(name=John Doe, email=john.doe@gmail.com, phone=9876543210)", dto.toString());
+        assertEquals("UpdateProfileInDTO(name=name, email=email@gmail.com, phone=9876543210)", dto.toString());
     }
 
     private UpdateProfileInDTO buildUpdateProfileInDTO(String name, String email, String phone) {

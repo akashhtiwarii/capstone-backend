@@ -6,7 +6,6 @@ import com.capstone.users_service.entity.User;
 import com.capstone.users_service.entity.Wallet;
 import com.capstone.users_service.exceptions.ResourceAlreadyExistsException;
 import com.capstone.users_service.exceptions.ResourceNotFoundException;
-import com.capstone.users_service.exceptions.ResourceNotValidException;
 import com.capstone.users_service.repository.UserRepository;
 import com.capstone.users_service.repository.WalletRepository;
 import com.capstone.users_service.serviceImpl.UserServiceImpl;
@@ -65,8 +64,8 @@ public class UserServiceImplTest {
         long userId = 1L;
         User user = new User();
         user.setUserId(userId);
-        user.setName("John Doe");
-        user.setEmail("john.doe@example.com");
+        user.setName("name");
+        user.setEmail("email@gmail.com");
         user.setPhone("1234567890");
         user.setRole(Role.USER);
 
@@ -118,15 +117,15 @@ public class UserServiceImplTest {
     @Test
     public void testRegisterUserSuccess() {
         UserInDTO userInDTO = new UserInDTO();
-        userInDTO.setEmail("john.doe@example.com");
+        userInDTO.setEmail("email@gmail.com");
         userInDTO.setRole(Role.USER);
-        userInDTO.setName("John Doe ");
+        userInDTO.setName("name ");
         userInDTO.setPassword("password123 ");
         userInDTO.setPhone("1234567890 ");
 
 
         User user = new User();
-        user.setEmail("john.doe@example.com");
+        user.setEmail("email@gmail.com");
 
         Mockito.when(userRepository.existsByEmail(userInDTO.getEmail())).thenReturn(false);
         Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(user);
@@ -140,8 +139,8 @@ public class UserServiceImplTest {
     @Test
     public void testRegisterUserEmailAlreadyExists() {
         UserInDTO userInDTO = new UserInDTO();
-        userInDTO.setEmail("john.doe@example.com");
-        userInDTO.setName("John Doe ");
+        userInDTO.setEmail("email@gmail.com");
+        userInDTO.setName("name ");
         userInDTO.setPassword("password123 ");
         userInDTO.setRole(Role.USER);
         userInDTO.setPhone("1234567890 ");
@@ -154,11 +153,11 @@ public class UserServiceImplTest {
     @Test
     public void testLoginUserSuccess() {
         LoginRequestInDTO loginRequestInDTO = new LoginRequestInDTO();
-        loginRequestInDTO.setEmail("john.doe@example.com");
+        loginRequestInDTO.setEmail("email@gmail.com");
         loginRequestInDTO.setPassword("password");
 
         User user = new User();
-        user.setEmail("john.doe@example.com");
+        user.setEmail("email@gmail.com");
         user.setPassword("password");
 
         Mockito.when(userRepository.findByEmailAndPassword(
@@ -175,7 +174,7 @@ public class UserServiceImplTest {
     @Test
     public void testLoginUserInvalidCredentials() {
         LoginRequestInDTO loginRequestInDTO = new LoginRequestInDTO();
-        loginRequestInDTO.setEmail("john.doe@example.com");
+        loginRequestInDTO.setEmail("email@gmail.com");
         loginRequestInDTO.setPassword("wrongpassword");
 
         Mockito.when(userRepository.findByEmailAndPassword(
@@ -238,7 +237,7 @@ public class UserServiceImplTest {
     @Test
     public void testContactUsSuccess() throws MessagingException {
         ContactUsInDTO contactUsInDTO = new ContactUsInDTO();
-        contactUsInDTO.setFromEmail("john.doe@example.com");
+        contactUsInDTO.setFromEmail("email@gmail.com");
         contactUsInDTO.setRestaurantEmail("restaurant@example.com");
         contactUsInDTO.setSubject("Inquiry");
         contactUsInDTO.setMessage("Hello, I would like to inquire about...");
@@ -256,7 +255,7 @@ public class UserServiceImplTest {
 
     @Test
     public void testForgotPasswordSuccess() throws MessagingException {
-        String email = "john.doe@example.com";
+        String email = "email@gmail.com";
 
         User user = new User();
         user.setEmail(email);
@@ -277,7 +276,7 @@ public class UserServiceImplTest {
 
     @Test
     public void testSendPasswordEmailSuccess() throws MessagingException {
-        String email = "john.doe@example.com";
+        String email = "email@gmail.com";
         User user = new User();
         user.setEmail(email);
         user.setPassword("cGFzc3dvcmQ=");

@@ -12,14 +12,14 @@ public class RequestSuccessOutDTOTest {
         RequestSuccessOutDTO dto = new RequestSuccessOutDTO();
 
         assertNull(dto.getMessage());
-        String message = "Operation successful!";
+        String message = "message";
         dto.setMessage(message);
         assertEquals(message, dto.getMessage());
     }
 
     @Test
     public void testEqualsAndHashCode() {
-        String message = "Operation successful!";
+        String message = "message";
 
         RequestSuccessOutDTO dto1 = new RequestSuccessOutDTO(message);
         RequestSuccessOutDTO dto2 = new RequestSuccessOutDTO(message);
@@ -36,9 +36,9 @@ public class RequestSuccessOutDTOTest {
     public void testToString() {
         RequestSuccessOutDTO dto = new RequestSuccessOutDTO();
 
-        String message = "Operation successful!";
+        String message = "message";
         dto.setMessage(message);
 
-        assertEquals("RequestSuccessOutDTO(message=Operation successful!)", dto.toString());
+        assertEquals("RequestSuccessOutDTO(message=message)", dto.toString());
     }
 }

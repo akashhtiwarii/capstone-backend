@@ -18,12 +18,12 @@ public class UserTest {
         assertEquals(userId, user.getUserId());
 
         assertNull(user.getName());
-        String name = "John Doe";
+        String name = "name";
         user.setName(name);
         assertEquals(name, user.getName());
 
         assertNull(user.getEmail());
-        String email = "john@example.com";
+        String email = "name@gmail.com";
         user.setEmail(email);
         assertEquals(email, user.getEmail());
 
@@ -45,8 +45,8 @@ public class UserTest {
 
     @Test
     public void testEqualsAndHashCode() {
-        User user1 = buildUser(123, "John Doe", "john@example.com", "password123", "1234567890", Role.OWNER);
-        User user2 = buildUser(123, "John Doe", "john@example.com", "password123", "1234567890", Role.OWNER);
+        User user1 = buildUser(123, "name", "name@gmail.com", "password123", "1234567890", Role.OWNER);
+        User user2 = buildUser(123, "name", "name@gmail.com", "password123", "1234567890", Role.OWNER);
 
         assertEquals(user1, user2);
         assertEquals(user1.hashCode(), user2.hashCode());
@@ -55,13 +55,13 @@ public class UserTest {
         assertNotEquals(user1, user2);
         assertNotEquals(user1.hashCode(), user2.hashCode());
 
-        user2 = buildUser(123, "Jane Doe", "john@example.com", "password123", "1234567890", Role.OWNER);
+        user2 = buildUser(123, "name2", "name@gmail.com", "password123", "1234567890", Role.OWNER);
         assertNotEquals(user1, user2);
 
-        user2 = buildUser(123, "John Doe", "jane@example.com", "password123", "1234567890", Role.OWNER);
+        user2 = buildUser(123, "name", "email2@gmail.com", "password123", "1234567890", Role.OWNER);
         assertNotEquals(user1, user2);
 
-        user2 = buildUser(123, "John Doe", "john@example.com", "password123", "1234567890", Role.USER);
+        user2 = buildUser(123, "name", "name@gmail.com", "password123", "1234567890", Role.USER);
         assertNotEquals(user1, user2);
 
         User user3 = new User();
@@ -72,8 +72,8 @@ public class UserTest {
 
     @Test
     public void testToString() {
-        User user = buildUser(123, "John Doe", "john@example.com", "password123", "1234567890", Role.OWNER);
-        String expectedString = "User(userId=123, name=John Doe, email=john@example.com, password=password123, phone=1234567890, role=OWNER)";
+        User user = buildUser(123, "name", "name@gmail.com", "password123", "1234567890", Role.OWNER);
+        String expectedString = "User(userId=123, name=name, email=name@gmail.com, password=password123, phone=1234567890, role=OWNER)";
         assertEquals(expectedString, user.toString());
     }
 

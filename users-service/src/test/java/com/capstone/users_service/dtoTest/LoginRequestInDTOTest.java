@@ -12,7 +12,7 @@ public class LoginRequestInDTOTest {
         LoginRequestInDTO loginRequestInDTO = new LoginRequestInDTO();
 
         assertNull(loginRequestInDTO.getEmail());
-        String email = "user@example.com";
+        String email = "email@example.com";
         loginRequestInDTO.setEmail(email);
         assertEquals(email, loginRequestInDTO.getEmail());
 
@@ -24,7 +24,7 @@ public class LoginRequestInDTOTest {
 
     @Test
     public void testEqualsAndHashcode() {
-        String email = "user@example.com";
+        String email = "email@example.com";
         String password = "password123";
 
         LoginRequestInDTO loginRequestInDTO1 = buildLoginRequestInDTO(email, password);
@@ -51,13 +51,13 @@ public class LoginRequestInDTOTest {
     public void testToString() {
         LoginRequestInDTO loginRequestInDTO = new LoginRequestInDTO();
 
-        String email = "user@example.com";
+        String email = "email@example.com";
         String password = "password123";
 
         loginRequestInDTO.setEmail(email);
         loginRequestInDTO.setPassword(password);
 
-        assertEquals("LoginRequestInDTO(email=user@example.com, password=password123)", loginRequestInDTO.toString());
+        assertEquals("LoginRequestInDTO(email=email@example.com, password=password123)", loginRequestInDTO.toString());
     }
 
     private LoginRequestInDTO buildLoginRequestInDTO(String email, String password) {

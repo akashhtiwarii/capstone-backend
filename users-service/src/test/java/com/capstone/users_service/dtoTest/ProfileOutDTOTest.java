@@ -12,12 +12,12 @@ public class ProfileOutDTOTest {
         ProfileOutDTO profileOutDTO = new ProfileOutDTO();
 
         assertNull(profileOutDTO.getName());
-        String name = "John Doe";
+        String name = "name";
         profileOutDTO.setName(name);
         assertEquals(name, profileOutDTO.getName());
 
         assertNull(profileOutDTO.getEmail());
-        String email = "johndoe@example.com";
+        String email = "email@gmail.com";
         profileOutDTO.setEmail(email);
         assertEquals(email, profileOutDTO.getEmail());
 
@@ -34,8 +34,8 @@ public class ProfileOutDTOTest {
 
     @Test
     public void testEqualsAndHashCode() {
-        String name = "John Doe";
-        String email = "johndoe@example.com";
+        String name = "name";
+        String email = "email@gmail.com";
         String phone = "1234567890";
         double walletAmount = 100.50;
 
@@ -54,10 +54,10 @@ public class ProfileOutDTOTest {
     public void testToString() {
         ProfileOutDTO profileOutDTO = new ProfileOutDTO();
 
-        String name = "John Doe";
+        String name = "name";
         profileOutDTO.setName(name);
 
-        String email = "johndoe@example.com";
+        String email = "email@gmail.com";
         profileOutDTO.setEmail(email);
 
         String phone = "1234567890";
@@ -66,7 +66,7 @@ public class ProfileOutDTOTest {
         double walletAmount = 100.50;
         profileOutDTO.setWalletAmount(walletAmount);
 
-        assertEquals("ProfileOutDTO(name=John Doe, email=johndoe@example.com, phone=1234567890, walletAmount=100.5)", profileOutDTO.toString());
+        assertEquals("ProfileOutDTO(name=name, email=email@gmail.com, phone=1234567890, walletAmount=100.5)", profileOutDTO.toString());
     }
 
     private ProfileOutDTO buildProfileOutDTO(String name, String email, String phone, double walletAmount) {

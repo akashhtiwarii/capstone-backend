@@ -17,7 +17,7 @@ public class AddressInDTOTest {
         assertEquals(userId, addressInDTO.getUserId());
 
         assertNull(addressInDTO.getAddress());
-        String address = "123 Main St";
+        String address = "address";
         addressInDTO.setAddress(address);
         assertEquals(address, addressInDTO.getAddress());
 
@@ -40,7 +40,7 @@ public class AddressInDTOTest {
     @Test
     public void testEqualsAndHashcode() {
         long userId = 123;
-        String address = "123 Main St";
+        String address = "address";
         long pincode = 123456;
         String city = "Test City";
         String state = "Test State";
@@ -82,7 +82,7 @@ public class AddressInDTOTest {
         AddressInDTO addressInDTO = new AddressInDTO();
 
         long userId = 123;
-        String address = "123 Main St";
+        String address = "address";
         long pincode = 123456;
         String city = "Test City";
         String state = "Test State";
@@ -93,7 +93,7 @@ public class AddressInDTOTest {
         addressInDTO.setCity(city);
         addressInDTO.setState(state);
 
-        assertEquals("AddressInDTO(userId=123, address=123 Main St, pincode=123456, city=Test City, state=Test State)",
+        assertEquals("AddressInDTO(userId=123, address=address, pincode=123456, city=Test City, state=Test State)",
                 addressInDTO.toString());
     }
 

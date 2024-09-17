@@ -13,6 +13,7 @@ import com.capstone.restaurants_service.dto.UserOutDTO;
 import com.capstone.restaurants_service.entity.Restaurant;
 import com.capstone.restaurants_service.feignClient.UserClient;
 import com.capstone.restaurants_service.repository.RestaurantRepository;
+import feign.FeignException;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -117,6 +118,65 @@ public class RestaurantServiceImplTest {
         String result = restaurantService.save(restaurantInDTO, image);
         assertEquals(Constants.RESTAURANT_ADDED_SUCCESSFULLY, result);
     }
+
+    @Test
+    public void testSaveEmptyImage() throws IOException {
+        UserOutDTO user = new UserOutDTO();
+        user.setRole(Role.OWNER);
+        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(user));
+        when(restaurantRepository.findByEmail(anyString())).thenReturn(null);
+        when(restaurantRepository.save(any())).thenReturn(new Restaurant());
+        when(image.isEmpty()).thenReturn(true);
+
+        RestaurantInDTO restaurantInDTO = new RestaurantInDTO();
+        restaurantInDTO.setOwnerId(1L);
+        restaurantInDTO.setEmail("test@example.com");
+        restaurantInDTO.setName("name");
+        restaurantInDTO.setAddress("address");
+        restaurantInDTO.setPhone("1223456789");
+
+        String result = restaurantService.save(restaurantInDTO, image);
+        assertEquals(Constants.RESTAURANT_ADDED_SUCCESSFULLY, result);
+
+        verify(restaurantRepository, times(1)).save(any(Restaurant.class));
+    }
+
+
+    @Test
+    public void testSaveNoImage() throws IOException {
+        UserOutDTO user = new UserOutDTO();
+        user.setRole(Role.OWNER);
+        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(user));
+        when(restaurantRepository.findByEmail(anyString())).thenReturn(null);
+        when(restaurantRepository.save(any())).thenReturn(new Restaurant());
+
+        RestaurantInDTO restaurantInDTO = new RestaurantInDTO();
+        restaurantInDTO.setOwnerId(1L);
+        restaurantInDTO.setEmail("test@example.com");
+        restaurantInDTO.setName("name");
+        restaurantInDTO.setAddress("address");
+        restaurantInDTO.setPhone("1223456789");
+
+        String result = restaurantService.save(restaurantInDTO, null);
+        assertEquals(Constants.RESTAURANT_ADDED_SUCCESSFULLY, result);
+
+        verify(restaurantRepository, times(1)).save(any(Restaurant.class));
+    }
+
+    @Test
+    public void testSaveFeignException() {
+        when(userClient.getUserById(anyLong())).thenThrow(FeignException.class);
+
+        RestaurantInDTO restaurantInDTO = new RestaurantInDTO();
+        restaurantInDTO.setOwnerId(1L);
+
+        RuntimeException thrown = assertThrows(
+                RuntimeException.class,
+                () -> restaurantService.save(restaurantInDTO, null)
+        );
+        assertEquals(Constants.USER_SERVICE_DOWN, thrown.getMessage());
+    }
+
 
     @Test
     public void testUpdateRestaurantUserNotFound() {

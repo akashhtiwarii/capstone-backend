@@ -23,7 +23,7 @@ public class AddressTest {
         assertEquals(userId, address.getUserId());
 
         assertNull(address.getAddress());
-        String addressLine = "123 Main St";
+        String addressLine = "address";
         address.setAddress(addressLine);
         assertEquals(addressLine, address.getAddress());
 
@@ -33,20 +33,20 @@ public class AddressTest {
         assertEquals(pincode, address.getPincode());
 
         assertNull(address.getCity());
-        String city = "New York";
+        String city = "city";
         address.setCity(city);
         assertEquals(city, address.getCity());
 
         assertNull(address.getState());
-        String state = "NY";
+        String state = "state";
         address.setState(state);
         assertEquals(state, address.getState());
     }
 
     @Test
     public void testEqualsAndHashCode() {
-        Address address1 = buildAddress(1L, 101L, "123 Main St", 123456, "New York", "NY");
-        Address address2 = buildAddress(1L, 101L, "123 Main St", 123456, "New York", "NY");
+        Address address1 = buildAddress(1L, 101L, "address", 123456, "city", "state");
+        Address address2 = buildAddress(1L, 101L, "address", 123456, "city", "state");
 
         assertEquals(address1, address2);
         assertEquals(address1.hashCode(), address2.hashCode());
@@ -55,19 +55,19 @@ public class AddressTest {
         assertNotEquals(address1, address2);
         assertNotEquals(address1.hashCode(), address2.hashCode());
 
-        address2 = buildAddress(1L, 102L, "123 Main St", 123456, "New York", "NY");
+        address2 = buildAddress(1L, 102L, "address", 123456, "city", "state");
         assertNotEquals(address1, address2);
 
-        address2 = buildAddress(1L, 101L, "456 Broadway", 123456, "New York", "NY");
+        address2 = buildAddress(1L, 101L, "456 Broadway", 123456, "city", "state");
         assertNotEquals(address1, address2);
 
-        address2 = buildAddress(1L, 101L, "123 Main St", 654321, "New York", "NY");
+        address2 = buildAddress(1L, 101L, "address", 654321, "city", "state");
         assertNotEquals(address1, address2);
 
-        address2 = buildAddress(1L, 101L, "123 Main St", 123456, "Los Angeles", "NY");
+        address2 = buildAddress(1L, 101L, "address", 123456, "city2", "state");
         assertNotEquals(address1, address2);
 
-        address2 = buildAddress(1L, 101L, "123 Main St", 123456, "New York", "CA");
+        address2 = buildAddress(1L, 101L, "address", 123456, "city", "state2");
         assertNotEquals(address1, address2);
 
         Address address3 = new Address();
@@ -78,8 +78,8 @@ public class AddressTest {
 
     @Test
     public void testToString() {
-        Address address = buildAddress(1L, 101L, "123 Main St", 123456, "New York", "NY");
-        String expectedString = "123 Main St, New York, NY, 123456";
+        Address address = buildAddress(1L, 101L, "address", 123456, "city", "state");
+        String expectedString = "address, city, state, 123456";
         assertEquals(expectedString, address.toString());
     }
 

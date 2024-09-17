@@ -18,12 +18,12 @@ public class UserOutDTOTest {
         assertEquals(userId, userOutDTO.getUserId());
 
         assertNull(userOutDTO.getEmail());
-        String email = "test@example.com";
+        String email = "email@gmail.com";
         userOutDTO.setEmail(email);
         assertEquals(email, userOutDTO.getEmail());
 
         assertNull(userOutDTO.getName());
-        String name = "John Doe";
+        String name = "name";
         userOutDTO.setName(name);
         assertEquals(name, userOutDTO.getName());
 
@@ -45,10 +45,10 @@ public class UserOutDTOTest {
         long userId = 1L;
         userOutDTO.setUserId(userId);
 
-        String email = "test@example.com";
+        String email = "email@gmail.com";
         userOutDTO.setEmail(email);
 
-        String name = "John Doe";
+        String name = "name";
         userOutDTO.setName(name);
 
         String phone = "1234567890";
@@ -57,14 +57,14 @@ public class UserOutDTOTest {
         Role role = Role.OWNER;
         userOutDTO.setRole(role);
 
-        assertEquals("UserOutDTO(userId=1, email=test@example.com, name=John Doe, phone=1234567890, role=OWNER)", userOutDTO.toString());
+        assertEquals("UserOutDTO(userId=1, email=email@gmail.com, name=name, phone=1234567890, role=OWNER)", userOutDTO.toString());
     }
 
     @Test
     public void testEqualsAndHashcode() {
         long userId = 1L;
-        String email = "test@example.com";
-        String name = "John Doe";
+        String email = "email@gmail.com";
+        String name = "name";
         String phone = "1234567890";
         Role role = Role.OWNER;
 

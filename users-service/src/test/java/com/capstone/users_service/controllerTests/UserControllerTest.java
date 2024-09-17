@@ -91,11 +91,11 @@ public class UserControllerTest {
     @Test
     public void getUserProfileReturnsProfile() {
         ProfileOutDTO profile = new ProfileOutDTO();
-        profile.setName("John Doe");
+        profile.setName("name");
         when(userService.getProfileInfo(anyLong())).thenReturn(profile);
         ResponseEntity<ProfileOutDTO> response = userController.getUserProfile(1);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("John Doe", response.getBody().getName());
+        assertEquals("name", response.getBody().getName());
     }
 
     @Test

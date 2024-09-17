@@ -14,17 +14,17 @@ public class UserConvertersTest {
     @Test
     public void testRegisterUserInDTOToUserEntity() {
         UserInDTO userInDTO = new UserInDTO();
-        userInDTO.setName("John Doe ");
+        userInDTO.setName("name");
         userInDTO.setPassword("password123 ");
-        userInDTO.setEmail("JohnDoe@example.com ");
+        userInDTO.setEmail("email@gmail.com");
         userInDTO.setRole(Role.USER);
         userInDTO.setPhone("1234567890 ");
 
         User user = UserConverters.registerUserInDTOToUserEntity(userInDTO);
 
-        assertEquals("John Doe", user.getName());
+        assertEquals("name", user.getName());
         assertEquals("password123", user.getPassword());
-        assertEquals("johndoe@example.com", user.getEmail());
+        assertEquals("email@gmail.com", user.getEmail());
         assertEquals(Role.USER, user.getRole());
         assertEquals("1234567890", user.getPhone());
     }
@@ -33,16 +33,16 @@ public class UserConvertersTest {
     public void testUserEntityToLoginResponseOutDTO() {
         User user = new User();
         user.setUserId(1L);
-        user.setName("John Doe");
-        user.setEmail("johndoe@example.com");
+        user.setName("name");
+        user.setEmail("email@gmail.com");
         user.setPhone("1234567890");
         user.setRole(Role.USER);
 
         LoginResponseOutDTO loginResponseOutDTO = UserConverters.userEntityToLoginResponseOutDTO(user);
 
         assertEquals(1L, loginResponseOutDTO.getUserId());
-        assertEquals("johndoe@example.com", loginResponseOutDTO.getEmail());
-        assertEquals("John Doe", loginResponseOutDTO.getName());
+        assertEquals("email@gmail.com", loginResponseOutDTO.getEmail());
+        assertEquals("name", loginResponseOutDTO.getName());
         assertEquals("1234567890", loginResponseOutDTO.getPhone());
         assertEquals(Role.USER, loginResponseOutDTO.getRole());
         assertEquals("Login Successful", loginResponseOutDTO.getMessage());

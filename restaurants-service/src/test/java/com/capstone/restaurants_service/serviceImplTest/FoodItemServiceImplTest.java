@@ -61,7 +61,7 @@ class FoodItemServiceImplTest {
         FoodItemInDTO foodItemInDTO = new FoodItemInDTO();
         foodItemInDTO.setLoggedInOwnerId(1L);
         foodItemInDTO.setCategoryId(1L);
-        foodItemInDTO.setName("burger");
+        foodItemInDTO.setName("food");
 
         UserOutDTO user = new UserOutDTO();
         user.setUserId(1L);
@@ -90,7 +90,7 @@ class FoodItemServiceImplTest {
         FoodItemInDTO foodItemInDTO = new FoodItemInDTO();
         foodItemInDTO.setLoggedInOwnerId(1L);
         foodItemInDTO.setCategoryId(1L);
-        foodItemInDTO.setName("burger");
+        foodItemInDTO.setName("food");
 
         UserOutDTO user = new UserOutDTO();
         user.setUserId(1L);
@@ -218,8 +218,8 @@ class FoodItemServiceImplTest {
     public void testGetFoodItemsByCategorySuccessMultipleItems() {
         long categoryId = 1L;
         List<FoodItem> foodItems = Arrays.asList(
-                new FoodItem(1L, categoryId, "Pizza", "Delicious pizza", 10.99, new byte[0]),
-                new FoodItem(2L, categoryId, "Pizza", "Delicious pizza", 10.99, new byte[0])
+                new FoodItem(1L, categoryId, "Food", "Description", 10.99, new byte[0]),
+                new FoodItem(2L, categoryId, "Food", "Description", 10.99, new byte[0])
         );
         when(foodItemRepository.findByCategoryId(categoryId)).thenReturn(foodItems);
 

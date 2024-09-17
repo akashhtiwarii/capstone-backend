@@ -9,9 +9,9 @@ public class UpdateFoodItemInDTOTest {
 
     @Test
     public void testEqualsAndHashCode() {
-        UpdateFoodItemInDTO dto1 = new UpdateFoodItemInDTO(1L, 2L, "Food Item", "Delicious", 10.99);
-        UpdateFoodItemInDTO dto2 = new UpdateFoodItemInDTO(1L, 2L, "Food Item", "Delicious", 10.99);
-        UpdateFoodItemInDTO dto3 = new UpdateFoodItemInDTO(2L, 3L, "Another Item", "Tasty", 15.99);
+        UpdateFoodItemInDTO dto1 = new UpdateFoodItemInDTO(1L, 2L, "Food Item", "Description", 10.99);
+        UpdateFoodItemInDTO dto2 = new UpdateFoodItemInDTO(1L, 2L, "Food Item", "Description", 10.99);
+        UpdateFoodItemInDTO dto3 = new UpdateFoodItemInDTO(2L, 3L, "Another Item", "Description2", 15.99);
 
         assertEquals(dto1, dto2);
         assertNotEquals(dto1, dto3);
@@ -23,13 +23,13 @@ public class UpdateFoodItemInDTOTest {
 
     @Test
     public void testEqualsWithNull() {
-        UpdateFoodItemInDTO dto = new UpdateFoodItemInDTO(1L, 2L, "Food Item", "Delicious", 10.99);
+        UpdateFoodItemInDTO dto = new UpdateFoodItemInDTO(1L, 2L, "Food Item", "Description", 10.99);
         assertNotEquals(dto, null);
     }
 
     @Test
     public void testEqualsWithDifferentClass() {
-        UpdateFoodItemInDTO dto = new UpdateFoodItemInDTO(1L, 2L, "Food Item", "Delicious", 10.99);
+        UpdateFoodItemInDTO dto = new UpdateFoodItemInDTO(1L, 2L, "Food Item", "Description", 10.99);
         assertNotEquals(dto, new Object());
     }
 
@@ -39,13 +39,13 @@ public class UpdateFoodItemInDTOTest {
         dto.setLoggedInOwnerId(1L);
         dto.setCategoryId(2L);
         dto.setName("Food Item");
-        dto.setDescription("Delicious");
+        dto.setDescription("Description");
         dto.setPrice(10.99);
 
         assertEquals(1L, dto.getLoggedInOwnerId());
         assertEquals(2L, dto.getCategoryId());
         assertEquals("Food Item", dto.getName());
-        assertEquals("Delicious", dto.getDescription());
+        assertEquals("Description", dto.getDescription());
         assertEquals(10.99, dto.getPrice());
     }
 

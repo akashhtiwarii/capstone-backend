@@ -15,16 +15,16 @@ class FoodItemConvertersTest {
 
         FoodItemInDTO foodItemInDTO = new FoodItemInDTO();
         foodItemInDTO.setCategoryId(1);
-        foodItemInDTO.setName("burger");
-        foodItemInDTO.setDescription("Delicious beef burger");
+        foodItemInDTO.setName("food");
+        foodItemInDTO.setDescription("Description");
         foodItemInDTO.setPrice(5.99);
 
         FoodItem foodItem = FoodItemConverters.foodItemInDTOToFoodItemEntity(foodItemInDTO);
 
         assertNotNull(foodItem);
         assertEquals(1, foodItem.getCategoryId());
-        assertEquals("Burger", foodItem.getName());
-        assertEquals("Delicious beef burger", foodItem.getDescription());
+        assertEquals("Food", foodItem.getName());
+        assertEquals("Description", foodItem.getDescription());
         assertEquals(5.99, foodItem.getPrice());
     }
 
@@ -33,7 +33,7 @@ class FoodItemConvertersTest {
 
         FoodItemInDTO foodItemInDTO = new FoodItemInDTO();
         foodItemInDTO.setCategoryId(2);
-        foodItemInDTO.setName("pizza");
+        foodItemInDTO.setName("food");
         foodItemInDTO.setDescription(null);
         foodItemInDTO.setPrice(8.50);
 
@@ -41,7 +41,7 @@ class FoodItemConvertersTest {
 
         assertNotNull(foodItem);
         assertEquals(2, foodItem.getCategoryId());
-        assertEquals("Pizza", foodItem.getName());
+        assertEquals("Food", foodItem.getName());
         assertEquals("", foodItem.getDescription());
         assertEquals(8.50, foodItem.getPrice());
     }
@@ -51,7 +51,7 @@ class FoodItemConvertersTest {
 
         FoodItemInDTO foodItemInDTO = new FoodItemInDTO();
         foodItemInDTO.setCategoryId(3);
-        foodItemInDTO.setName("sushi");
+        foodItemInDTO.setName("food");
         foodItemInDTO.setDescription("");
         foodItemInDTO.setPrice(12.00);
 
@@ -59,7 +59,7 @@ class FoodItemConvertersTest {
 
         assertNotNull(foodItem);
         assertEquals(3, foodItem.getCategoryId());
-        assertEquals("Sushi", foodItem.getName());
+        assertEquals("Food", foodItem.getName());
         assertEquals("", foodItem.getDescription());
         assertEquals(12.00, foodItem.getPrice());
     }

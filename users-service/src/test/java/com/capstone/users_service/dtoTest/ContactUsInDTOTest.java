@@ -12,7 +12,7 @@ public class ContactUsInDTOTest {
         ContactUsInDTO contactUsInDTO = new ContactUsInDTO();
 
         assertNull(contactUsInDTO.getRestaurantEmail());
-        String restaurantEmail = "restaurant@example.com";
+        String restaurantEmail = "email@gmail.com";
         contactUsInDTO.setRestaurantEmail(restaurantEmail);
         assertEquals(restaurantEmail, contactUsInDTO.getRestaurantEmail());
 
@@ -22,7 +22,7 @@ public class ContactUsInDTOTest {
         assertEquals(subject, contactUsInDTO.getSubject());
 
         assertNull(contactUsInDTO.getMessage());
-        String message = "I have an issue with my recent order.";
+        String message = "message";
         contactUsInDTO.setMessage(message);
         assertEquals(message, contactUsInDTO.getMessage());
 
@@ -34,9 +34,9 @@ public class ContactUsInDTOTest {
 
     @Test
     public void testEqualsAndHashcode() {
-        String restaurantEmail = "restaurant@example.com";
+        String restaurantEmail = "email@gmail.com";
         String subject = "Order Issue";
-        String message = "I have an issue with my recent order.";
+        String message = "message";
         String fromEmail = "user@example.com";
 
         ContactUsInDTO contactUsInDTO1 = buildContactUsInDTO(restaurantEmail, subject, message, fromEmail);
@@ -71,9 +71,9 @@ public class ContactUsInDTOTest {
     public void testToString() {
         ContactUsInDTO contactUsInDTO = new ContactUsInDTO();
 
-        String restaurantEmail = "restaurant@example.com";
+        String restaurantEmail = "email@gmail.com";
         String subject = "Order Issue";
-        String message = "I have an issue with my recent order.";
+        String message = "message";
         String fromEmail = "user@example.com";
 
         contactUsInDTO.setRestaurantEmail(restaurantEmail);
@@ -81,7 +81,7 @@ public class ContactUsInDTOTest {
         contactUsInDTO.setMessage(message);
         contactUsInDTO.setFromEmail(fromEmail);
 
-        assertEquals("ContactUsInDTO(restaurantEmail=restaurant@example.com, subject=Order Issue, message=I have an issue with my recent order., fromEmail=user@example.com)",
+        assertEquals("ContactUsInDTO(restaurantEmail=email@gmail.com, subject=Order Issue, message=message, fromEmail=user@example.com)",
                 contactUsInDTO.toString());
     }
 

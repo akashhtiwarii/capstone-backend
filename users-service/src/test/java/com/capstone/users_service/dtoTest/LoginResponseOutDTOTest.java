@@ -18,12 +18,12 @@ public class LoginResponseOutDTOTest {
         assertEquals(userId, loginResponseOutDTO.getUserId());
 
         assertNull(loginResponseOutDTO.getEmail());
-        String email = "test@example.com";
+        String email = "email@gmail.com";
         loginResponseOutDTO.setEmail(email);
         assertEquals(email, loginResponseOutDTO.getEmail());
 
         assertNull(loginResponseOutDTO.getName());
-        String name = "John Doe";
+        String name = "name";
         loginResponseOutDTO.setName(name);
         assertEquals(name, loginResponseOutDTO.getName());
 
@@ -46,8 +46,8 @@ public class LoginResponseOutDTOTest {
     @Test
     public void testEqualsAndHashcode() {
         long userId = 12345L;
-        String email = "test@example.com";
-        String name = "John Doe";
+        String email = "email@gmail.com";
+        String name = "name";
         String phone = "1234567890";
         Role role = Role.USER;
         String message = "Login successful";
@@ -70,10 +70,10 @@ public class LoginResponseOutDTOTest {
         long userId = 12345L;
         loginResponseOutDTO.setUserId(userId);
 
-        String email = "test@example.com";
+        String email = "email@gmail.com";
         loginResponseOutDTO.setEmail(email);
 
-        String name = "John Doe";
+        String name = "name";
         loginResponseOutDTO.setName(name);
 
         String phone = "1234567890";
@@ -85,7 +85,7 @@ public class LoginResponseOutDTOTest {
         String message = "Login successful";
         loginResponseOutDTO.setMessage(message);
 
-        assertEquals("LoginResponseOutDTO(userId=12345, email=test@example.com, name=John Doe, phone=1234567890, role=USER, message=Login successful)", loginResponseOutDTO.toString());
+        assertEquals("LoginResponseOutDTO(userId=12345, email=email@gmail.com, name=name, phone=1234567890, role=USER, message=Login successful)", loginResponseOutDTO.toString());
     }
 
     private LoginResponseOutDTO buildLoginResponseOutDTO(long userId, String email, String name, String phone, Role role, String message) {

@@ -221,7 +221,7 @@ class OrderServiceImplTest {
 
 
         UserOutDTO user = new UserOutDTO();
-        user.setName("John Doe");
+        user.setName("name");
         when(usersFeignClient.getUserById(1L)).thenReturn(ResponseEntity.ok(user));
 
         OrderDetail orderDetail = new OrderDetail();
@@ -233,7 +233,7 @@ class OrderServiceImplTest {
         when(orderDetailRepository.findByOrderId(1L)).thenReturn(orderDetails);
 
         FoodItemOutDTO foodItem = new FoodItemOutDTO();
-        foodItem.setName("Pizza");
+        foodItem.setName("Food");
         when(restaurantFeignClient.getFoodItemById(1L)).thenReturn(ResponseEntity.ok(foodItem));
 
 
@@ -247,7 +247,7 @@ class OrderServiceImplTest {
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals("John Doe", result.get(0).getUserName());
+        assertEquals("name", result.get(0).getUserName());
         assertEquals(1L, result.get(0).getOrderId());
     }
 
@@ -284,7 +284,7 @@ class OrderServiceImplTest {
 
 
         RestaurantOutDTO restaurant = new RestaurantOutDTO();
-        restaurant.setName("Pizza Place");
+        restaurant.setName("Food Place");
         restaurant.setEmail("contact@pizzaplace.com");
         when(restaurantFeignClient.getRestaurantById(1L)).thenReturn(ResponseEntity.ok(restaurant));
 
@@ -298,7 +298,7 @@ class OrderServiceImplTest {
 
         FoodItemOutDTO foodItem = new FoodItemOutDTO();
         foodItem.setFoodId(1L);
-        foodItem.setName("Pizza");
+        foodItem.setName("Food");
         foodItem.setPrice(5.0);
         when(restaurantFeignClient.getFoodItemById(1L)).thenReturn(ResponseEntity.ok(foodItem));
 
@@ -306,7 +306,7 @@ class OrderServiceImplTest {
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals("Pizza Place", result.get(0).getRestaurantName());
+        assertEquals("Food Place", result.get(0).getRestaurantName());
         assertEquals("contact@pizzaplace.com", result.get(0).getRestaurantEmail());
     }
 

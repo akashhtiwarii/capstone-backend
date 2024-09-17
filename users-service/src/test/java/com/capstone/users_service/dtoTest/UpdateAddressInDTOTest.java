@@ -22,12 +22,12 @@ public class UpdateAddressInDTOTest {
         assertEquals(addressId, updateAddressInDTO.getAddressId());
 
         assertNull(updateAddressInDTO.getAddress());
-        String address = "123 Main St";
+        String address = "address";
         updateAddressInDTO.setAddress(address);
         assertEquals(address, updateAddressInDTO.getAddress());
 
         assertNull(updateAddressInDTO.getCity());
-        String city = "New York";
+        String city = "city";
         updateAddressInDTO.setCity(city);
         assertEquals(city, updateAddressInDTO.getCity());
 
@@ -37,7 +37,7 @@ public class UpdateAddressInDTOTest {
         assertEquals(pincode, updateAddressInDTO.getPincode());
 
         assertNull(updateAddressInDTO.getState());
-        String state = "NY";
+        String state = "state";
         updateAddressInDTO.setState(state);
         assertEquals(state, updateAddressInDTO.getState());
     }
@@ -46,10 +46,10 @@ public class UpdateAddressInDTOTest {
     public void testEqualsAndHashcode() {
         long userId = 1L;
         long addressId = 1L;
-        String address = "123 Main St";
-        String city = "New York";
+        String address = "address";
+        String city = "city";
         long pincode = 123456;
-        String state = "NY";
+        String state = "state";
 
         UpdateAddressInDTO dto1 = buildUpdateAddressInDTO(userId, addressId, address, city, pincode, state);
 
@@ -97,12 +97,12 @@ public class UpdateAddressInDTOTest {
         UpdateAddressInDTO dto = new UpdateAddressInDTO();
         dto.setUserId(1L);
         dto.setAddressId(1L);
-        dto.setAddress("123 Main St");
-        dto.setCity("New York");
+        dto.setAddress("address");
+        dto.setCity("city");
         dto.setPincode(123456);
-        dto.setState("NY");
+        dto.setState("state");
 
-        assertEquals("UpdateAddressInDTO(userId=1, addressId=1, address=123 Main St, city=New York, pincode=123456, state=NY)", dto.toString());
+        assertEquals("UpdateAddressInDTO(userId=1, addressId=1, address=address, city=city, pincode=123456, state=state)", dto.toString());
     }
 
     private UpdateAddressInDTO buildUpdateAddressInDTO(long userId, long addressId, String address, String city, long pincode, String state) {

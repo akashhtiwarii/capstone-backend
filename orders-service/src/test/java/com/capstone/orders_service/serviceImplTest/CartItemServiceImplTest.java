@@ -1,5 +1,6 @@
 package com.capstone.orders_service.serviceImplTest;
 
+import com.capstone.orders_service.Enum.Role;
 import com.capstone.orders_service.dto.AddToCartInDTO;
 import com.capstone.orders_service.dto.CartItemOutDTO;
 import com.capstone.orders_service.dto.FoodItemOutDTO;
@@ -56,6 +57,22 @@ class CartItemServiceImplTest {
             cartItemService.addToCart(addToCartInDTO);
         });
         assertEquals(Constants.USER_NOT_FOUND, exception.getMessage());
+    }
+
+    @Test
+    void testAddToCartFoodItemNotAvailable() {
+        AddToCartInDTO addToCartInDTO = new AddToCartInDTO();
+        addToCartInDTO.setUserId(1L);
+        addToCartInDTO.setFoodId(1L);
+
+        when(usersFeignClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(new UserOutDTO()));
+        when(restaurantFeignClient.getFoodItemById(anyLong())).thenThrow(FeignException.NotFound.class);
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            cartItemService.addToCart(addToCartInDTO);
+        });
+
+        assertEquals(Constants.FOOD_ITEM_NOT_FOUND, exception.getMessage());
     }
 
     @Test

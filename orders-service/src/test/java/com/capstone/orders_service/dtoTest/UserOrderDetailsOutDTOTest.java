@@ -17,13 +17,13 @@ class UserOrderDetailsOutDTOTest {
     void testEqualsAndHashCode() {
         UserFoodItemOutDTO foodItem1 = new UserFoodItemOutDTO();
         foodItem1.setFoodId(1L);
-        foodItem1.setName("Pizza");
+        foodItem1.setName("Food");
         foodItem1.setQuantity(2);
         foodItem1.setPrice(20.0);
 
         UserFoodItemOutDTO foodItem2 = new UserFoodItemOutDTO();
         foodItem2.setFoodId(2L);
-        foodItem2.setName("Burger");
+        foodItem2.setName("Food2");
         foodItem2.setQuantity(1);
         foodItem2.setPrice(10.0);
 
@@ -63,32 +63,32 @@ class UserOrderDetailsOutDTOTest {
     void testGettersAndSetters() {
         UserOrderDetailsOutDTO order = new UserOrderDetailsOutDTO();
         order.setRestaurantName("My Restaurant");
-        order.setRestaurantEmail("info@restaurant.com");
+        order.setRestaurantEmail("email@gmail.com");
         order.setOrderId(1L);
         order.setStatus(Status.COMPLETED);
         order.setOrderTime(LocalDateTime.of(2024, 1, 1, 12, 0));
 
         UserFoodItemOutDTO foodItem1 = new UserFoodItemOutDTO();
         foodItem1.setFoodId(1L);
-        foodItem1.setName("Pizza");
+        foodItem1.setName("Food");
         foodItem1.setQuantity(2);
         foodItem1.setPrice(20.0);
 
         UserFoodItemOutDTO foodItem2 = new UserFoodItemOutDTO();
         foodItem2.setFoodId(2L);
-        foodItem2.setName("Burger");
+        foodItem2.setName("Food2");
         foodItem2.setQuantity(1);
         foodItem2.setPrice(10.0);
 
         order.setFoodItemOutDTOS(Arrays.asList(foodItem1, foodItem2));
 
         assertEquals("My Restaurant", order.getRestaurantName());
-        assertEquals("info@restaurant.com", order.getRestaurantEmail());
+        assertEquals("email@gmail.com", order.getRestaurantEmail());
         assertEquals(1L, order.getOrderId());
         assertEquals(Status.COMPLETED, order.getStatus());
         assertEquals(LocalDateTime.of(2024, 1, 1, 12, 0), order.getOrderTime());
         assertEquals(2, order.getFoodItemOutDTOS().size());
-        assertEquals("Pizza", order.getFoodItemOutDTOS().get(0).getName());
-        assertEquals("Burger", order.getFoodItemOutDTOS().get(1).getName());
+        assertEquals("Food", order.getFoodItemOutDTOS().get(0).getName());
+        assertEquals("Food2", order.getFoodItemOutDTOS().get(1).getName());
     }
 }

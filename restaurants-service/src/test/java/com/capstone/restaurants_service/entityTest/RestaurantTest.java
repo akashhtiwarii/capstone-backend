@@ -28,12 +28,12 @@ public class RestaurantTest {
         assertEquals("email@example.com", restaurant.getEmail());
 
         assertNull(restaurant.getPhone());
-        restaurant.setPhone("123-456-7890");
-        assertEquals("123-456-7890", restaurant.getPhone());
+        restaurant.setPhone("1234567890");
+        assertEquals("1234567890", restaurant.getPhone());
 
         assertNull(restaurant.getAddress());
-        restaurant.setAddress("123 Restaurant St");
-        assertEquals("123 Restaurant St", restaurant.getAddress());
+        restaurant.setAddress("address");
+        assertEquals("address", restaurant.getAddress());
 
         assertNull(restaurant.getImage());
         byte[] image = {1, 2, 3};
@@ -49,52 +49,52 @@ public class RestaurantTest {
         restaurant.setOwnerId(2);
         restaurant.setName("Restaurant Name");
         restaurant.setEmail("email@example.com");
-        restaurant.setPhone("123-456-7890");
-        restaurant.setAddress("123 Restaurant St");
+        restaurant.setPhone("1234567890");
+        restaurant.setAddress("address");
         restaurant.setImage(new byte[]{1, 2, 3});
 
         assertEquals("Restaurant(restaurantId=1, ownerId=2, name=Restaurant Name, email=email@example.com, " +
-                "phone=123-456-7890, address=123 Restaurant St, image=[1, 2, 3])", restaurant.toString());
+                "phone=1234567890, address=address, image=[1, 2, 3])", restaurant.toString());
     }
 
     @Test
     public void testEqualsAndHashcode() {
-        Restaurant restaurant1 = buildRestaurant(1, 2, "Restaurant Name", "email@example.com", "123-456-7890", "123 Restaurant St", new byte[]{1, 2, 3});
+        Restaurant restaurant1 = buildRestaurant(1, 2, "Restaurant Name", "email@example.com", "1234567890", "address", new byte[]{1, 2, 3});
 
         assertEquals(restaurant1, restaurant1);
         assertEquals(restaurant1.hashCode(), restaurant1.hashCode());
 
         assertNotEquals(restaurant1, new Object());
 
-        Restaurant restaurant2 = buildRestaurant(1, 2, "Restaurant Name", "email@example.com", "123-456-7890", "123 Restaurant St", new byte[]{1, 2, 3});
+        Restaurant restaurant2 = buildRestaurant(1, 2, "Restaurant Name", "email@example.com", "1234567890", "address", new byte[]{1, 2, 3});
         assertEquals(restaurant1, restaurant2);
         assertEquals(restaurant1.hashCode(), restaurant2.hashCode());
 
-        restaurant2 = buildRestaurant(2, 2, "Restaurant Name", "email@example.com", "123-456-7890", "123 Restaurant St", new byte[]{1, 2, 3});
+        restaurant2 = buildRestaurant(2, 2, "Restaurant Name", "email@example.com", "1234567890", "address", new byte[]{1, 2, 3});
         assertNotEquals(restaurant1, restaurant2);
         assertNotEquals(restaurant1.hashCode(), restaurant2.hashCode());
 
-        restaurant2 = buildRestaurant(1, 3, "Restaurant Name", "email@example.com", "123-456-7890", "123 Restaurant St", new byte[]{1, 2, 3});
+        restaurant2 = buildRestaurant(1, 3, "Restaurant Name", "email@example.com", "1234567890", "address", new byte[]{1, 2, 3});
         assertNotEquals(restaurant1, restaurant2);
         assertNotEquals(restaurant1.hashCode(), restaurant2.hashCode());
 
-        restaurant2 = buildRestaurant(1, 2, "Different Name", "email@example.com", "123-456-7890", "123 Restaurant St", new byte[]{1, 2, 3});
+        restaurant2 = buildRestaurant(1, 2, "Different Name", "email@example.com", "1234567890", "address", new byte[]{1, 2, 3});
         assertNotEquals(restaurant1, restaurant2);
         assertNotEquals(restaurant1.hashCode(), restaurant2.hashCode());
 
-        restaurant2 = buildRestaurant(1, 2, "Restaurant Name", "different@example.com", "123-456-7890", "123 Restaurant St", new byte[]{1, 2, 3});
+        restaurant2 = buildRestaurant(1, 2, "Restaurant Name", "different@example.com", "1234567890", "address", new byte[]{1, 2, 3});
         assertNotEquals(restaurant1, restaurant2);
         assertNotEquals(restaurant1.hashCode(), restaurant2.hashCode());
 
-        restaurant2 = buildRestaurant(1, 2, "Restaurant Name", "email@example.com", "987-654-3210", "123 Restaurant St", new byte[]{1, 2, 3});
+        restaurant2 = buildRestaurant(1, 2, "Restaurant Name", "email@example.com", "9876543210", "address", new byte[]{1, 2, 3});
         assertNotEquals(restaurant1, restaurant2);
         assertNotEquals(restaurant1.hashCode(), restaurant2.hashCode());
 
-        restaurant2 = buildRestaurant(1, 2, "Restaurant Name", "email@example.com", "123-456-7890", "Different Address", new byte[]{1, 2, 3});
+        restaurant2 = buildRestaurant(1, 2, "Restaurant Name", "email@example.com", "1234567890", "Different Address", new byte[]{1, 2, 3});
         assertNotEquals(restaurant1, restaurant2);
         assertNotEquals(restaurant1.hashCode(), restaurant2.hashCode());
 
-        restaurant2 = buildRestaurant(1, 2, "Restaurant Name", "email@example.com", "123-456-7890", "123 Restaurant St", new byte[]{4, 5, 6});
+        restaurant2 = buildRestaurant(1, 2, "Restaurant Name", "email@example.com", "1234567890", "address", new byte[]{4, 5, 6});
         assertNotEquals(restaurant1, restaurant2);
         assertNotEquals(restaurant1.hashCode(), restaurant2.hashCode());
 

@@ -40,7 +40,7 @@ public class AddressServiceImplTest {
     public void testAddAddressSuccess() {
         AddressInDTO addressInDTO = new AddressInDTO();
         addressInDTO.setUserId(1L);
-        addressInDTO.setAddress("123 Main St");
+        addressInDTO.setAddress("address");
         addressInDTO.setPincode(12345);
         addressInDTO.setCity("City");
         addressInDTO.setState("State");
@@ -108,7 +108,7 @@ public class AddressServiceImplTest {
         UpdateAddressInDTO updateAddressInDTO = new UpdateAddressInDTO();
         updateAddressInDTO.setUserId(1L);
         updateAddressInDTO.setAddressId(1L);
-        updateAddressInDTO.setAddress("456 New St");
+        updateAddressInDTO.setAddress("address2");
         updateAddressInDTO.setPincode(678907);
         updateAddressInDTO.setCity("New City");
         updateAddressInDTO.setState("New State");

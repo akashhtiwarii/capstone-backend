@@ -16,8 +16,8 @@ public class RestaurantConvertersTest {
         restaurantInDTO.setOwnerId(1L);
         restaurantInDTO.setName("Test Restaurant");
         restaurantInDTO.setEmail("test@example.com");
-        restaurantInDTO.setPhone("123-456-7890");
-        restaurantInDTO.setAddress("123 Test St");
+        restaurantInDTO.setPhone("1234567890");
+        restaurantInDTO.setAddress("address");
 
         Restaurant restaurant = RestaurantConverters.restaurantInDTOTORestaurant(restaurantInDTO);
 
@@ -25,8 +25,8 @@ public class RestaurantConvertersTest {
         assertEquals(1L, restaurant.getOwnerId());
         assertEquals("Test Restaurant", restaurant.getName());
         assertEquals("test@example.com", restaurant.getEmail());
-        assertEquals("123-456-7890", restaurant.getPhone());
-        assertEquals("123 Test St", restaurant.getAddress());
+        assertEquals("1234567890", restaurant.getPhone());
+        assertEquals("address", restaurant.getAddress());
     }
 
     @Test

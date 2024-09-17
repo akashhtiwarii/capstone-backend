@@ -25,7 +25,7 @@ public class UpdateRestaurantInDTOTest {
 
     @Test
     public void testValidation_ValidDTO_ShouldPass() {
-        UpdateRestaurantInDTO dto = new UpdateRestaurantInDTO(1L, 1L, "Restaurant Name", "test@gmail.com", "9876543210", "Restaurant Address");
+        UpdateRestaurantInDTO dto = new UpdateRestaurantInDTO(1L, 1L, "Restaurant Name", "email@gmail.com", "9876543210", "Restaurant Address");
         Set<javax.validation.ConstraintViolation<UpdateRestaurantInDTO>> violations = validator.validate(dto);
         assertThat(violations).isEmpty();
     }
@@ -41,7 +41,7 @@ public class UpdateRestaurantInDTOTest {
 
     @Test
     public void testValidation_InvalidPhone_ShouldFail() {
-        UpdateRestaurantInDTO dto = new UpdateRestaurantInDTO(1L, 1L, "Restaurant Name", "test@gmail.com", "1234567890", "Restaurant Address");
+        UpdateRestaurantInDTO dto = new UpdateRestaurantInDTO(1L, 1L, "Restaurant Name", "email@gmail.com", "1234567890", "Restaurant Address");
         Set<javax.validation.ConstraintViolation<UpdateRestaurantInDTO>> violations = validator.validate(dto);
         assertThat(violations).hasSize(1)
                 .extracting("message")
@@ -54,23 +54,23 @@ public class UpdateRestaurantInDTOTest {
         dto.setLoggedInOwnerId(1L);
         dto.setRestaurantId(2L);
         dto.setName("Restaurant Name");
-        dto.setEmail("test@gmail.com");
+        dto.setEmail("email@gmail.com");
         dto.setPhone("9876543210");
         dto.setAddress("Restaurant Address");
 
         assertThat(dto.getLoggedInOwnerId()).isEqualTo(1L);
         assertThat(dto.getRestaurantId()).isEqualTo(2L);
         assertThat(dto.getName()).isEqualTo("Restaurant Name");
-        assertThat(dto.getEmail()).isEqualTo("test@gmail.com");
+        assertThat(dto.getEmail()).isEqualTo("email@gmail.com");
         assertThat(dto.getPhone()).isEqualTo("9876543210");
         assertThat(dto.getAddress()).isEqualTo("Restaurant Address");
     }
 
     @Test
     public void testEqualsAndHashCode() {
-        UpdateRestaurantInDTO dto1 = new UpdateRestaurantInDTO(1L, 1L, "Restaurant Name", "test@gmail.com", "9876543210", "Restaurant Address");
-        UpdateRestaurantInDTO dto2 = new UpdateRestaurantInDTO(1L, 1L, "Restaurant Name", "test@gmail.com", "9876543210", "Restaurant Address");
-        UpdateRestaurantInDTO dto3 = new UpdateRestaurantInDTO(2L, 1L, "Different Restaurant", "test@gmail.com", "9876543210", "Restaurant Address");
+        UpdateRestaurantInDTO dto1 = new UpdateRestaurantInDTO(1L, 1L, "Restaurant Name", "email@gmail.com", "9876543210", "Restaurant Address");
+        UpdateRestaurantInDTO dto2 = new UpdateRestaurantInDTO(1L, 1L, "Restaurant Name", "email@gmail.com", "9876543210", "Restaurant Address");
+        UpdateRestaurantInDTO dto3 = new UpdateRestaurantInDTO(2L, 1L, "Different Restaurant", "email@gmail.com", "9876543210", "Restaurant Address");
 
         assertThat(dto1).isEqualTo(dto2);
         assertThat(dto1).isNotEqualTo(dto3);
