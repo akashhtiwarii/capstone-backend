@@ -83,7 +83,7 @@ public class OrderDetail {
      * @return true if this order detail is equal to the specified object; false otherwise.
      */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }

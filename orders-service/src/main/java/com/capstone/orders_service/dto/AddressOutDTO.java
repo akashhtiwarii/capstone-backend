@@ -53,7 +53,7 @@ public class AddressOutDTO {
      * @return true if the specified object is equal to this AddressOutDTO; false otherwise.
      */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -88,6 +88,6 @@ public class AddressOutDTO {
      */
     @Override
     public String toString() {
-        return (address + ", " + city + ", " + state + ", " + pincode);
+        return address + ", " + city + ", " + state + ", " + pincode;
     }
 }

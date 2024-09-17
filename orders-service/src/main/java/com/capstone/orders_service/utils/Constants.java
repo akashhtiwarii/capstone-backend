@@ -10,7 +10,9 @@ package com.capstone.orders_service.utils;
  */
 public final class Constants {
 
-    // Private constructor to prevent instantiation
+    /**
+     * Private Constructor for utility class.
+     */
     private Constants() {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }

@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
      * @throws ResourceNotValidException if the requesting user does not have permission to view the requested user
      */
     @Override
-    public User getById(GetUserInfoInDTO getUserInfoInDTO) {
+    public User getById(final GetUserInfoInDTO getUserInfoInDTO) {
         try {
             User user = userRepository.findById(getUserInfoInDTO.getUserId());
             User loggedInUser = userRepository.findById(getUserInfoInDTO.getLoggedInUserId());
@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService {
      * @throws ResourceNotFoundException if the user is not found
      */
     @Override
-    public ProfileOutDTO getProfileInfo(long userId) {
+    public ProfileOutDTO getProfileInfo(final long userId) {
         User user = userRepository.findById(userId);
         if (user == null) {
             throw new ResourceNotFoundException("User Not Found");
@@ -111,7 +111,7 @@ public class UserServiceImpl implements UserService {
      * @throws ResourceNotFoundException if the user is not found
      */
     @Override
-    public User getByIdentity(long userId) {
+    public User getByIdentity(final long userId) {
         User user = userRepository.findById(userId);
         if (user == null) {
             throw new ResourceNotFoundException("User not found");
@@ -128,7 +128,7 @@ public class UserServiceImpl implements UserService {
      * @throws RuntimeException if an unexpected error occurs while saving the user
      */
     @Override
-    public String registerUser(UserInDTO userInDTO) {
+    public String registerUser(final UserInDTO userInDTO) {
         User user = UserConverters.registerUserInDTOToUserEntity(userInDTO);
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new ResourceAlreadyExistsException(Constants.EMAIL_ALREADY_IN_USE);
@@ -156,7 +156,7 @@ public class UserServiceImpl implements UserService {
      * @return a {@link LoginResponseOutDTO} containing user details if authentication is successful or an error message
      */
     @Override
-    public LoginResponseOutDTO loginUser(LoginRequestInDTO loginRequestInDTO) {
+    public LoginResponseOutDTO loginUser(final LoginRequestInDTO loginRequestInDTO) {
         User user = userRepository.findByEmailAndPassword(
                 loginRequestInDTO.getEmail(),
                 loginRequestInDTO.getPassword()
@@ -180,7 +180,7 @@ public class UserServiceImpl implements UserService {
      * @throws ResourceAlreadyExistsException if the email in the updated profile already exists
      */
     @Override
-    public String updateUserProfile(long userId, UpdateProfileInDTO updateProfileInDTO) {
+    public String updateUserProfile(final long userId, final UpdateProfileInDTO updateProfileInDTO) {
         User user = userRepository.findById(userId);
         if (user == null) {
             throw new ResourceNotFoundException("User Not Found");
@@ -206,7 +206,7 @@ public class UserServiceImpl implements UserService {
      * @throws RuntimeException if an error occurs while sending the email
      */
     @Override
-    public String contactUs(ContactUsInDTO contactUsInDTO) {
+    public String contactUs(final ContactUsInDTO contactUsInDTO) {
         try {
             sendEmail(contactUsInDTO);
             return "Your message has been sent successfully!";
@@ -221,7 +221,7 @@ public class UserServiceImpl implements UserService {
      * @return a string message
      */
     @Override
-    public String forgotPassword(String email) {
+    public String forgotPassword(final String email) {
         try {
             sendPasswordEmail(email);
             return "Your Password has been sent successfully!";
@@ -236,7 +236,7 @@ public class UserServiceImpl implements UserService {
      * @param contactUsDTO the DTO containing the email details (subject, message, from email, etc.)
      * @throws MessagingException if an error occurs while creating or sending the email
      */
-    private void sendEmail(ContactUsInDTO contactUsDTO) throws MessagingException {
+    private void sendEmail(final ContactUsInDTO contactUsDTO) throws MessagingException {
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
@@ -254,7 +254,7 @@ public class UserServiceImpl implements UserService {
      * @param email the email ID of the user
      * @throws MessagingException if an error occurs while creating or sending the email
      */
-    private void sendPasswordEmail(String email) throws MessagingException {
+    private void sendPasswordEmail(final String email) throws MessagingException {
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
         User user = userRepository.findByEmail(email);

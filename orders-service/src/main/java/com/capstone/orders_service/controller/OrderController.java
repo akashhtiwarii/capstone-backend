@@ -64,8 +64,8 @@ public class OrderController {
      */
     @GetMapping(Constants.GET_RESTAURANT_ORDERS)
     public ResponseEntity<List<OrderOutDTO>> getOrders(
-            @RequestParam @Min(value = 1, message = Constants.USER_ID_NOT_VALID) long loggedInUserId,
-            @RequestParam @Min(value = 1, message = Constants.RESTAURANT_ID_NOT_VALID) long restaurantId) {
+            @RequestParam @Min(value = 1, message = Constants.USER_ID_NOT_VALID) final long loggedInUserId,
+            @RequestParam @Min(value = 1, message = Constants.RESTAURANT_ID_NOT_VALID) final long restaurantId) {
         logger.info("Fetching orders for restaurant : {}", restaurantId);
         List<OrderOutDTO> orders = orderService.getOrders(loggedInUserId, restaurantId);
         logger.info("Fetched orders for restaurant : {}", restaurantId);
@@ -81,8 +81,8 @@ public class OrderController {
      */
     @PostMapping(Constants.ADD_ORDER)
     public ResponseEntity<RequestSuccessOutDTO> addOrder(
-            @RequestParam @Min(value = 1, message = Constants.USER_ID_NOT_VALID) long userId,
-            @RequestParam @Min(value = 1, message = Constants.ADDRESS_ID_NOT_VALID) long addressId) {
+            @RequestParam @Min(value = 1, message = Constants.USER_ID_NOT_VALID) final long userId,
+            @RequestParam @Min(value = 1, message = Constants.ADDRESS_ID_NOT_VALID) final long addressId) {
         logger.info("Adding orders for user : {}", userId);
         String response = orderService.addOrder(userId, addressId);
         logger.info("Added orders for user : {}", userId);
@@ -97,7 +97,7 @@ public class OrderController {
      */
     @GetMapping(Constants.MY_CART)
     public ResponseEntity<List<CartItemOutDTO>> getMyCart(
-            @RequestParam @Min(value = 1, message = Constants.USER_ID_NOT_VALID) long userId
+            @RequestParam @Min(value = 1, message = Constants.USER_ID_NOT_VALID) final long userId
     ) {
         logger.info("Fetching Cart for user : {}", userId);
         List<CartItemOutDTO> cartItemOutDTOS = cartItemService.getCartItems(userId);
@@ -112,7 +112,7 @@ public class OrderController {
      * @return A ResponseEntity containing a message indicating the result of the operation.
      */
     @PostMapping(Constants.ADD_TO_CART)
-    public ResponseEntity<RequestSuccessOutDTO> addToCart(@Valid @RequestBody AddToCartInDTO addToCartInDTO) {
+    public ResponseEntity<RequestSuccessOutDTO> addToCart(@Valid @RequestBody final AddToCartInDTO addToCartInDTO) {
         logger.info("Adding to Cart for user : {}", addToCartInDTO.getUserId());
         String response = cartItemService.addToCart(addToCartInDTO);
         logger.info("Added to Cart for user : {}", addToCartInDTO.getUserId());
@@ -129,9 +129,9 @@ public class OrderController {
      */
     @PutMapping(Constants.UPDATE_ORDER)
     public ResponseEntity<RequestSuccessOutDTO> updateOrder(
-            @RequestParam @Min(value = 1, message = Constants.OWNER_ID_NOT_VALID) long ownerId,
-            @RequestParam @Min(value = 1, message = Constants.ORDER_ID_NOT_VALID) long orderId,
-            @RequestParam Status status) {
+            @RequestParam @Min(value = 1, message = Constants.OWNER_ID_NOT_VALID) final long ownerId,
+            @RequestParam @Min(value = 1, message = Constants.ORDER_ID_NOT_VALID) final long orderId,
+            @RequestParam final Status status) {
         logger.info("Updating order for orderID : {}", orderId);
         String response = orderService.updateOrder(ownerId, orderId, status);
         logger.info("Updated order for orderID : {}", orderId);
@@ -146,7 +146,7 @@ public class OrderController {
      */
     @GetMapping(Constants.GET_RESTAURANT_ORDER_DETAILS)
     public ResponseEntity<List<RestaurantOrderDetailsOutDTO>> getRestaurantOrderDetails(
-            @RequestParam @Min(value = 1, message = Constants.RESTAURANT_ID_NOT_VALID) long restaurantId) {
+            @RequestParam @Min(value = 1, message = Constants.RESTAURANT_ID_NOT_VALID) final long restaurantId) {
         logger.info("Fetching order details for restaurantId : {}", restaurantId);
         List<RestaurantOrderDetailsOutDTO> restaurantOrderDetailsOutDTOS = orderService.getOrderDetails(restaurantId);
         logger.info("Fetched order details for restaurantId : {}", restaurantId);
@@ -161,7 +161,7 @@ public class OrderController {
      */
     @GetMapping(Constants.GET_USER_ORDERS)
     public ResponseEntity<List<UserOrderDetailsOutDTO>> getUserOrders(
-            @RequestParam @Min(value = 1, message = Constants.USER_ID_NOT_VALID) long userId
+            @RequestParam @Min(value = 1, message = Constants.USER_ID_NOT_VALID) final long userId
     ) {
         logger.info("Fetching order details for UserID : {}", userId);
         List<UserOrderDetailsOutDTO> userOrderDetailsOutDTOS = orderService.getUserOrders(userId);
@@ -178,8 +178,8 @@ public class OrderController {
      */
     @PutMapping(Constants.UPDATE_CART)
     public ResponseEntity<RequestSuccessOutDTO> updateCartItem(
-            @RequestParam @Min(value = 1, message = Constants.CART_ID_NOT_VALID) long cartItemId,
-            @RequestParam int delta
+            @RequestParam @Min(value = 1, message = Constants.CART_ID_NOT_VALID) final long cartItemId,
+            @RequestParam final int delta
     ) {
         logger.info("Updating cart item for ID : {}", cartItemId);
         String message = cartItemService.updateCartItem(cartItemId, delta);
@@ -195,7 +195,7 @@ public class OrderController {
      */
     @DeleteMapping(Constants.DELETE_CART)
     public ResponseEntity<RequestSuccessOutDTO> deleteCartItem(
-            @RequestParam @Min(value = 1, message = Constants.CART_ID_NOT_VALID) long cartItemId
+            @RequestParam @Min(value = 1, message = Constants.CART_ID_NOT_VALID) final long cartItemId
     ) {
         logger.info("Deleting cart item with ID : {}", cartItemId);
         String message = cartItemService.deleteCartItem(cartItemId);
@@ -211,7 +211,7 @@ public class OrderController {
      */
     @PutMapping(Constants.CANCEL_ORDER)
     public ResponseEntity<RequestSuccessOutDTO> cancelOrder(
-            @RequestParam @Min(value = 1, message = Constants.ORDER_ID_NOT_VALID) long orderId
+            @RequestParam @Min(value = 1, message = Constants.ORDER_ID_NOT_VALID) final long orderId
     ) {
         logger.info("Cancelling order with ID : {}", orderId);
         String response = orderService.cancelOrder(orderId);

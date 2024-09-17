@@ -7,7 +7,13 @@ import com.capstone.restaurants_service.entity.Restaurant;
  * Utility class for converting between {@link RestaurantInDTO} and {@link Restaurant} entities.
  * This class contains methods to transform {@link RestaurantInDTO} objects into {@link Restaurant} entities.
  */
-public class RestaurantConverters {
+public final class RestaurantConverters {
+    /**
+     * Private constructor for CategoryConverters.
+     */
+    private RestaurantConverters() {
+        throw new UnsupportedOperationException("Utility Class Cannot be instantiated");
+    }
 
     /**
      * Converts a {@link RestaurantInDTO} object to a {@link Restaurant} entity.
@@ -25,7 +31,7 @@ public class RestaurantConverters {
      * @param restaurantInDTO the DTO containing restaurant data to be converted
      * @return a {@link Restaurant} entity populated with data from the provided DTO
      */
-    public static Restaurant restaurantInDTOTORestaurant(RestaurantInDTO restaurantInDTO) {
+    public static Restaurant restaurantInDTOTORestaurant(final RestaurantInDTO restaurantInDTO) {
         Restaurant restaurant = new Restaurant();
         restaurant.setOwnerId(restaurantInDTO.getOwnerId());
         restaurant.setName(restaurantInDTO.getName().trim());

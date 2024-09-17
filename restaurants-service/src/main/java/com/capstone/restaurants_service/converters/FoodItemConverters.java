@@ -10,7 +10,14 @@ import java.util.Objects;
  * Utility class for converting between {@link FoodItemInDTO} and {@link FoodItem} entities.
  * This class contains methods to transform {@link FoodItemInDTO} objects into {@link FoodItem} entities.
  */
-public class FoodItemConverters {
+public final class FoodItemConverters {
+
+    /**
+     * Private constructor for CategoryConverters.
+     */
+    private FoodItemConverters() {
+        throw new UnsupportedOperationException("Utility Class Cannot be instantiated");
+    }
 
     /**
      * Converts a {@link FoodItemInDTO} object to a {@link FoodItem} entity.
@@ -28,7 +35,7 @@ public class FoodItemConverters {
      * @param foodItemInDTO the DTO containing food item data to be converted
      * @return a {@link FoodItem} entity populated with data from the provided DTO
      */
-    public static FoodItem foodItemInDTOToFoodItemEntity(FoodItemInDTO foodItemInDTO) {
+    public static FoodItem foodItemInDTOToFoodItemEntity(final FoodItemInDTO foodItemInDTO) {
         FoodItem foodItem = new FoodItem();
         foodItem.setCategoryId(foodItemInDTO.getCategoryId());
         foodItem.setName(StringUtils.capitalizeFirstLetter(foodItemInDTO.getName().trim()));

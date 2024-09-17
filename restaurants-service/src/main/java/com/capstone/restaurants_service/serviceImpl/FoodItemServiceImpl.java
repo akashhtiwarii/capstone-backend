@@ -77,7 +77,7 @@ public class FoodItemServiceImpl implements FoodItemService {
      * @throws ResourceNotValidException if the user does not have the correct role or cannot add the food item
      * @throws ResourceAlreadyExistsException if the food item already exists for the given category
      */
-    public String addFoodItem(FoodItemInDTO foodItemInDTO, MultipartFile image) {
+    public String addFoodItem(final FoodItemInDTO foodItemInDTO, final MultipartFile image) {
         try {
             UserOutDTO user = userClient.getUserById(foodItemInDTO.getLoggedInOwnerId()).getBody();
             if (user == null) {
@@ -133,7 +133,7 @@ public class FoodItemServiceImpl implements FoodItemService {
      * @throws ResourceNotValidException if the user does not have the correct role or cannot delete the food item
      */
     @Override
-    public String deleteFoodItem(long userId, long foodId) {
+    public String deleteFoodItem(final long userId, final long foodId) {
         try {
             UserOutDTO user = userClient.getUserById(userId).getBody();
             if (user == null) {
@@ -177,7 +177,9 @@ public class FoodItemServiceImpl implements FoodItemService {
      * @throws ResourceNotValidException if the user does not have the correct role or cannot update the food item
      */
     @Override
-    public String updateFoodItem(long foodItemId, UpdateFoodItemInDTO updateFoodItemInDTO, MultipartFile image) {
+    public String updateFoodItem(
+            final long foodItemId, final UpdateFoodItemInDTO updateFoodItemInDTO, final MultipartFile image
+    ) {
         try {
             UserOutDTO user = userClient.getUserById(updateFoodItemInDTO.getLoggedInOwnerId()).getBody();
             if (user == null) {
@@ -232,7 +234,7 @@ public class FoodItemServiceImpl implements FoodItemService {
      * @throws ResourceNotFoundException if the restaurant or categories are not found, or if no food items are found
      */
     @Override
-    public List<FoodItem> getAllFoodItemsOfRestaurant(long restaurantId) {
+    public List<FoodItem> getAllFoodItemsOfRestaurant(final long restaurantId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId);
         if (restaurant == null) {
             throw new ResourceNotFoundException(Constants.RESTAURANT_NOT_FOUND);
@@ -265,7 +267,7 @@ public class FoodItemServiceImpl implements FoodItemService {
      * @throws ResourceNotFoundException if no food items are found for the given category
      */
     @Override
-    public List<FoodItem> getFoodItemsByCategory(long categoryId) {
+    public List<FoodItem> getFoodItemsByCategory(final long categoryId) {
         try {
             List<FoodItem> foodItems = foodItemRepository.findByCategoryId(categoryId);
             if (foodItems == null || foodItems.isEmpty()) {
@@ -288,7 +290,7 @@ public class FoodItemServiceImpl implements FoodItemService {
      * @throws ResourceNotFoundException if the food item is not found
      */
     @Override
-    public FoodItem getByFoodId(long foodId) {
+    public FoodItem getByFoodId(final long foodId) {
         FoodItem foodItem = foodItemRepository.findById(foodId);
         if (foodItem == null) {
             throw new ResourceNotFoundException("Food Item Not Found");

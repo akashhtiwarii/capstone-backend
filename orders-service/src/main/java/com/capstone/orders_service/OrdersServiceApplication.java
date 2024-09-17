@@ -16,13 +16,22 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableFeignClients
 public class OrdersServiceApplication {
 
-	/**
-	 * Main method that serves as the entry point for the Spring Boot Orders Service application.
-	 *
-	 * @param args command-line arguments (if any) passed during application startup
-	 */
-	public static void main(String[] args) {
-		SpringApplication.run(OrdersServiceApplication.class, args);
-	}
+    /**
+    * Runs the application.
+    *
+    * @param args Arguments parameter.
+    */
+    public final void run(final String[] args) {
+        SpringApplication.run(OrdersServiceApplication.class, args);
+    }
+
+    /**
+     * Main method that serves as the entry point for the Spring Boot Orders Service application.
+     *
+     * @param args command-line arguments (if any) passed during application startup
+     */
+    public static void main(final String[] args) {
+        SpringApplication.run(OrdersServiceApplication.class, args);
+    }
 
 }

@@ -14,7 +14,7 @@ public class ResourceNotValidException extends RuntimeException {
      *
      * @param message the detail message, which is saved for later retrieval by the {@link #getMessage()} method
      */
-    public ResourceNotValidException(String message) {
+    public ResourceNotValidException(final String message) {
         super(message);
     }
 }

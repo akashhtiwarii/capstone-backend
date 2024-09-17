@@ -39,7 +39,7 @@ public class LoginRequestInDTO {
      * @return {@code true} if this object is the same as the {@code o} argument; {@code false} otherwise.
      */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }

@@ -57,7 +57,7 @@ public class RestaurantServiceImpl implements RestaurantService {
      * @throws ResourceAlreadyExistsException if a restaurant with the given email already exists
      */
     @Override
-    public String save(RestaurantInDTO restaurantInDTO, MultipartFile image) {
+    public String save(final RestaurantInDTO restaurantInDTO, final MultipartFile image) {
         try {
             UserOutDTO user = userClient.getUserById(restaurantInDTO.getOwnerId()).getBody();
             if (user == null) {
@@ -103,7 +103,7 @@ public class RestaurantServiceImpl implements RestaurantService {
      * @throws ResourceAlreadyExistsException if a restaurant with the given email already exists
      */
     @Override
-    public String updateRestaurant(UpdateRestaurantInDTO updateRestaurantInDTO, MultipartFile image) {
+    public String updateRestaurant(final UpdateRestaurantInDTO updateRestaurantInDTO, final MultipartFile image) {
         try {
             UserOutDTO user = userClient.getUserById(updateRestaurantInDTO.getLoggedInOwnerId()).getBody();
             if (user == null) {
@@ -174,7 +174,7 @@ public class RestaurantServiceImpl implements RestaurantService {
      * @throws ResourceNotFoundException if no restaurants are found for the given owner ID
      */
     @Override
-    public List<Restaurant> findByOwnerId(long ownerId) {
+    public List<Restaurant> findByOwnerId(final long ownerId) {
         List<Restaurant> restaurant = restaurantRepository.findByOwnerId(ownerId);
         if (restaurant.isEmpty()) {
             throw new ResourceNotFoundException(Constants.RESTAURANT_DOES_NOT_EXISTS);
@@ -193,7 +193,7 @@ public class RestaurantServiceImpl implements RestaurantService {
      * @throws ResourceNotFoundException if the restaurant with the given ID does not exist
      */
     @Override
-    public Restaurant findById(long restaurantId) {
+    public Restaurant findById(final long restaurantId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId);
         if (restaurant == null) {
             throw new ResourceNotFoundException(Constants.RESTAURANT_DOES_NOT_EXISTS);

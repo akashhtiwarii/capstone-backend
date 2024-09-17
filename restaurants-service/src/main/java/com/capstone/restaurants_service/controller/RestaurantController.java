@@ -75,8 +75,8 @@ public class RestaurantController {
      */
     @PostMapping(Constants.ADD_RESTAURANT_ENDPOINT)
     public ResponseEntity<RequestSuccessOutDTO> addRestaurant(
-            @ModelAttribute @Valid RestaurantInDTO restaurantInDTO,
-            @RequestParam(value = "image", required = false) MultipartFile image) {
+            @ModelAttribute @Valid final RestaurantInDTO restaurantInDTO,
+            @RequestParam(value = "image", required = false) final MultipartFile image) {
         logger.info("Adding Restaurant : {}", restaurantInDTO.getName());
         logger.info("Restaurant Details Fetched");
         logger.info("Image Fetched");
@@ -91,7 +91,7 @@ public class RestaurantController {
      * @return ResponseEntity containing the restaurant details.
      */
     @GetMapping(Constants.GET_RESTAURANT_BY_ID)
-    public ResponseEntity<Restaurant> getRestaurantById(@PathVariable("restaurantId") long restaurantId) {
+    public ResponseEntity<Restaurant> getRestaurantById(@PathVariable("restaurantId") final long restaurantId) {
         logger.info("Fetching Restaurant by Id : {}", restaurantId);
         Restaurant restaurant = restaurantService.findById(restaurantId);
         logger.info("Fetched Restaurant by Id : {}", restaurantId);
@@ -105,7 +105,7 @@ public class RestaurantController {
      */
     @GetMapping(Constants.GET_OWNER_RESTAURANTS)
     public ResponseEntity<List<Restaurant>> getOwnerRestaurants(
-            @RequestParam @Min(value = 1, message = "Valid Owner ID required") long ownerId) {
+            @RequestParam @Min(value = 1, message = "Valid Owner ID required") final long ownerId) {
         logger.info("Fetching Restaurants of ownerID : {}", ownerId);
         List<Restaurant> restaurants = restaurantService.findByOwnerId(ownerId);
         logger.info("Fetched Restaurants of ownerId : {}", ownerId);
@@ -130,7 +130,7 @@ public class RestaurantController {
      * @return ResponseEntity containing the status message of the operation.
      */
     @PostMapping(Constants.ADD_CATEGORIES_ENDPOINT)
-    public ResponseEntity<RequestSuccessOutDTO> addCategory(@Valid @RequestBody CategoryInDTO categoryInDTO) {
+    public ResponseEntity<RequestSuccessOutDTO> addCategory(@Valid @RequestBody final CategoryInDTO categoryInDTO) {
         logger.info("Adding Category for restaurant ID: {}", categoryInDTO.getRestaurantId());
         String response = categoryService.addCategory(categoryInDTO);
         logger.info("Added Category for restaurant ID: {}", categoryInDTO.getRestaurantId());
@@ -145,8 +145,8 @@ public class RestaurantController {
      */
     @PutMapping(value = Constants.UPDATE_RESTAURANT_ENDPOINT)
     public ResponseEntity<RequestSuccessOutDTO> updateRestaurant(
-            @ModelAttribute @Valid UpdateRestaurantInDTO updateRestaurantInDTO,
-            @RequestParam(value = "image", required = false) MultipartFile image) {
+            @ModelAttribute @Valid final UpdateRestaurantInDTO updateRestaurantInDTO,
+            @RequestParam(value = "image", required = false) final MultipartFile image) {
         logger.info("Updating Restaurant for restaurant ID: {}", updateRestaurantInDTO.getRestaurantId());
         String response = restaurantService.updateRestaurant(updateRestaurantInDTO, image);
         logger.info("Updated Restaurant for restaurant ID: {}", updateRestaurantInDTO.getRestaurantId());
@@ -159,7 +159,7 @@ public class RestaurantController {
      * @return ResponseEntity containing a list of categories for the specified restaurant.
      */
     @GetMapping(Constants.GET_CATEGORIES_ENDPOINT)
-    public ResponseEntity<List<Category>> getCategories(@PathVariable("restaurantId") long restaurantId) {
+    public ResponseEntity<List<Category>> getCategories(@PathVariable("restaurantId") final long restaurantId) {
         logger.info("Fetching Categories for restaurant ID: {}", restaurantId);
         List<Category> categories = categoryService.getAllCategoriesOfRestaurant(restaurantId);
         logger.info("Fetched Categories for restaurant ID: {}", restaurantId);
@@ -174,8 +174,8 @@ public class RestaurantController {
      */
     @DeleteMapping(Constants.DELETE_CATEGORY_ENDPOINT)
     public ResponseEntity<RequestSuccessOutDTO> deleteCategory(
-            @RequestParam @Min(value = 1, message = "Valid User ID required") long userId,
-            @RequestParam @Min(value = 1, message = "Valid Category ID required") long categoryId) {
+            @RequestParam @Min(value = 1, message = "Valid User ID required") final long userId,
+            @RequestParam @Min(value = 1, message = "Valid Category ID required") final long categoryId) {
         logger.info("Deleting Category : {}", categoryId);
         String message = categoryService.deleteCategory(userId, categoryId);
         logger.info("Deleted Category : {}", categoryId);
@@ -190,8 +190,8 @@ public class RestaurantController {
      */
     @PutMapping(Constants.UPDATE_CATEGORY_ENDPOINT)
     public ResponseEntity<RequestSuccessOutDTO> updateCategory(
-            @PathVariable("categoryId") long categoryId,
-            @Valid @RequestBody UpdateCategoryDTO updateCategoryDTO) {
+            @PathVariable("categoryId") final long categoryId,
+            @Valid @RequestBody final UpdateCategoryDTO updateCategoryDTO) {
         logger.info("Updating Category : {}", updateCategoryDTO);
         String message = categoryService.updateCategory(categoryId, updateCategoryDTO);
         logger.info("Updated Category : {}", updateCategoryDTO);
@@ -206,8 +206,8 @@ public class RestaurantController {
      */
     @PostMapping(Constants.ADD_FOOD_ITEM_ENDPOINT)
     public ResponseEntity<RequestSuccessOutDTO> addFoodItem(
-            @ModelAttribute @Valid FoodItemInDTO foodItemInDTO,
-            @RequestParam(value = "image", required = false) MultipartFile image) {
+            @ModelAttribute @Valid final FoodItemInDTO foodItemInDTO,
+            @RequestParam(value = "image", required = false) final MultipartFile image) {
         logger.info("Adding new food item.");
         String message = foodItemService.addFoodItem(foodItemInDTO, image);
         logger.info("Added new food item.");
@@ -223,9 +223,9 @@ public class RestaurantController {
      */
     @PutMapping(Constants.UPDATE_FOOD_ITEM_ENDPOINT)
     public ResponseEntity<RequestSuccessOutDTO> updateFoodItem(
-            @PathVariable("foodItemId") long fooditemId,
-            @ModelAttribute @Valid UpdateFoodItemInDTO updateFoodItemInDTO,
-            @RequestParam(value = "image", required = false) MultipartFile image) {
+            @PathVariable("foodItemId") final long fooditemId,
+            @ModelAttribute @Valid final UpdateFoodItemInDTO updateFoodItemInDTO,
+            @RequestParam(value = "image", required = false) final MultipartFile image) {
         logger.info("Updating food item : {}", fooditemId);
         String message = foodItemService.updateFoodItem(fooditemId, updateFoodItemInDTO, image);
         logger.info("Updated food item : {}", fooditemId);
@@ -240,8 +240,8 @@ public class RestaurantController {
      */
     @DeleteMapping(Constants.DELETE_FOOD_ITEM)
     public ResponseEntity<RequestSuccessOutDTO> deleteFoodItem(
-            @RequestParam @Min(value = 1, message = "Valid User ID required") long userId,
-            @RequestParam @Min(value = 1, message = "Valid Food ID required") long foodId) {
+            @RequestParam @Min(value = 1, message = "Valid User ID required") final long userId,
+            @RequestParam @Min(value = 1, message = "Valid Food ID required") final long foodId) {
         logger.info("Deleting Food item : {}", foodId);
         String message = foodItemService.deleteFoodItem(userId, foodId);
         logger.info("Deleted Food item : {}", foodId);
@@ -254,7 +254,9 @@ public class RestaurantController {
      * @return ResponseEntity containing a list of food items for the specified restaurant.
      */
     @GetMapping(Constants.GET_FOOD_ITEMS_BY_RESTAURANT)
-    public ResponseEntity<List<FoodItem>> getFoodItemsByRestaurant(@PathVariable("restaurantId") long restaurantId) {
+    public ResponseEntity<List<FoodItem>> getFoodItemsByRestaurant(
+            @PathVariable("restaurantId") final long restaurantId
+    ) {
         logger.info("Fetching Food items of restaurant: {}", restaurantId);
         List<FoodItem> foodItems = foodItemService.getAllFoodItemsOfRestaurant(restaurantId);
         logger.info("Fetched Food items of restaurant: {}", restaurantId);
@@ -267,7 +269,7 @@ public class RestaurantController {
      * @return ResponseEntity containing a list of food items for the specified category.
      */
     @GetMapping(Constants.GET_FOOD_ITEMS_BY_CATEGORY)
-    public ResponseEntity<List<FoodItem>> getFoodItemsByCategory(@PathVariable("categoryId") long categoryId) {
+    public ResponseEntity<List<FoodItem>> getFoodItemsByCategory(@PathVariable("categoryId") final long categoryId) {
         logger.info("Fetching Food items of category: {}", categoryId);
         List<FoodItem> foodItems = foodItemService.getFoodItemsByCategory(categoryId);
         logger.info("Fetched Food items of category: {}", categoryId);
@@ -280,7 +282,7 @@ public class RestaurantController {
      * @return ResponseEntity containing the details of the food item.
      */
     @GetMapping("food/id")
-    public ResponseEntity<FoodItem> getFoodItemById(@RequestParam long foodId) {
+    public ResponseEntity<FoodItem> getFoodItemById(@RequestParam final long foodId) {
         logger.info("Fetching Food item of ID: {}", foodId);
         FoodItem foodItem = foodItemService.getByFoodId(foodId);
         logger.info("Fetched Food item of ID: {}", foodId);

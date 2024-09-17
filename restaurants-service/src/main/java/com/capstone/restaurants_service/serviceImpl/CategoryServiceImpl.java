@@ -64,7 +64,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @throws ResourceAlreadyExistsException if the category already exists for the restaurant
      */
     @Override
-    public String addCategory(CategoryInDTO categoryInDTO) {
+    public String addCategory(final CategoryInDTO categoryInDTO) {
         try {
             UserOutDTO user = userClient.getUserById(categoryInDTO.getUserId()).getBody();
 
@@ -112,7 +112,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @throws ResourceNotFoundException if the restaurant does not exist or if no categories are found
      */
     @Override
-    public List<Category> getAllCategoriesOfRestaurant(long restaurantId) {
+    public List<Category> getAllCategoriesOfRestaurant(final long restaurantId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId);
         if (restaurant == null) {
             throw new ResourceNotFoundException(Constants.NO_RESTAURANTS);
@@ -140,7 +140,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @throws ResourceAlreadyExistsException if the updated category name already exists for the restaurant
      */
     @Override
-    public String updateCategory(long categoryId, UpdateCategoryDTO updateCategoryDTO) {
+    public String updateCategory(final long categoryId, final UpdateCategoryDTO updateCategoryDTO) {
         try {
             UserOutDTO user = userClient.getUserById(updateCategoryDTO.getUserId()).getBody();
             String categoryToBeAdded = updateCategoryDTO.getName().toUpperCase();
@@ -193,7 +193,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @throws ResourceNotValidException if the user does not have the correct role or cannot delete the category
      */
     @Override
-    public String deleteCategory(long userId, long categoryId) {
+    public String deleteCategory(final long userId, final long categoryId) {
         try {
             UserOutDTO user = userClient.getUserById(userId).getBody();
             if (user == null) {

@@ -28,7 +28,7 @@ public class WalletServiceImpl implements WalletService {
      * @throws ResourceNotFoundException if no wallet is found for the specified user ID
      */
     @Override
-    public Wallet findByUserId(long userId) {
+    public Wallet findByUserId(final long userId) {
         Wallet wallet = walletRepository.findByUserId(userId);
         if (wallet == null) {
             throw new ResourceNotFoundException("User not present");
@@ -46,7 +46,7 @@ public class WalletServiceImpl implements WalletService {
      * @throws RuntimeException if an unexpected error occurs while saving the wallet
      */
     @Override
-    public String updateWallet(long userId, double amount) {
+    public String updateWallet(final long userId, final double amount) {
         Wallet wallet = walletRepository.findByUserId(userId);
         if (wallet == null) {
             throw new ResourceNotFoundException("User not present");
@@ -69,7 +69,7 @@ public class WalletServiceImpl implements WalletService {
      * @throws ResourceNotFoundException if no wallet is found for the specified user ID
      */
     @Override
-    public String rechargeWallet(long userId, double amount) {
+    public String rechargeWallet(final long userId, final double amount) {
         Wallet wallet = walletRepository.findByUserId(userId);
         if (wallet == null) {
             throw new ResourceNotFoundException("No User Present");

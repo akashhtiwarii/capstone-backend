@@ -99,14 +99,20 @@ public class RestaurantServiceImplTest {
     public void testSaveSuccess() throws IOException {
         UserOutDTO user = new UserOutDTO();
         user.setRole(Role.OWNER);
+        user.setUserId(1L);
+        user.setName("name");
+        user.setEmail("email@gmail.com");
         when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(user));
         when(restaurantRepository.findByEmail(anyString())).thenReturn(null);
         when(restaurantRepository.save(any())).thenReturn(new Restaurant());
-        when(image.getBytes()).thenReturn(new byte[]{});
+        when(image.getBytes()).thenReturn(new byte[]{0,1,2,3});
 
         RestaurantInDTO restaurantInDTO = new RestaurantInDTO();
         restaurantInDTO.setOwnerId(1L);
         restaurantInDTO.setEmail("test@example.com");
+        restaurantInDTO.setPhone("9876654321");
+        restaurantInDTO.setName("name");
+        restaurantInDTO.setAddress("Address");
 
         String result = restaurantService.save(restaurantInDTO, image);
         assertEquals(Constants.RESTAURANT_ADDED_SUCCESSFULLY, result);

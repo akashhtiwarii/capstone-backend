@@ -80,7 +80,7 @@ public class Address {
      * @return true if this address is equal to the specified object, false otherwise
      */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -114,6 +114,6 @@ public class Address {
      */
     @Override
     public String toString() {
-        return (address + ", " + city + ", " + state + ", " + pincode);
+        return address + ", " + city + ", " + state + ", " + pincode;
     }
 }

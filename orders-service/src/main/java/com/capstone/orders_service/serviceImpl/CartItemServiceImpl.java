@@ -57,10 +57,13 @@ public class CartItemServiceImpl implements CartItemService {
      * @throws RestaurantConflictException if the user tries to add items from different restaurants
      */
     @Override
-    public String addToCart(AddToCartInDTO addToCartInDTO) {
+    public String addToCart(final AddToCartInDTO addToCartInDTO) {
         CartItem cartItem = CartConverter.addToCartInDTOToCartEntity(addToCartInDTO);
         try {
             UserOutDTO user = usersFeignClient.getUserById(addToCartInDTO.getUserId()).getBody();
+            if (user == null) {
+                throw new ResourceNotFoundException("User Not Found");
+            }
         } catch (FeignException.NotFound e) {
             throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
         } catch (FeignException e) {
@@ -116,7 +119,7 @@ public class CartItemServiceImpl implements CartItemService {
      * @throws ResourceNotFoundException if the cart item is not found
      */
     @Override
-    public String deleteCartItem(long cartItemId) {
+    public String deleteCartItem(final long cartItemId) {
         CartItem cartItem = cartItemRepository.findById(cartItemId);
         if (cartItem == null) {
             throw new ResourceNotFoundException(Constants.CART_ITEM_NOT_FOUND);
@@ -133,7 +136,7 @@ public class CartItemServiceImpl implements CartItemService {
      * @throws ResourceNotFoundException if no items are found in the cart
      */
     @Override
-    public List<CartItemOutDTO> getCartItems(long userId) {
+    public List<CartItemOutDTO> getCartItems(final long userId) {
         List<CartItem> cartItems = cartItemRepository.findByUserId(userId);
         if (cartItems.isEmpty()) {
             throw new ResourceNotFoundException(Constants.CART_ITEM_NOT_FOUND);
@@ -171,7 +174,7 @@ public class CartItemServiceImpl implements CartItemService {
      * @throws ResourceNotFoundException if the cart item is not found
      */
     @Override
-    public String updateCartItem(long cartItemId, int index) {
+    public String updateCartItem(final long cartItemId, final int index) {
         CartItem cartItem = cartItemRepository.findById(cartItemId);
         if (cartItem == null) {
             throw new ResourceNotFoundException(Constants.FOOD_ITEM_NOT_FOUND);

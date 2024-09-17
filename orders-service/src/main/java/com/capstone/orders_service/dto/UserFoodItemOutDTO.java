@@ -56,7 +56,7 @@ public class UserFoodItemOutDTO {
      * @return {@code true} if this instance is equal to the specified object; {@code false} otherwise
      */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }

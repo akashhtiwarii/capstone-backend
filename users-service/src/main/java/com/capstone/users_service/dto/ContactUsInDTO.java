@@ -43,7 +43,7 @@ public class ContactUsInDTO {
      * @return {@code true} if the given object is equal to this {@code ContactUsInDTO}; {@code false} otherwise
      */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }

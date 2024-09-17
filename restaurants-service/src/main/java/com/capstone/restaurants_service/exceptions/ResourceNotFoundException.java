@@ -17,7 +17,7 @@ public class ResourceNotFoundException extends RuntimeException {
      * </p>
      * @param message the detail message explaining why the resource was not found
      */
-    public ResourceNotFoundException(String message) {
+    public ResourceNotFoundException(final String message) {
         super(message);
     }
 }

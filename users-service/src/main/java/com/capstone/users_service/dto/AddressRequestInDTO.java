@@ -32,7 +32,7 @@ public class AddressRequestInDTO {
      * @return {@code true} if the objects are equal based on the email field, {@code false} otherwise.
      */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }

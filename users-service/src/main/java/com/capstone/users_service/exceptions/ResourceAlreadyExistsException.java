@@ -13,7 +13,7 @@ public class ResourceAlreadyExistsException extends RuntimeException {
      *
      * @param message the detail message, which is saved for later retrieval by the {@link #getMessage()} method
      */
-    public ResourceAlreadyExistsException(String message) {
+    public ResourceAlreadyExistsException(final String message) {
         super(message);
     }
 }

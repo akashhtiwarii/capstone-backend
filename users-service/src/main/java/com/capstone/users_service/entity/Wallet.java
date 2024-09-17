@@ -59,7 +59,7 @@ public class Wallet {
      * @return true if this wallet is equal to the specified object, false otherwise
      */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }

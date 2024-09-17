@@ -42,7 +42,7 @@ public class AddressServiceImpl implements AddressService {
      * @throws RuntimeException if an unexpected error occurs while saving the address
      */
     @Override
-    public String addAddress(AddressInDTO addressInDTO) {
+    public String addAddress(final AddressInDTO addressInDTO) {
         User user = userRepository.findById(addressInDTO.getUserId());
         if (user == null) {
             throw new ResourceNotFoundException("User not found with ID: " + addressInDTO.getUserId());
@@ -69,7 +69,7 @@ public class AddressServiceImpl implements AddressService {
      * @throws ResourceNotFoundException if no addresses are found for the specified user ID
      */
     @Override
-    public List<Address> getAddressByUserId(long userId) {
+    public List<Address> getAddressByUserId(final long userId) {
         List<Address> addresses = addressRepository.findByUserId(userId);
         if (addresses.isEmpty()) {
             throw new ResourceNotFoundException("Address Not Found");
@@ -85,7 +85,7 @@ public class AddressServiceImpl implements AddressService {
      * @throws ResourceNotFoundException if no address is found with the specified ID
      */
     @Override
-    public Address getAddressById(long addressId) {
+    public Address getAddressById(final long addressId) {
         Address address = addressRepository.findById(addressId);
         if (address == null) {
             throw new ResourceNotFoundException("Address Not Found");
@@ -102,7 +102,7 @@ public class AddressServiceImpl implements AddressService {
      * @throws ResourceNotValidException if the user ID associated with the address does not match the provided user ID
      */
     @Override
-    public String updateAddress(UpdateAddressInDTO updateAddressInDTO) {
+    public String updateAddress(final UpdateAddressInDTO updateAddressInDTO) {
         User user = userRepository.findById(updateAddressInDTO.getUserId());
         if (user == null) {
             throw new ResourceNotFoundException("User Not Found");
@@ -132,7 +132,7 @@ public class AddressServiceImpl implements AddressService {
      * @throws ResourceNotValidException if the user ID associated with the address does not match the provided user ID
      */
     @Override
-    public String deleteAddress(long userId, long addressId) {
+    public String deleteAddress(final long userId, final long addressId) {
         User user = userRepository.findById(userId);
         if (user == null) {
             throw new ResourceNotFoundException("User Not Found");

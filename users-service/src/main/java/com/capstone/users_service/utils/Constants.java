@@ -3,7 +3,14 @@ package com.capstone.users_service.utils;
 /**
  * Constants for storing constants used throughout.
  */
-public class Constants {
+public final class Constants {
+
+    /**
+     * Private Constructor.
+     */
+    private Constants() {
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
     /**
      * Minimum password length.
      */

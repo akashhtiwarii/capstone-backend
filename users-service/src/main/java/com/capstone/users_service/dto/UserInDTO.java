@@ -84,7 +84,7 @@ public class UserInDTO {
      * @return {@code true} if the specified object is equal to this object; {@code false} otherwise.
      */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }

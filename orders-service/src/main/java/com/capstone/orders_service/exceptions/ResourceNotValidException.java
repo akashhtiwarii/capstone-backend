@@ -18,7 +18,7 @@ public class ResourceNotValidException extends RuntimeException {
      * @param message The detail message explaining the reason for the exception,
      * such as the nature of the validation error.
      */
-    public ResourceNotValidException(String message) {
+    public ResourceNotValidException(final String message) {
         super(message);
     }
 }

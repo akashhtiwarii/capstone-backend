@@ -82,7 +82,7 @@ public class UserController {
      * @return a ResponseEntity containing the registration status message
      */
     @PostMapping(Constants.USER_REGISTER_ENDPOINT)
-    public ResponseEntity<RequestSuccessOutDTO> registerUser(@Valid @RequestBody UserInDTO userInDTO) {
+    public ResponseEntity<RequestSuccessOutDTO> registerUser(@Valid @RequestBody final UserInDTO userInDTO) {
         logger.info("Registering new user: {}", userInDTO.getEmail());
         String message = userService.registerUser(userInDTO);
         logger.info("User registered successfully: {}", userInDTO.getEmail());
@@ -95,7 +95,7 @@ public class UserController {
      * @return a ResponseEntity containing user details or an unauthorized message
      */
     @PostMapping(Constants.USER_LOGIN_ENDPOINT)
-    public ResponseEntity<LoginResponseOutDTO> loginUser(@Valid @RequestBody LoginRequestInDTO loginRequestInDTO) {
+    public ResponseEntity<LoginResponseOutDTO> loginUser(@Valid @RequestBody final LoginRequestInDTO loginRequestInDTO) {
         logger.info("User login attempt: {}", loginRequestInDTO.getEmail());
         LoginResponseOutDTO response = userService.loginUser(loginRequestInDTO);
         if (response.getUserId() == 0) {
@@ -119,7 +119,7 @@ public class UserController {
             @Pattern(
                     regexp = "^[\\w.%+-]+@gmail\\.com$",
                     message = "Valid Email not found"
-            ) @RequestParam String email) {
+            ) @RequestParam final String email) {
         logger.info("Sending Password through email");
         String response = userService.forgotPassword(email);
         logger.info("Sent Password through email");
@@ -132,7 +132,7 @@ public class UserController {
      * @return a ResponseEntity containing user information
      */
     @GetMapping("/id")
-    public ResponseEntity<User> getUserById(@RequestBody GetUserInfoInDTO getUserInfoInDTO) {
+    public ResponseEntity<User> getUserById(@RequestBody final GetUserInfoInDTO getUserInfoInDTO) {
         logger.info("Fetching user info..{}", getUserInfoInDTO.getUserId());
         User user = userService.getById(getUserInfoInDTO);
         logger.info("Fetched user info..{}", getUserInfoInDTO.getUserId());
@@ -145,7 +145,7 @@ public class UserController {
      * @return a ResponseEntity containing user profile information
      */
     @GetMapping("/profile")
-    public ResponseEntity<ProfileOutDTO> getUserProfile(@RequestParam long userId) {
+    public ResponseEntity<ProfileOutDTO> getUserProfile(@RequestParam final long userId) {
         logger.info("Fetching user info..{}", userId);
         ProfileOutDTO profileOutDTO = userService.getProfileInfo(userId);
         logger.info("Fetched user info..{}", userId);
@@ -160,8 +160,8 @@ public class UserController {
      */
     @PutMapping("/profile/update")
     public ResponseEntity<RequestSuccessOutDTO> updateUserProfile(
-            @RequestParam @Min(value = 1, message = "Valid User ID required") long userId,
-            @Valid @RequestBody UpdateProfileInDTO updateProfileInDTO
+            @RequestParam @Min(value = 1, message = "Valid User ID required") final long userId,
+            @Valid @RequestBody final UpdateProfileInDTO updateProfileInDTO
     ) {
         logger.info("Updating user info..{}", userId);
         String message = userService.updateUserProfile(userId, updateProfileInDTO);
@@ -175,7 +175,7 @@ public class UserController {
      * @return a ResponseEntity containing user information
      */
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserByIdentity(@PathVariable("id") long userId) {
+    public ResponseEntity<User> getUserByIdentity(@PathVariable("id") final long userId) {
         logger.info("Fetching user info..{}", userId);
         User user = userService.getByIdentity(userId);
         logger.info("Fetched user info..{}", userId);
@@ -188,7 +188,7 @@ public class UserController {
      * @return a ResponseEntity containing the add address status message
      */
     @PostMapping(Constants.USER_ADD_ADDRESS_ENDPOINT)
-    public ResponseEntity<RequestSuccessOutDTO> addAddress(@Valid @RequestBody AddressInDTO addressInDTO) {
+    public ResponseEntity<RequestSuccessOutDTO> addAddress(@Valid @RequestBody final AddressInDTO addressInDTO) {
         logger.info("Adding new address for User ID: {}", addressInDTO.getUserId());
         String message = addressService.addAddress(addressInDTO);
         logger.info("Address added successfully for User ID: {}", addressInDTO.getUserId());
@@ -201,7 +201,7 @@ public class UserController {
      * @return a ResponseEntity containing the address information
      */
     @GetMapping("/address/id")
-    public ResponseEntity<Address> getAddressById(@RequestParam long addressId) {
+    public ResponseEntity<Address> getAddressById(@RequestParam final long addressId) {
         logger.info("Fetching address for address ID: {}", addressId);
         Address response = addressService.getAddressById(addressId);
         logger.info("Fetched address for address ID: {}", addressId);
@@ -214,7 +214,7 @@ public class UserController {
      * @return a ResponseEntity containing the list of addresses
      */
     @GetMapping("/address")
-    public ResponseEntity<List<Address>> getAddressByUserId(@RequestParam long userId) {
+    public ResponseEntity<List<Address>> getAddressByUserId(@RequestParam final long userId) {
         logger.info("Fetching address for user ID: {}", userId);
         List<Address> response = addressService.getAddressByUserId(userId);
         logger.info("Fetched address for user ID: {}", userId);
@@ -229,8 +229,8 @@ public class UserController {
      */
     @DeleteMapping("/address/delete")
     public ResponseEntity<RequestSuccessOutDTO> deleteAddress(
-            @RequestParam @Min(value = 1, message = "Valid User ID required") long userId,
-            @RequestParam @Min(value = 1, message = "Valid Address ID required") long addressId
+            @RequestParam @Min(value = 1, message = "Valid User ID required") final long userId,
+            @RequestParam @Min(value = 1, message = "Valid Address ID required") final long addressId
     ) {
         logger.info("Deleting address for user ID: {}", userId);
         String response = addressService.deleteAddress(userId, addressId);
@@ -245,7 +245,7 @@ public class UserController {
      */
     @PutMapping("address/update")
     public ResponseEntity<RequestSuccessOutDTO> updateAddress(
-            @Valid @RequestBody UpdateAddressInDTO updateAddressInDTO
+            @Valid @RequestBody final UpdateAddressInDTO updateAddressInDTO
     ) {
         logger.info("Updating address for user ID: {}", updateAddressInDTO.getUserId());
         String response = addressService.updateAddress(updateAddressInDTO);
@@ -259,7 +259,7 @@ public class UserController {
      * @return a ResponseEntity containing the wallet information
      */
     @GetMapping("/wallet")
-    public ResponseEntity<Wallet> findUserWallet(@RequestParam long userId) {
+    public ResponseEntity<Wallet> findUserWallet(@RequestParam final long userId) {
         logger.info("Fetching wallet for userId: {}", userId);
         Wallet wallet = walletService.findByUserId(userId);
         logger.info("Fetched wallet for userId: {}", userId);
@@ -274,8 +274,8 @@ public class UserController {
      */
     @PutMapping("/wallet/update")
     public ResponseEntity<RequestSuccessOutDTO> updateUserWallet(
-            @RequestParam @Min(value = 1, message = "Valid User ID required") long userId,
-            @RequestParam @PositiveOrZero(message = "Valid amount required") double amount
+            @RequestParam @Min(value = 1, message = "Valid User ID required") final long userId,
+            @RequestParam @PositiveOrZero(message = "Valid amount required") final double amount
     ) {
         logger.info("Updating Wallet for UserID : {}", userId);
         String message = walletService.updateWallet(userId, amount);
@@ -291,8 +291,8 @@ public class UserController {
      */
     @PutMapping("/wallet/recharge")
     public ResponseEntity<RequestSuccessOutDTO> rechargeWallet(
-            @RequestParam @Min(value = 1, message = "Valid User ID required") long userId,
-            @RequestParam @Positive(message = "Valid Amount required") double amount
+            @RequestParam @Min(value = 1, message = "Valid User ID required") final long userId,
+            @RequestParam @Positive(message = "Valid Amount required") final double amount
     ) {
         logger.info("Recharging Wallet for UserID : {}", userId);
         String message = walletService.rechargeWallet(userId, amount);
@@ -306,7 +306,7 @@ public class UserController {
      * @return a RequestSuccessOutDTO containing the status message
      */
     @PostMapping("/contact-us")
-    public RequestSuccessOutDTO contactUs(@RequestBody ContactUsInDTO contactUsDTO) {
+    public RequestSuccessOutDTO contactUs(@RequestBody final ContactUsInDTO contactUsDTO) {
         logger.info("Sending Mail to restaurant : {}", contactUsDTO.getRestaurantEmail());
         String message = userService.contactUs(contactUsDTO);
         logger.info("Sent Mail to restaurant : {}", contactUsDTO.getRestaurantEmail());

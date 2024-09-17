@@ -83,7 +83,7 @@ public class OrderServiceImpl implements OrderService {
      * @throws ResourceNotValidException   if the user does not own the restaurant
      */
     @Override
-    public List<OrderOutDTO> getOrders(long loggedInUserId, long restaurantId) {
+    public List<OrderOutDTO> getOrders(final long loggedInUserId, final long restaurantId) {
         try {
             UserOutDTO user = usersFeignClient.getUserById(loggedInUserId).getBody();
             RestaurantOutDTO restaurant = restaurantFeignClient.getRestaurantById(restaurantId).getBody();
@@ -117,7 +117,7 @@ public class OrderServiceImpl implements OrderService {
      * @throws InsufficientAmountException if the user's wallet does not have enough funds for the order
      */
     @Override
-    public String addOrder(long userId, long addressId) {
+    public String addOrder(final long userId, final long addressId) {
         UserOutDTO user;
         AddressOutDTO addressOutDTO;
         WalletOutDTO wallet;
@@ -149,7 +149,7 @@ public class OrderServiceImpl implements OrderService {
                 throw new InsufficientAmountException(Constants.INSUFFICIENT_WALLET_AMOUNT);
             }
             double updatedAmount = wallet.getAmount() - price;
-            String message = usersFeignClient.updateUserWallet(userId, updatedAmount).getBody();
+            usersFeignClient.updateUserWallet(user.getUserId(), updatedAmount).getBody();
         } catch (FeignException.NotFound e) {
             throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
         } catch (FeignException e) {
@@ -164,7 +164,6 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(Status.PENDING);
         try {
             Order savedOrder = orderRepository.save(order);
-            List<OrderDetail> orderDetails = new ArrayList<>();
             for (CartItem cartItem : cartItems) {
                 OrderDetail orderDetail = new OrderDetail();
                 orderDetail.setOrderId(savedOrder.getOrderId());
@@ -188,7 +187,7 @@ public class OrderServiceImpl implements OrderService {
      * @throws ResourceNotFoundException if the order is not found
      */
     @Override
-    public String deleteOrder(long orderId) {
+    public String deleteOrder(final long orderId) {
         Order order = orderRepository.findById(orderId);
         if (order == null) {
             throw new ResourceNotFoundException(Constants.ORDER_NOT_FOUND);
@@ -211,14 +210,16 @@ public class OrderServiceImpl implements OrderService {
      * @throws ResourceNotFoundException if the order or restaurant is not found
      */
     @Override
-    public String updateOrder(long userId, long orderId, Status status) {
+    public String updateOrder(final long userId, final long orderId, final Status status) {
         Order order = orderRepository.findById(orderId);
         if (order == null) {
             throw new ResourceNotFoundException(Constants.ORDER_NOT_FOUND);
         }
         try {
             RestaurantOutDTO restaurant = restaurantFeignClient.getRestaurantById(order.getRestaurantId()).getBody();
-            long restaurantId = order.getRestaurantId();
+            if (restaurant == null) {
+                throw new ResourceNotFoundException("Restaurant Not Found");
+            }
         } catch (FeignException.NotFound e) {
             throw new ResourceNotFoundException(Constants.RESTAURANT_NOT_FOUND);
         } catch (FeignException e) {
@@ -237,7 +238,7 @@ public class OrderServiceImpl implements OrderService {
      * @throws ResourceNotFoundException if no orders are found
      */
     @Override
-    public List<RestaurantOrderDetailsOutDTO> getOrderDetails(long restaurantId) {
+    public List<RestaurantOrderDetailsOutDTO> getOrderDetails(final long restaurantId) {
         List<Order> orders = orderRepository.findByRestaurantId(restaurantId);
         String address = "";
         if (orders.isEmpty()) {
@@ -299,7 +300,7 @@ public class OrderServiceImpl implements OrderService {
      * @throws ResourceNotFoundException if no orders are found for the user or if the user does not exist
      */
     @Override
-    public List<UserOrderDetailsOutDTO> getUserOrders(long userId) {
+    public List<UserOrderDetailsOutDTO> getUserOrders(final long userId) {
         try {
             UserOutDTO user = usersFeignClient.getUserById(userId).getBody();
             List<Order> orders = orderRepository.findByUserId(user.getUserId());
@@ -354,7 +355,7 @@ public class OrderServiceImpl implements OrderService {
      * @throws ResourceNotValidException   if the cancellation time exceeds the allowed limit
      */
     @Override
-    public String cancelOrder(long orderId) {
+    public String cancelOrder(final long orderId) {
         Order order = orderRepository.findById(orderId);
         if (order == null) {
             throw new ResourceNotFoundException(Constants.ORDER_NOT_FOUND);
