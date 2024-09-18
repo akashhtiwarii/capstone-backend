@@ -36,10 +36,10 @@ public class CartItemOutDTOTest {
         cartItemOutDTO.setQuantity(quantity);
         assertEquals(quantity, cartItemOutDTO.getQuantity());
 
-        assertEquals(0.0, cartItemOutDTO.getPrice());
-        double price = 10.5;
-        cartItemOutDTO.setPrice(price);
-        assertEquals(price, cartItemOutDTO.getPrice(), 0.001);
+        assertNull(cartItemOutDTO.getPriceQuantity());
+        String priceQuantity = "10 x 3 = 30";
+        cartItemOutDTO.setPriceQuantity("10 x 3 = 30");
+        assertEquals(priceQuantity, cartItemOutDTO.getPriceQuantity());
     }
 
     @Test
@@ -49,40 +49,40 @@ public class CartItemOutDTOTest {
         String restaurantName = "Restaurant A";
         String foodName = "Food Item";
         int quantity = 3;
-        double price = 10.5;
+        String priceQuantity = "10 x 1 = 10";
 
-        CartItemOutDTO cartItemOutDTO1 = buildCartItemOutDTO(cartItemId, userId, restaurantName, foodName, quantity, price);
+        CartItemOutDTO cartItemOutDTO1 = buildCartItemOutDTO(cartItemId, userId, restaurantName, foodName, quantity, priceQuantity);
 
         assertEquals(cartItemOutDTO1, cartItemOutDTO1);
         assertEquals(cartItemOutDTO1.hashCode(), cartItemOutDTO1.hashCode());
 
         assertNotEquals(cartItemOutDTO1, new Object());
 
-        CartItemOutDTO cartItemOutDTO2 = buildCartItemOutDTO(cartItemId, userId, restaurantName, foodName, quantity, price);
+        CartItemOutDTO cartItemOutDTO2 = buildCartItemOutDTO(cartItemId, userId, restaurantName, foodName, quantity, priceQuantity);
         assertEquals(cartItemOutDTO1, cartItemOutDTO2);
         assertEquals(cartItemOutDTO1.hashCode(), cartItemOutDTO2.hashCode());
 
-        cartItemOutDTO2 = buildCartItemOutDTO(cartItemId + 1, userId, restaurantName, foodName, quantity, price);
+        cartItemOutDTO2 = buildCartItemOutDTO(cartItemId + 1, userId, restaurantName, foodName, quantity, priceQuantity);
         assertNotEquals(cartItemOutDTO1, cartItemOutDTO2);
         assertNotEquals(cartItemOutDTO1.hashCode(), cartItemOutDTO2.hashCode());
 
-        cartItemOutDTO2 = buildCartItemOutDTO(cartItemId, userId + 1, restaurantName, foodName, quantity, price);
+        cartItemOutDTO2 = buildCartItemOutDTO(cartItemId, userId + 1, restaurantName, foodName, quantity, priceQuantity);
         assertNotEquals(cartItemOutDTO1, cartItemOutDTO2);
         assertNotEquals(cartItemOutDTO1.hashCode(), cartItemOutDTO2.hashCode());
 
-        cartItemOutDTO2 = buildCartItemOutDTO(cartItemId, userId, "Restaurant B", foodName, quantity, price);
+        cartItemOutDTO2 = buildCartItemOutDTO(cartItemId, userId, "Restaurant B", foodName, quantity, priceQuantity);
         assertNotEquals(cartItemOutDTO1, cartItemOutDTO2);
         assertNotEquals(cartItemOutDTO1.hashCode(), cartItemOutDTO2.hashCode());
 
-        cartItemOutDTO2 = buildCartItemOutDTO(cartItemId, userId, restaurantName, "Food Item B", quantity, price);
+        cartItemOutDTO2 = buildCartItemOutDTO(cartItemId, userId, restaurantName, "Food Item B", quantity, priceQuantity);
         assertNotEquals(cartItemOutDTO1, cartItemOutDTO2);
         assertNotEquals(cartItemOutDTO1.hashCode(), cartItemOutDTO2.hashCode());
 
-        cartItemOutDTO2 = buildCartItemOutDTO(cartItemId, userId, restaurantName, foodName, quantity + 1, price);
+        cartItemOutDTO2 = buildCartItemOutDTO(cartItemId, userId, restaurantName, foodName, quantity + 1, priceQuantity);
         assertNotEquals(cartItemOutDTO1, cartItemOutDTO2);
         assertNotEquals(cartItemOutDTO1.hashCode(), cartItemOutDTO2.hashCode());
 
-        cartItemOutDTO2 = buildCartItemOutDTO(cartItemId, userId, restaurantName, foodName, quantity, price + 1.0);
+        cartItemOutDTO2 = buildCartItemOutDTO(cartItemId, userId, restaurantName, foodName, quantity, priceQuantity + 1.0);
         assertNotEquals(cartItemOutDTO1, cartItemOutDTO2);
         assertNotEquals(cartItemOutDTO1.hashCode(), cartItemOutDTO2.hashCode());
 
@@ -92,7 +92,7 @@ public class CartItemOutDTOTest {
         assertEquals(cartItemOutDTO1.hashCode(), cartItemOutDTO2.hashCode());
     }
 
-    private CartItemOutDTO buildCartItemOutDTO(long cartItemId, long userId, String restaurantName, String foodName, int quantity, double price) {
+    private CartItemOutDTO buildCartItemOutDTO(long cartItemId, long userId, String restaurantName, String foodName, int quantity, String priceQuantity) {
         CartItemOutDTO cartItemOutDTO = new CartItemOutDTO();
 
         cartItemOutDTO.setCartItemId(cartItemId);
@@ -100,7 +100,7 @@ public class CartItemOutDTOTest {
         cartItemOutDTO.setRestaurantName(restaurantName);
         cartItemOutDTO.setFoodName(foodName);
         cartItemOutDTO.setQuantity(quantity);
-        cartItemOutDTO.setPrice(price);
+        cartItemOutDTO.setPriceQuantity(priceQuantity);
 
         return cartItemOutDTO;
     }

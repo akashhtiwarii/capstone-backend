@@ -288,7 +288,7 @@ public class OrderServiceImpl implements OrderService {
                         }
                         orderDetailOutDTO.setFoodName(foodItemOutDTO.getName());
                         orderDetailOutDTO.setQuantity(orderDetail.getQuantity());
-                        orderDetailOutDTO.setPrice(orderDetail.getPrice());
+                        orderDetailOutDTO.setPrice(orderDetail.getPrice() * orderDetail.getQuantity());
                     } catch (FeignException.NotFound e) {
                         throw new ResourceNotFoundException(Constants.FOOD_ITEM_NOT_FOUND);
                     } catch (FeignException e) {
