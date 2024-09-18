@@ -62,12 +62,15 @@ public class OrderControllerTest {
     @Test
     void testGetMyCart() {
         List<CartItemOutDTO> cartItems = Collections.singletonList(new CartItemOutDTO());
-        when(cartItemService.getCartItems(anyLong())).thenReturn(cartItems);
+        CartItemsListOutDTO cartItemsListOutDTO = new CartItemsListOutDTO();
+        cartItemsListOutDTO.setCartItemOutDTOList(cartItems);
+        cartItemsListOutDTO.setTotalAmount(100.0);
+        when(cartItemService.getCartItems(anyLong())).thenReturn(cartItemsListOutDTO);
 
-        ResponseEntity<List<CartItemOutDTO>> response = orderController.getMyCart(1L);
+        ResponseEntity<CartItemsListOutDTO> response = orderController.getMyCart(1L);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(cartItems, response.getBody());
+        assertEquals(cartItemsListOutDTO, response.getBody());
     }
 
     @Test

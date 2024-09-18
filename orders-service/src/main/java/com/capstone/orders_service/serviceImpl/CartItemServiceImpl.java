@@ -3,6 +3,7 @@ package com.capstone.orders_service.serviceImpl;
 import com.capstone.orders_service.converters.CartConverter;
 import com.capstone.orders_service.dto.AddToCartInDTO;
 import com.capstone.orders_service.dto.CartItemOutDTO;
+import com.capstone.orders_service.dto.CartItemsListOutDTO;
 import com.capstone.orders_service.dto.FoodItemOutDTO;
 import com.capstone.orders_service.dto.RestaurantOutDTO;
 import com.capstone.orders_service.dto.UserOutDTO;
@@ -142,12 +143,13 @@ public class CartItemServiceImpl implements CartItemService {
      * @throws ResourceNotFoundException if no items are found in the cart
      */
     @Override
-    public List<CartItemOutDTO> getCartItems(final long userId) {
+    public CartItemsListOutDTO getCartItems(final long userId) {
         List<CartItem> cartItems = cartItemRepository.findByUserId(userId);
         if (cartItems.isEmpty()) {
             throw new ResourceNotFoundException(Constants.CART_ITEM_NOT_FOUND);
         }
         List<CartItemOutDTO> cartItemOutDTOS = new ArrayList<>();
+        double totalAmount = 0.0;
         for (CartItem cartItem: cartItems) {
             try {
                 FoodItemOutDTO foodItemOutDTO = restaurantFeignClient.getFoodItemById(cartItem.getFoodId()).getBody();
@@ -166,7 +168,11 @@ public class CartItemServiceImpl implements CartItemService {
                 cartItemOutDTO.setFoodName(foodItemOutDTO.getName());
                 cartItemOutDTO.setRestaurantName(restaurant.getName());
                 cartItemOutDTO.setQuantity(cartItem.getQuantity());
-                cartItemOutDTO.setPrice(cartItem.getPrice());
+                cartItemOutDTO.setPriceQuantity(
+                        cartItem.getPrice() + " x " +  cartItem.getQuantity()
+                                + " = " + cartItem.getPrice() * cartItem.getQuantity()
+                );
+                totalAmount += cartItem.getPrice() * cartItem.getQuantity();
                 cartItemOutDTOS.add(cartItemOutDTO);
             } catch (FeignException.NotFound e) {
                 throw new ResourceNotFoundException(Constants.FOOD_ITEM_NOT_FOUND);
@@ -174,7 +180,10 @@ public class CartItemServiceImpl implements CartItemService {
                 throw new RuntimeException(Constants.RESTAURANT_SERVICE_DOWN);
             }
         }
-        return cartItemOutDTOS;
+        CartItemsListOutDTO cartItemsListOutDTO = new CartItemsListOutDTO();
+        cartItemsListOutDTO.setCartItemOutDTOList(cartItemOutDTOS);
+        cartItemsListOutDTO.setTotalAmount(totalAmount);
+        return cartItemsListOutDTO;
     }
 
     /**

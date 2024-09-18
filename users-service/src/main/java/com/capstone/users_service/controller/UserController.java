@@ -307,9 +307,9 @@ public class UserController {
      */
     @PostMapping("/contact-us")
     public RequestSuccessOutDTO contactUs(@RequestBody final ContactUsInDTO contactUsDTO) {
-        logger.info("Sending Mail to restaurant : {}", contactUsDTO.getRestaurantEmail());
+        logger.info("Sending Mail to Support");
         String message = userService.contactUs(contactUsDTO);
-        logger.info("Sent Mail to restaurant : {}", contactUsDTO.getRestaurantEmail());
+        logger.info("Sent Mail to Support");
         return new RequestSuccessOutDTO(message);
     }
 }

@@ -2,7 +2,7 @@ package com.capstone.orders_service.controller;
 
 import com.capstone.orders_service.Enum.Status;
 import com.capstone.orders_service.dto.AddToCartInDTO;
-import com.capstone.orders_service.dto.CartItemOutDTO;
+import com.capstone.orders_service.dto.CartItemsListOutDTO;
 import com.capstone.orders_service.dto.OrderOutDTO;
 import com.capstone.orders_service.dto.RequestSuccessOutDTO;
 import com.capstone.orders_service.dto.RestaurantOrderDetailsOutDTO;
@@ -96,13 +96,13 @@ public class OrderController {
      * @return A ResponseEntity containing a list of cart items for the specified user.
      */
     @GetMapping(Constants.MY_CART)
-    public ResponseEntity<List<CartItemOutDTO>> getMyCart(
+    public ResponseEntity<CartItemsListOutDTO> getMyCart(
             @RequestParam @Min(value = 1, message = Constants.USER_ID_NOT_VALID) final long userId
     ) {
         logger.info("Fetching Cart for user : {}", userId);
-        List<CartItemOutDTO> cartItemOutDTOS = cartItemService.getCartItems(userId);
+        CartItemsListOutDTO cartItemsListOutDTO = cartItemService.getCartItems(userId);
         logger.info("Fetched Cart for user : {}", userId);
-        return ResponseEntity.status(HttpStatus.OK).body(cartItemOutDTOS);
+        return ResponseEntity.status(HttpStatus.OK).body(cartItemsListOutDTO);
     }
 
     /**

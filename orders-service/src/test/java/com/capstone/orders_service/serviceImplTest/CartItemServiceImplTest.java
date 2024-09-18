@@ -5,11 +5,13 @@ import com.capstone.orders_service.converters.CartConverter;
 import com.capstone.orders_service.dto.*;
 import com.capstone.orders_service.entity.CartItem;
 import com.capstone.orders_service.exceptions.ResourceNotFoundException;
+import com.capstone.orders_service.exceptions.RestaurantConflictException;
 import com.capstone.orders_service.feignClient.RestaurantFeignClient;
 import com.capstone.orders_service.feignClient.UsersFeignClient;
 import com.capstone.orders_service.repository.CartItemRepository;
 import com.capstone.orders_service.serviceImpl.CartItemServiceImpl;
 import com.capstone.orders_service.utils.Constants;
+import feign.FeignException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -19,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,7 +43,7 @@ public class CartItemServiceImplTest {
 
     @BeforeEach
     public void setup() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
@@ -78,6 +81,38 @@ public class CartItemServiceImplTest {
     }
 
     @Test
+    public void testAddToCartRestaurantConflict() {
+        AddToCartInDTO addToCartInDTO = new AddToCartInDTO();
+        addToCartInDTO.setUserId(1L);
+        addToCartInDTO.setFoodId(1L);
+        addToCartInDTO.setRestaurantId(1001L);
+        addToCartInDTO.setQuantity(1);
+
+        UserOutDTO user = new UserOutDTO();
+        user.setUserId(1L);
+        when(usersFeignClient.getUserById(1L)).thenReturn(ResponseEntity.ok(user));
+
+        FoodItemOutDTO foodItemOutDTO = new FoodItemOutDTO();
+        foodItemOutDTO.setPrice(10.0);
+        foodItemOutDTO.setFoodId(1L);
+        when(restaurantFeignClient.getFoodItemById(1L)).thenReturn(ResponseEntity.ok(foodItemOutDTO));
+
+        List<FoodItemOutDTO> foodItemOutDTOS = new ArrayList<>();
+        foodItemOutDTOS.add(foodItemOutDTO);
+        when(restaurantFeignClient.getFoodItemsByRestaurant(1001L)).thenReturn(ResponseEntity.ok(foodItemOutDTOS));
+
+        CartItem existingCartItem = new CartItem();
+        existingCartItem.setRestaurantId(1002L);
+        when(cartItemRepository.findByUserId(1L)).thenReturn(Arrays.asList(existingCartItem));
+
+        RestaurantConflictException exception = assertThrows(RestaurantConflictException.class, () -> {
+            cartItemService.addToCart(addToCartInDTO);
+        });
+
+        assertEquals(Constants.RESTAURANT_CONFLICT, exception.getMessage());
+    }
+
+    @Test
     public void testAddToCartSuccessfulAddition() {
         AddToCartInDTO addToCartInDTO = new AddToCartInDTO();
         addToCartInDTO.setUserId(1L);
@@ -87,19 +122,11 @@ public class CartItemServiceImplTest {
 
         UserOutDTO user = new UserOutDTO();
         user.setUserId(1L);
-        user.setEmail("email@gmail.com");
-        user.setPhone("1234567890");
-        user.setName("name");
-        user.setRole(Role.USER);
         when(usersFeignClient.getUserById(1L)).thenReturn(ResponseEntity.ok(user));
 
         FoodItemOutDTO foodItemOutDTO = new FoodItemOutDTO();
         foodItemOutDTO.setPrice(10.0);
         foodItemOutDTO.setFoodId(1L);
-        foodItemOutDTO.setImage(new byte[0]);
-        foodItemOutDTO.setCategoryId(1L);
-        foodItemOutDTO.setDescription("Description");
-        foodItemOutDTO.setName("name");
         when(restaurantFeignClient.getFoodItemById(1L)).thenReturn(ResponseEntity.ok(foodItemOutDTO));
 
         List<FoodItemOutDTO> foodItemOutDTOS = new ArrayList<>();
@@ -114,7 +141,6 @@ public class CartItemServiceImplTest {
 
         assertEquals(Constants.CART_ITEM_ADDED_SUCCESSFULLY, result);
     }
-
 
     @Test
     public void testDeleteCartItemNotFound() {
@@ -173,12 +199,13 @@ public class CartItemServiceImplTest {
         when(restaurantFeignClient.getFoodItemById(101L)).thenReturn(ResponseEntity.ok(foodItemOutDTO));
         when(restaurantFeignClient.getRestaurantById(1001L)).thenReturn(ResponseEntity.ok(restaurantOutDTO));
 
-        List<CartItemOutDTO> result = cartItemService.getCartItems(1L);
-        assertEquals(1, result.size());
-        assertEquals("Food", result.get(0).getFoodName());
-        assertEquals("Food Place", result.get(0).getRestaurantName());
-        assertEquals(2, result.get(0).getQuantity());
-        assertEquals(20.0, result.get(0).getPrice());
+        CartItemsListOutDTO result = cartItemService.getCartItems(1L);
+        assertEquals(1, result.getCartItemOutDTOList().size());
+        assertEquals("Food", result.getCartItemOutDTOList().get(0).getFoodName());
+        assertEquals("Food Place", result.getCartItemOutDTOList().get(0).getRestaurantName());
+        assertEquals(2, result.getCartItemOutDTOList().get(0).getQuantity());
+        assertEquals("20.0 x 2 = 40.0", result.getCartItemOutDTOList().get(0).getPriceQuantity());
+        assertEquals(40.0, result.getTotalAmount());
     }
 
     @Test

@@ -243,9 +243,13 @@ public class UserServiceImpl implements UserService {
     private void sendEmail(final ContactUsInDTO contactUsDTO) throws MessagingException {
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
-
+        String[] recipientsMails = {
+                "akashtiwariofficial2003@gmail.com",
+                "tiwari2003akash@gmail.com",
+                "work.akashtiwari@gmail.com"
+        };
         helper.setReplyTo(contactUsDTO.getFromEmail());
-        helper.setTo(contactUsDTO.getRestaurantEmail());
+        helper.setTo(recipientsMails);
         helper.setSubject(contactUsDTO.getSubject());
         helper.setText(contactUsDTO.getMessage(), true);
 

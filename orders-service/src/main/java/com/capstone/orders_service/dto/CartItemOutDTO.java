@@ -41,9 +41,9 @@ public class CartItemOutDTO {
     private int quantity;
 
     /**
-     * The price of the food item in the cart.
+     * The price of the food item with quantity in the cart.
      */
-    private double price;
+    private String priceQuantity;
 
     /**
      * Compares this CartItemOutDTO object to the specified object for equality.
@@ -64,9 +64,9 @@ public class CartItemOutDTO {
         return cartItemId == that.cartItemId
                 && userId == that.userId
                 && quantity == that.quantity
-                && Double.compare(price, that.price) == 0
                 && Objects.equals(restaurantName, that.restaurantName)
-                && Objects.equals(foodName, that.foodName);
+                && Objects.equals(foodName, that.foodName)
+                && Objects.equals(priceQuantity, that.priceQuantity);
     }
 
     /**
@@ -77,6 +77,6 @@ public class CartItemOutDTO {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(cartItemId, userId, restaurantName, foodName, quantity, price);
+        return Objects.hash(cartItemId, userId, restaurantName, foodName, quantity, priceQuantity);
     }
 }

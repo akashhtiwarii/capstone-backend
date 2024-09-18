@@ -1,9 +1,7 @@
 package com.capstone.orders_service.service;
 
 import com.capstone.orders_service.dto.AddToCartInDTO;
-import com.capstone.orders_service.dto.CartItemOutDTO;
-
-import java.util.List;
+import com.capstone.orders_service.dto.CartItemsListOutDTO;
 
 /**
  * Service interface for managing cart items.
@@ -35,9 +33,9 @@ public interface CartItemService {
      * Retrieves all cart items for a specific user.
      *
      * @param userId The unique identifier of the user whose cart items are to be retrieved.
-     * @return A {@link List} of {@link CartItemOutDTO} objects representing the items in the user's cart.
+     * @return A of {@link CartItemsListOutDTO} objects representing the items in the user's cart.
      */
-    List<CartItemOutDTO> getCartItems(long userId);
+    CartItemsListOutDTO getCartItems(long userId);
 
     /**
      * Updates the quantity of a specific item in the cart.

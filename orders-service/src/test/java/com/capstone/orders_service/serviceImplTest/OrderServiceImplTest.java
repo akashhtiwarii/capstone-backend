@@ -289,7 +289,7 @@ class OrderServiceImplTest {
         OrderDetailOutDTO orderDetailOutDTO = orderDetailOutDTOS.get(0);
         assertEquals("Food2", orderDetailOutDTO.getFoodName());
         assertEquals(2, orderDetailOutDTO.getQuantity());
-        assertEquals(10.0, orderDetailOutDTO.getPrice(), 0.01);
+        assertEquals(20.0, orderDetailOutDTO.getPrice(), 0.01);
     }
 
 

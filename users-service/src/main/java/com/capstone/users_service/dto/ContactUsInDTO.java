@@ -10,12 +10,11 @@ import java.util.Objects;
  */
 @Data
 public class ContactUsInDTO {
-
     /**
-     * Email address of the restaurant that will receive the contact message.
-     * This field holds the recipient's email address.
+     * Email address of the sender.
+     * This field specifies the email address from which the contact message is being sent.
      */
-    private String restaurantEmail;
+    private String fromEmail;
 
     /**
      * Subject of the contact message.
@@ -28,12 +27,6 @@ public class ContactUsInDTO {
      * This field contains the main body of the message that the user wants to send to the restaurant.
      */
     private String message;
-
-    /**
-     * Email address of the sender.
-     * This field specifies the email address from which the contact message is being sent.
-     */
-    private String fromEmail;
 
     /**
      * Indicates whether some other object is "equal to" this one.
@@ -51,8 +44,7 @@ public class ContactUsInDTO {
             return false;
         }
         ContactUsInDTO that = (ContactUsInDTO) o;
-        return Objects.equals(restaurantEmail, that.restaurantEmail)
-                && Objects.equals(subject, that.subject)
+        return Objects.equals(subject, that.subject)
                 && Objects.equals(message, that.message)
                 && Objects.equals(fromEmail, that.fromEmail);
     }
@@ -65,6 +57,6 @@ public class ContactUsInDTO {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(restaurantEmail, subject, message, fromEmail);
+        return Objects.hash(subject, message, fromEmail);
     }
 }
