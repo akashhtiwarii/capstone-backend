@@ -42,15 +42,20 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> handleTypeMismatchException(final MethodArgumentTypeMismatchException ex) {
-        if (ex.getRequiredType() != null && ex.getRequiredType().isEnum()) {
+        Class<?> requiredType = ex.getRequiredType();
+
+        if (requiredType != null && requiredType.isEnum()) {
             String message = "Invalid status value. Allowed values are: PENDING, ONGOING, COMPLETED";
             ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), message);
             return ResponseEntity.badRequest().body(errorResponse);
         }
+
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(), "Invalid Data Provided");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
+
+
 
     /**
      * Handles {@link InsufficientAmountException} exceptions.

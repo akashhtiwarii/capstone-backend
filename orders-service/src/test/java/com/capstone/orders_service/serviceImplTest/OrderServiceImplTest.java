@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
@@ -186,13 +187,28 @@ class OrderServiceImplTest {
     void testCancelOrderSuccess() {
         Order order = new Order();
         order.setOrderTime(LocalDateTime.now().minusSeconds(20));
+        order.setUserId(1L);
+        order.setPrice(100.0);
+        order.setStatus(Status.ONGOING);
+
         when(orderRepository.findById(1L)).thenReturn(order);
+
+        WalletOutDTO wallet = new WalletOutDTO();
+        wallet.setAmount(200.0);
+        when(usersFeignClient.getUserWallet(order.getUserId())).thenReturn(ResponseEntity.ok(wallet));
+
+        when(usersFeignClient.updateUserWallet(order.getUserId(), wallet.getAmount() + order.getPrice())).thenReturn(ResponseEntity.status(HttpStatus.OK).body("Wallet Update"));
 
         String result = orderService.cancelOrder(1L);
 
         assertEquals(Constants.ORDER_CANCELLED_SUCCESSFULLY, result);
         assertEquals(Status.CANCELLED, order.getStatus());
+
+        verify(orderRepository).save(order);
+        verify(usersFeignClient).getUserWallet(order.getUserId());
+        verify(usersFeignClient).updateUserWallet(order.getUserId(), wallet.getAmount() + order.getPrice());
     }
+
 
     @Test
     void testCancelOrderTimeExceededThrowsException() {
@@ -210,46 +226,72 @@ class OrderServiceImplTest {
     void testGetOrderDetailsSuccess() {
         long restaurantId = 1L;
 
-
         Order order = new Order();
         order.setOrderId(1L);
         order.setUserId(1L);
+        order.setAddressId(1L);
+        order.setPrice(100.0);
+        order.setOrderTime(LocalDateTime.now());
+        order.setRestaurantId(1L);
         order.setStatus(Status.PENDING);
 
         List<Order> orders = Collections.singletonList(order);
         when(orderRepository.findByRestaurantId(restaurantId)).thenReturn(orders);
 
-
         UserOutDTO user = new UserOutDTO();
         user.setName("name");
+        user.setUserId(1L);
         when(usersFeignClient.getUserById(1L)).thenReturn(ResponseEntity.ok(user));
 
         OrderDetail orderDetail = new OrderDetail();
         orderDetail.setFoodId(1L);
         orderDetail.setQuantity(2);
-        orderDetail.setPrice(5.0);
+        orderDetail.setPrice(10.0);
+        orderDetail.setOrderDetailId(1L);
+        orderDetail.setOrderId(1L);
 
         List<OrderDetail> orderDetails = Collections.singletonList(orderDetail);
         when(orderDetailRepository.findByOrderId(1L)).thenReturn(orderDetails);
 
         FoodItemOutDTO foodItem = new FoodItemOutDTO();
-        foodItem.setName("Food");
+        foodItem.setName("Food2");
+        foodItem.setFoodId(1L);
+        foodItem.setImage(new byte[0]);
+        foodItem.setDescription("Description");
+        foodItem.setCategoryId(1L);
+        foodItem.setPrice(100.0);
         when(restaurantFeignClient.getFoodItemById(1L)).thenReturn(ResponseEntity.ok(foodItem));
 
-
-        List<AddressOutDTO> addressOutDTOList = new ArrayList<>();
         AddressOutDTO address = new AddressOutDTO();
         address.setAddressId(1L);
-        addressOutDTOList.add(address);
-        when(usersFeignClient.getAddressByUserId(1L)).thenReturn(ResponseEntity.ok(addressOutDTOList));
+        address.setUserId(1L);
+        address.setAddress("address");
+        address.setState("state");
+        address.setCity("city");
+        address.setPincode("123456");
+        when(usersFeignClient.getAddressById(1L)).thenReturn(ResponseEntity.ok(address));
 
         List<RestaurantOrderDetailsOutDTO> result = orderService.getOrderDetails(restaurantId);
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals("name", result.get(0).getUserName());
-        assertEquals(1L, result.get(0).getOrderId());
+
+        RestaurantOrderDetailsOutDTO orderDetailsOutDTO = result.get(0);
+        assertEquals(1L, orderDetailsOutDTO.getOrderId());
+        assertEquals("name", orderDetailsOutDTO.getUserName());
+        assertEquals("address, city, state, 123456", orderDetailsOutDTO.getAddress());
+        assertEquals(Status.PENDING, orderDetailsOutDTO.getStatus());
+
+        List<OrderDetailOutDTO> orderDetailOutDTOS = orderDetailsOutDTO.getOrderDetailOutDTOS();
+        assertNotNull(orderDetailOutDTOS);
+        assertEquals(1, orderDetailOutDTOS.size());
+
+        OrderDetailOutDTO orderDetailOutDTO = orderDetailOutDTOS.get(0);
+        assertEquals("Food2", orderDetailOutDTO.getFoodName());
+        assertEquals(2, orderDetailOutDTO.getQuantity());
+        assertEquals(10.0, orderDetailOutDTO.getPrice(), 0.01);
     }
+
 
     @Test
     void testGetOrderDetailsNoOrders() {

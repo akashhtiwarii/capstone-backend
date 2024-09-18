@@ -1,6 +1,7 @@
 package com.capstone.orders_service.dto;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -13,6 +14,7 @@ import java.util.Objects;
  * </p>
  */
 @Data
+@NoArgsConstructor
 public class FoodItemOutDTO {
 
     /**
@@ -62,6 +64,62 @@ public class FoodItemOutDTO {
      * </p>
      */
     private byte[] image;
+
+    /**
+     * Constructs a new {@code FoodItemOutDTO} with the specified values.
+     * <p>
+     * This constructor initializes the fields of the {@code FoodItemOutDTO} with the provided values.
+     * A new array is created from the given image array to ensure that the internal state is not affected by
+     * external modifications.
+     * </p>
+     *
+     * @param foodId      the unique identifier for the food item
+     * @param categoryId  the unique identifier for the category
+     * @param name        the name of the food item
+     * @param description a description of the food item
+     * @param price       the price of the food item
+     * @param image       the image of the food item; may be {@code null}
+     */
+    public FoodItemOutDTO(
+            final long foodId,
+            final long categoryId,
+            final String name,
+            final String description,
+            final double price,
+            final byte[] image
+    ) {
+        this.foodId = foodId;
+        this.categoryId = categoryId;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.image = image != null ? image.clone() : null;
+    }
+
+    /**
+     * Sets the image of the food item.
+     * <p>
+     * This method sets the image to a new array created from the provided array to protect the internal
+     * state from external modifications.
+     * </p>
+     *
+     * @param image the new image of the food item; may be {@code null}
+     */
+    public void setImage(final byte[] image) {
+        this.image = image != null ? image.clone() : null;
+    }
+
+    /**
+     * Returns a copy of the image byte array of the food item.
+     * <p>
+     * This method returns a new byte array that contains the same data as the internal image array.
+     * </p>
+     *
+     * @return a copy of the image byte array
+     */
+    public byte[] getImage() {
+        return image != null ? image.clone() : null;
+    }
 
     /**
      * Compares this {@code FoodItemOutDTO} instance with another object for equality.

@@ -35,9 +35,9 @@ public final class RestaurantConverters {
         Restaurant restaurant = new Restaurant();
         restaurant.setOwnerId(restaurantInDTO.getOwnerId());
         restaurant.setName(restaurantInDTO.getName().trim());
-        restaurant.setEmail(restaurantInDTO.getEmail());
+        restaurant.setEmail(restaurantInDTO.getEmail().trim().toLowerCase());
         restaurant.setPhone(restaurantInDTO.getPhone());
-        restaurant.setAddress(restaurantInDTO.getAddress());
+        restaurant.setAddress(restaurantInDTO.getAddress().trim());
         return restaurant;
     }
 }

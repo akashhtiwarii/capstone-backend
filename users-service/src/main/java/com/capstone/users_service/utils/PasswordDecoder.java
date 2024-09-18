@@ -1,5 +1,6 @@
 package com.capstone.users_service.utils;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 /**
@@ -13,6 +14,7 @@ public final class PasswordDecoder {
     private PasswordDecoder() {
         throw new UnsupportedOperationException("Utility Class cannot be instantiated");
     }
+
     /**
      * Decodes a Base64-encoded password.
      *
@@ -21,6 +23,6 @@ public final class PasswordDecoder {
      */
     public static String decodeBase64Password(final String base64EncodedPassword) {
         byte[] decodedBytes = Base64.getDecoder().decode(base64EncodedPassword);
-        return new String(decodedBytes);
+        return new String(decodedBytes, StandardCharsets.UTF_8);
     }
 }

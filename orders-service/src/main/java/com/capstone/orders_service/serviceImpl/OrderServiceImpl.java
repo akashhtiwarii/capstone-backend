@@ -87,6 +87,12 @@ public class OrderServiceImpl implements OrderService {
         try {
             UserOutDTO user = usersFeignClient.getUserById(loggedInUserId).getBody();
             RestaurantOutDTO restaurant = restaurantFeignClient.getRestaurantById(restaurantId).getBody();
+            if (user == null) {
+                throw new ResourceNotFoundException("User Not Found");
+            }
+            if (restaurant == null) {
+                throw new ResourceNotFoundException("Restaurant Not Found");
+            }
             if (restaurant.getOwnerId() != user.getUserId()) {
                 throw new ResourceNotValidException(Constants.USER_NOT_VALID);
             }
@@ -123,6 +129,9 @@ public class OrderServiceImpl implements OrderService {
         WalletOutDTO wallet;
         try {
             user = usersFeignClient.getUserById(userId).getBody();
+            if (user == null) {
+                throw new ResourceNotFoundException("User Not Found");
+            }
         } catch (FeignException.NotFound e) {
             throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
         } catch (FeignException e) {
@@ -130,6 +139,9 @@ public class OrderServiceImpl implements OrderService {
         }
         try {
             addressOutDTO = usersFeignClient.getAddressById(addressId).getBody();
+            if (addressOutDTO == null) {
+                throw new ResourceNotFoundException("Address Not Found");
+            }
         } catch (FeignException.NotFound e) {
             throw new ResourceNotFoundException(Constants.ADDRESS_NOT_FOUND);
         } catch (FeignException e) {
@@ -145,6 +157,9 @@ public class OrderServiceImpl implements OrderService {
         }
         try {
             wallet = usersFeignClient.getUserWallet(userId).getBody();
+            if (wallet == null) {
+                throw new ResourceNotFoundException("Wallet Not Found");
+            }
             if (wallet.getAmount() < price) {
                 throw new InsufficientAmountException(Constants.INSUFFICIENT_WALLET_AMOUNT);
             }
@@ -251,6 +266,9 @@ public class OrderServiceImpl implements OrderService {
                 restaurantOrderDetailsOutDTO.setOrderId(order.getOrderId());
                 try {
                     UserOutDTO user = usersFeignClient.getUserById(order.getUserId()).getBody();
+                    if (user == null) {
+                        throw new ResourceNotFoundException("User Not Found");
+                    }
                     restaurantOrderDetailsOutDTO.setUserName(user.getName());
                 } catch (FeignException.NotFound e) {
                     throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
@@ -265,6 +283,9 @@ public class OrderServiceImpl implements OrderService {
                         FoodItemOutDTO foodItemOutDTO = restaurantFeignClient.getFoodItemById(
                                 orderDetail.getFoodId()
                         ).getBody();
+                        if (foodItemOutDTO == null) {
+                            throw new ResourceNotFoundException("Food Item Not Found");
+                        }
                         orderDetailOutDTO.setFoodName(foodItemOutDTO.getName());
                         orderDetailOutDTO.setQuantity(orderDetail.getQuantity());
                         orderDetailOutDTO.setPrice(orderDetail.getPrice());
@@ -276,7 +297,11 @@ public class OrderServiceImpl implements OrderService {
                     orderDetailOutDTOS.add(orderDetailOutDTO);
                 }
                 try {
-                    address = usersFeignClient.getAddressByUserId(order.getUserId()).getBody().toString();
+                    AddressOutDTO userAddress = usersFeignClient.getAddressById(order.getAddressId()).getBody();
+                    if (userAddress == null) {
+                        throw new ResourceNotFoundException("Address Not Found");
+                    }
+                    address = userAddress.toString();
                 } catch (FeignException.NotFound e) {
                     throw new ResourceNotFoundException(Constants.ADDRESS_NOT_FOUND);
                 } catch (FeignException e) {
@@ -303,6 +328,9 @@ public class OrderServiceImpl implements OrderService {
     public List<UserOrderDetailsOutDTO> getUserOrders(final long userId) {
         try {
             UserOutDTO user = usersFeignClient.getUserById(userId).getBody();
+            if (user == null) {
+                throw new ResourceNotFoundException("User Not Found");
+            }
             List<Order> orders = orderRepository.findByUserId(user.getUserId());
             if (orders.isEmpty()) {
                 throw new ResourceNotFoundException(Constants.ORDER_NOT_FOUND);
@@ -313,6 +341,9 @@ public class OrderServiceImpl implements OrderService {
                     RestaurantOutDTO restaurant = restaurantFeignClient.getRestaurantById(
                             order.getRestaurantId()
                     ).getBody();
+                    if (restaurant == null) {
+                        throw new ResourceNotFoundException("Restaurant Not Found");
+                    }
                     List<OrderDetail> orderDetails = orderDetailRepository.findByOrderId(order.getOrderId());
                     UserOrderDetailsOutDTO userOrderDetailsOutDTO = new UserOrderDetailsOutDTO();
                     userOrderDetailsOutDTO.setOrderId(order.getOrderId());
@@ -324,6 +355,9 @@ public class OrderServiceImpl implements OrderService {
                         FoodItemOutDTO foodItem = restaurantFeignClient.getFoodItemById(
                                 orderDetail.getFoodId()
                         ).getBody();
+                        if (foodItem == null) {
+                            throw new ResourceNotFoundException("Food Item Not Found");
+                        }
                         UserFoodItemOutDTO userFoodItemOutDTO = new UserFoodItemOutDTO();
                         userFoodItemOutDTO.setFoodId(foodItem.getFoodId());
                         userFoodItemOutDTO.setName(foodItem.getName());
@@ -364,6 +398,24 @@ public class OrderServiceImpl implements OrderService {
         Duration timeDifference = Duration.between(order.getOrderTime(), currentTime);
         if (timeDifference.getSeconds() > Constants.TIME_TO_CANCEL_ORDER) {
             throw new ResourceNotValidException(Constants.CANNOT_CANCEL_ORDER + timeDifference.getSeconds());
+        }
+        try {
+            WalletOutDTO wallet = usersFeignClient.getUserWallet(order.getUserId()).getBody();
+            if (wallet == null) {
+                throw new ResourceNotFoundException("Wallet Not Found");
+            }
+            double updatedAmount = wallet.getAmount() + order.getPrice();
+            try {
+                usersFeignClient.updateUserWallet(order.getUserId(), updatedAmount);
+            } catch (FeignException.NotFound e) {
+                throw new RuntimeException("Unexpected Error! Try Again");
+            } catch (FeignException e) {
+                throw new RuntimeException(Constants.USER_SERVICE_DOWN);
+            }
+        } catch (FeignException.NotFound e) {
+            throw new ResourceNotFoundException("Wallet Not Found");
+        } catch (FeignException e) {
+            throw new RuntimeException(Constants.USER_SERVICE_DOWN);
         }
         order.setStatus(Status.CANCELLED);
         orderRepository.save(order);

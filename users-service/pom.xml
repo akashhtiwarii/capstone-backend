@@ -193,6 +193,13 @@
 				<configuration>
 					<htmlOutput>true</htmlOutput>
 				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
 				<dependencies>
 					<dependency>
 						<groupId>com.github.spotbugs</groupId>
