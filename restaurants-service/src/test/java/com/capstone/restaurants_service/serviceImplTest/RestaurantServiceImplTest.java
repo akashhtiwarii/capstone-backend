@@ -106,7 +106,9 @@ public class RestaurantServiceImplTest {
         when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(user));
         when(restaurantRepository.findByEmail(anyString())).thenReturn(null);
         when(restaurantRepository.save(any())).thenReturn(new Restaurant());
-        when(image.getBytes()).thenReturn(new byte[]{0,1,2,3});
+        when(image.getContentType()).thenReturn("image/jpeg");
+        when(image.getBytes()).thenReturn(new byte[]{1, 2, 3});
+        when(image.isEmpty()).thenReturn(false);
 
         RestaurantInDTO restaurantInDTO = new RestaurantInDTO();
         restaurantInDTO.setOwnerId(1L);
@@ -246,6 +248,40 @@ public class RestaurantServiceImplTest {
         );
         assertEquals(Constants.YOU_CANNOT_UPDATE_RESTAURANT, thrown.getMessage());
     }
+
+    @Test
+    public void testUpdateRestaurantSuccess() throws IOException {
+        UserOutDTO user = new UserOutDTO();
+        user.setRole(Role.OWNER);
+        user.setUserId(1L);
+        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(user));
+
+        Restaurant existingRestaurant = new Restaurant();
+        existingRestaurant.setOwnerId(1L);
+        when(restaurantRepository.findById(anyLong())).thenReturn(existingRestaurant);
+        when(restaurantRepository.findByEmail(anyString())).thenReturn(null);
+        when(restaurantRepository.save(any())).thenReturn(new Restaurant());
+
+        when(image.getContentType()).thenReturn("image/jpeg");
+        when(image.getBytes()).thenReturn(new byte[]{1, 2, 3});
+        when(image.isEmpty()).thenReturn(false);
+
+        UpdateRestaurantInDTO updateRestaurantInDTO = new UpdateRestaurantInDTO();
+        updateRestaurantInDTO.setLoggedInOwnerId(1L);
+        updateRestaurantInDTO.setRestaurantId(1L);
+        updateRestaurantInDTO.setName("Updated Name");
+        updateRestaurantInDTO.setEmail("updated@example.com");
+        updateRestaurantInDTO.setPhone("1234567890");
+        updateRestaurantInDTO.setAddress("Updated Address");
+
+        // Call the method under test
+        String result = restaurantService.updateRestaurant(updateRestaurantInDTO, image);
+
+        // Verify the result and interactions
+        assertEquals(Constants.RESTAURANT_UPDATED_SUCCESSFULLY, result);
+        verify(restaurantRepository, times(1)).save(any(Restaurant.class));
+    }
+
 
     @Test
     public void testFindAllNoRestaurants() {

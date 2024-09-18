@@ -78,7 +78,9 @@ class FoodItemServiceImplTest {
         when(categoryRepository.findById(anyLong())).thenReturn(category);
         when(restaurantRepository.findById(anyLong())).thenReturn(restaurant);
         when(foodItemRepository.findByCategoryIdAndName(anyLong(), anyString())).thenReturn(null);
-
+        when(image.getContentType()).thenReturn("image/jpeg");
+        when(image.getBytes()).thenReturn(new byte[]{1, 2, 3});
+        when(image.isEmpty()).thenReturn(false);
         String result = foodItemServiceImpl.addFoodItem(foodItemInDTO, image);
 
         assertEquals(Constants.FOOD_ADDED_SUCCESSFULLY, result);
@@ -166,7 +168,9 @@ class FoodItemServiceImplTest {
         when(foodItemRepository.findById(anyLong())).thenReturn(foodItem);
         when(categoryRepository.findById(anyLong())).thenReturn(category);
         when(restaurantRepository.findById(anyLong())).thenReturn(restaurant);
-
+        when(image.getContentType()).thenReturn("image/jpeg");
+        when(image.getBytes()).thenReturn(new byte[]{1, 2, 3});
+        when(image.isEmpty()).thenReturn(false);
         String result = foodItemServiceImpl.updateFoodItem(1L, updateFoodItemInDTO, image);
 
         assertEquals(Constants.FOOD_UPDATED_SUCCESSFULLY, result);
