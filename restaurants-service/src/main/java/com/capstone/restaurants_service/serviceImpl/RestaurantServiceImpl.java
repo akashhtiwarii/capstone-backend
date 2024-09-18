@@ -74,10 +74,16 @@ public class RestaurantServiceImpl implements RestaurantService {
             Restaurant restaurant = RestaurantConverters.restaurantInDTOTORestaurant(restaurantInDTO);
             try {
                 if (image != null && !image.isEmpty()) {
+                    String contentType = image.getContentType();
+                    if (contentType == null || !contentType.startsWith("image/")) {
+                        throw new ResourceNotValidException(Constants.INVALID_IMAGE_TYPE);
+                    }
                     restaurant.setImage(image.getBytes());
                 }
                 restaurantRepository.save(restaurant);
                 return Constants.RESTAURANT_ADDED_SUCCESSFULLY;
+            } catch (ResourceNotValidException e) {
+                throw e;
             } catch (IOException e) {
                 throw new RuntimeException(Constants.FAILED_TO_UPLOAD_IMAGE + e.getMessage());
             } catch (Exception e) {
@@ -87,6 +93,7 @@ public class RestaurantServiceImpl implements RestaurantService {
             throw new RuntimeException(Constants.USER_SERVICE_DOWN);
         }
     }
+
 
     /**
      * Updates an existing restaurant.
@@ -131,10 +138,16 @@ public class RestaurantServiceImpl implements RestaurantService {
             restaurant.setAddress(updateRestaurantInDTO.getAddress());
             try {
                 if (image != null && !image.isEmpty()) {
+                    String contentType = image.getContentType();
+                    if (contentType == null || !contentType.startsWith("image/")) {
+                        throw new ResourceNotValidException(Constants.INVALID_IMAGE_TYPE);
+                    }
                     restaurant.setImage(image.getBytes());
                 }
                 restaurantRepository.save(restaurant);
                 return Constants.RESTAURANT_UPDATED_SUCCESSFULLY;
+            } catch (ResourceNotValidException e) {
+                throw e;
             } catch (IOException e) {
                 throw new RuntimeException(Constants.FAILED_TO_UPLOAD_IMAGE + e.getMessage());
             } catch (Exception e) {

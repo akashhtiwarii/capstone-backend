@@ -231,4 +231,9 @@ public final class Constants {
      * User Service Not Available.
      */
     public static final String USER_SERVICE_DOWN = "Unable to communicate with User Service";
+
+    /**
+     * Invalid type for image.
+     */
+    public static final String INVALID_IMAGE_TYPE = "Invalid file type. Only image files are allowed.";
 }

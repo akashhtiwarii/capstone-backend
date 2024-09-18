@@ -106,10 +106,16 @@ public class FoodItemServiceImpl implements FoodItemService {
             FoodItem foodItem = FoodItemConverters.foodItemInDTOToFoodItemEntity(foodItemInDTO);
             try {
                 if (image != null && !image.isEmpty()) {
+                    String contentType = image.getContentType();
+                    if (contentType == null || !contentType.startsWith("image/")) {
+                        throw new ResourceNotValidException(Constants.INVALID_IMAGE_TYPE);
+                    }
                     foodItem.setImage(image.getBytes());
                 }
                 foodItemRepository.save(foodItem);
                 return Constants.FOOD_ADDED_SUCCESSFULLY;
+            } catch (ResourceNotValidException e) {
+                throw e;
             } catch (IOException e) {
                 throw new RuntimeException(Constants.FAILED_TO_UPLOAD_IMAGE + e.getMessage());
             } catch (Exception ex) {
@@ -208,10 +214,16 @@ public class FoodItemServiceImpl implements FoodItemService {
             foodItem.setPrice(updateFoodItemInDTO.getPrice());
             try {
                 if (image != null && !image.isEmpty()) {
+                    String contentType = image.getContentType();
+                    if (contentType == null || !contentType.startsWith("image/")) {
+                        throw new ResourceNotValidException(Constants.INVALID_IMAGE_TYPE);
+                    }
                     foodItem.setImage(image.getBytes());
                 }
                 foodItemRepository.save(foodItem);
                 return Constants.FOOD_UPDATED_SUCCESSFULLY;
+            } catch (ResourceNotValidException e) {
+                throw e;
             } catch (IOException e) {
                 throw new RuntimeException(Constants.FAILED_TO_UPLOAD_IMAGE + e.getMessage());
             } catch (Exception ex) {
