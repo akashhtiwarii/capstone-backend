@@ -1,6 +1,5 @@
 package com.capstone.orders_service.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,7 +11,6 @@ import java.util.Objects;
  * This class is used to transfer restaurant details from the server to the client.
  */
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class RestaurantOutDTO {
 
@@ -46,6 +44,62 @@ public class RestaurantOutDTO {
      * This may be used to display the restaurant's image visually.
      */
     private byte[] image;
+
+    /**
+     * Constructs a new {@code RestaurantOutDTO} with the specified values.
+     * <p>
+     * This constructor initializes the fields of the {@code RestaurantOutDTO} with the provided values.
+     * A new byte array is created from the given image array to ensure that the internal state is not affected by
+     * external modifications.
+     * </p>
+     *
+     * @param restaurantId the unique identifier for the restaurant; should not be negative
+     * @param ownerId      the unique identifier for the owner of the restaurant; should not be negative
+     * @param name         the name of the restaurant; may be {@code null}
+     * @param email        the email address associated with the restaurant; may be {@code null}
+     * @param phone        the phone number associated with the restaurant; may be {@code null}
+     * @param image        the image of the restaurant in binary format; may be {@code null}
+     */
+    public RestaurantOutDTO(
+            final long restaurantId,
+            final long ownerId,
+            final String name,
+            final String email,
+            final String phone,
+            final byte[] image
+    ) {
+        this.restaurantId = restaurantId;
+        this.ownerId = ownerId;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.image = image != null ? image.clone() : null;
+    }
+
+    /**
+     * Sets the image of the restaurant.
+     * <p>
+     * This method takes a new image array and sets it to the internal image field, making a copy of it to ensure
+     * the internal state cannot be modified externally.
+     * </p>
+     *
+     * @param image the new image byte array; may be {@code null}
+     */
+    public void setImage(final byte[] image) {
+        this.image = image != null ? image.clone() : null;
+    }
+
+    /**
+     * Returns a copy of the image byte array of the restaurant.
+     * <p>
+     * This method returns a new byte array that contains the same data as the internal image array.
+     * </p>
+     *
+     * @return a copy of the image byte array; may be {@code null}
+     */
+    public byte[] getImage() {
+        return image != null ? image.clone() : null;
+    }
 
     /**
      * Compares this RestaurantOutDTO object to the specified object for equality.

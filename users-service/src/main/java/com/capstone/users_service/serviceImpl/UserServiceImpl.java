@@ -157,16 +157,20 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public LoginResponseOutDTO loginUser(final LoginRequestInDTO loginRequestInDTO) {
-        User user = userRepository.findByEmailAndPassword(
-                loginRequestInDTO.getEmail(),
-                loginRequestInDTO.getPassword()
-        );
-        if (user != null) {
+        try {
+            User user = userRepository.findByEmailAndPassword(
+                    loginRequestInDTO.getEmail(),
+                    loginRequestInDTO.getPassword()
+            );
+            if (user == null) {
+                System.out.println("Hello");
+                throw new ResourceNotValidException("Invalid Credentials");
+            }
             return UserConverters.userEntityToLoginResponseOutDTO(user);
-        } else {
-            LoginResponseOutDTO loginResponseOutDTO = new LoginResponseOutDTO();
-            loginResponseOutDTO.setMessage(Constants.INVALID_CREDENTIALS);
-            return loginResponseOutDTO;
+        } catch (ResourceNotValidException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(Constants.UNEXPECTED_ERROR + e.getMessage());
         }
     }
 

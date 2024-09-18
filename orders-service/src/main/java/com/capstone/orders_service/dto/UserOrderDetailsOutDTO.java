@@ -2,8 +2,11 @@ package com.capstone.orders_service.dto;
 
 import com.capstone.orders_service.Enum.Status;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -16,6 +19,7 @@ import java.util.Objects;
  * </p>
  */
 @Data
+@NoArgsConstructor
 public class UserOrderDetailsOutDTO {
 
     /**
@@ -65,6 +69,62 @@ public class UserOrderDetailsOutDTO {
      * </p>
      */
     private LocalDateTime orderTime;
+
+    /**
+     * Constructs a new {@code UserOrderDetailsOutDTO} with the specified values.
+     * <p>
+     * This constructor initializes the fields of the {@code UserOrderDetailsOutDTO} with the provided values.
+     * A new list is created from the given food items list to ensure that the internal state is not affected by
+     * external modifications.
+     * </p>
+     *
+     * @param restaurantName  the name of the restaurant where the order was placed; may be {@code null}
+     * @param restaurantEmail the email address of the restaurant; may be {@code null}
+     * @param orderId         the unique identifier for the order; should not be negative
+     * @param foodItemOutDTOS a list of food items included in the order; may be {@code null}
+     * @param status          the current status of the order; should not be {@code null}
+     * @param orderTime       the date and time when the order was placed; may be {@code null}
+     */
+    public UserOrderDetailsOutDTO(
+            final String restaurantName,
+            final String restaurantEmail,
+            final long orderId,
+            final List<UserFoodItemOutDTO> foodItemOutDTOS,
+            final Status status,
+            final LocalDateTime orderTime
+    ) {
+        this.restaurantName = restaurantName;
+        this.restaurantEmail = restaurantEmail;
+        this.orderId = orderId;
+        this.foodItemOutDTOS = foodItemOutDTOS != null ? new ArrayList<>(foodItemOutDTOS) : null;
+        this.status = status;
+        this.orderTime = orderTime;
+    }
+
+    /**
+     * Sets the list of food items in the order.
+     * <p>
+     * This method sets the food items list to a new list created from the provided list to protect the internal
+     * state from external modifications.
+     * </p>
+     *
+     * @param foodItemOutDTOS the new list of food items; may be {@code null}
+     */
+    public void setFoodItemOutDTOS(final List<UserFoodItemOutDTO> foodItemOutDTOS) {
+        this.foodItemOutDTOS = foodItemOutDTOS != null ? new ArrayList<>(foodItemOutDTOS) : null;
+    }
+
+    /**
+     * Returns a copy of the list of food items included in the order.
+     * <p>
+     * This method returns a new list that contains the same food item objects as the internal list.
+     * </p>
+     *
+     * @return a list of food items; may be empty but never {@code null}
+     */
+    public List<UserFoodItemOutDTO> getFoodItemOutDTOS() {
+        return foodItemOutDTOS != null ? Collections.unmodifiableList(new ArrayList<>(foodItemOutDTOS)) : Collections.emptyList();
+    }
 
     /**
      * Compares this {@code UserOrderDetailsOutDTO} instance with another object for equality.

@@ -6,6 +6,7 @@ import com.capstone.users_service.entity.User;
 import com.capstone.users_service.entity.Wallet;
 import com.capstone.users_service.exceptions.ResourceAlreadyExistsException;
 import com.capstone.users_service.exceptions.ResourceNotFoundException;
+import com.capstone.users_service.exceptions.ResourceNotValidException;
 import com.capstone.users_service.repository.UserRepository;
 import com.capstone.users_service.repository.WalletRepository;
 import com.capstone.users_service.serviceImpl.UserServiceImpl;
@@ -159,6 +160,8 @@ public class UserServiceImplTest {
         User user = new User();
         user.setEmail("email@gmail.com");
         user.setPassword("password");
+        user.setName("John Doe");
+        user.setPhone("1234567890");
 
         Mockito.when(userRepository.findByEmailAndPassword(
                 loginRequestInDTO.getEmail(), loginRequestInDTO.getPassword()
@@ -181,10 +184,11 @@ public class UserServiceImplTest {
                 loginRequestInDTO.getEmail(), loginRequestInDTO.getPassword()
         )).thenReturn(null);
 
-        LoginResponseOutDTO result = userService.loginUser(loginRequestInDTO);
-
-        assertEquals(Constants.INVALID_CREDENTIALS, result.getMessage());
+        assertThrows(ResourceNotValidException.class, () -> {
+            userService.loginUser(loginRequestInDTO);
+        });
     }
+
 
     @Test
     public void testUpdateUserProfileSuccess() {

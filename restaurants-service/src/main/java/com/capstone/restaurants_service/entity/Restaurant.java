@@ -1,6 +1,5 @@
 package com.capstone.restaurants_service.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
@@ -26,7 +25,6 @@ import java.util.Objects;
 @Table(name = "restaurants")
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class Restaurant {
 
     /**
@@ -81,6 +79,63 @@ public class Restaurant {
     @Column(name = "image")
     @Type(type = "org.hibernate.type.BinaryType")
     private byte[] image;
+
+    /**
+     * Constructs a new {@code Restaurant} instance with the specified attributes.
+     *
+     * @param restaurantIdValue the unique identifier for the restaurant
+     * @param ownerIdValue the identifier for the owner of the restaurant
+     * @param nameValue the name of the restaurant
+     * @param emailValue the email address of the restaurant
+     * @param phoneValue the phone number of the restaurant
+     * @param addressValue the address of the restaurant
+     * @param imageValue the image of the restaurant as a byte array.
+     * A copy of this array is stored to prevent external modifications.
+     */
+    public Restaurant(
+            final long restaurantIdValue,
+            final long ownerIdValue,
+            final String nameValue,
+            final String emailValue,
+            final String phoneValue,
+            final String addressValue,
+            final byte[] imageValue
+    ) {
+        this.restaurantId = restaurantIdValue;
+        this.ownerId = ownerIdValue;
+        this.name = nameValue;
+        this.email = emailValue;
+        this.phone = phoneValue;
+        this.address = addressValue;
+        this.image = (imageValue != null) ? imageValue.clone() : null;
+    }
+
+    /**
+     * Returns a copy of the image of the restaurant.
+     *
+     * <p>This method returns a copy of the internal byte array representing the restaurant's image.
+     * This ensures that the internal state of the restaurant object cannot be modified by external code.</p>
+     *
+     * @return a byte array containing the image of the restaurant, or {@code null} if no image is set
+     */
+    public byte[] getImage() {
+        return (image != null) ? image.clone() : null;
+    }
+
+    /**
+     * Sets the image of the restaurant.
+     *
+     * <p>This method sets the restaurant's image to a new byte array. A copy of the provided byte array is made to
+     * ensure that changes to the original array outside of this class
+     * do not affect the internal state of the restaurant.</p>
+     * @param imageValue a byte array containing the new image for the restaurant.
+     * A copy of this array is stored to prevent external modifications.
+     * If {@code null} is provided, the restaurant's image is cleared.
+     */
+    public void setImage(final byte[] imageValue) {
+        this.image = (imageValue != null) ? imageValue.clone() : null;
+    }
+
 
     /**
      * Compares this restaurant entity with another object for equality.

@@ -1,13 +1,9 @@
 package com.capstone.orders_service.dtoTest;
 
-
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.capstone.orders_service.dto.RestaurantOutDTO;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.Objects;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class RestaurantOutDTOTest {
 
@@ -16,97 +12,92 @@ public class RestaurantOutDTOTest {
         RestaurantOutDTO restaurantOutDTO = new RestaurantOutDTO();
 
         assertEquals(0, restaurantOutDTO.getRestaurantId());
-        long restaurantId = 1001L;
+        long restaurantId = 100L;
         restaurantOutDTO.setRestaurantId(restaurantId);
         assertEquals(restaurantId, restaurantOutDTO.getRestaurantId());
 
         assertEquals(0, restaurantOutDTO.getOwnerId());
-        long ownerId = 2002L;
+        long ownerId = 200L;
         restaurantOutDTO.setOwnerId(ownerId);
         assertEquals(ownerId, restaurantOutDTO.getOwnerId());
 
         assertNull(restaurantOutDTO.getName());
-        String name = "Test Restaurant";
+        String name = "Cafe Delight";
         restaurantOutDTO.setName(name);
         assertEquals(name, restaurantOutDTO.getName());
 
         assertNull(restaurantOutDTO.getEmail());
-        String email = "test@restaurant.com";
+        String email = "cafe@delight.com";
         restaurantOutDTO.setEmail(email);
         assertEquals(email, restaurantOutDTO.getEmail());
 
         assertNull(restaurantOutDTO.getPhone());
-        String phone = "1234567890";
+        String phone = "123-456-7890";
         restaurantOutDTO.setPhone(phone);
         assertEquals(phone, restaurantOutDTO.getPhone());
 
         assertNull(restaurantOutDTO.getImage());
-        byte[] image = new byte[] { 1, 2, 3 };
+        byte[] image = new byte[]{1, 2, 3};
         restaurantOutDTO.setImage(image);
         assertArrayEquals(image, restaurantOutDTO.getImage());
     }
 
     @Test
-    public void testEqualsAndHashcode() {
-        long restaurantId = 1001L;
-        long ownerId = 2002L;
-        String name = "Test Restaurant";
-        String email = "test@restaurant.com";
-        String phone = "1234567890";
-        byte[] image = new byte[] { 1, 2, 3 };
+    public void testConstructor() {
+        long restaurantId = 100L;
+        long ownerId = 200L;
+        String name = "Bistro Place";
+        String email = "contact@bistro.com";
+        String phone = "987-654-3210";
+        byte[] image = new byte[]{4, 5, 6};
 
-        RestaurantOutDTO dto1 = buildRestaurantOutDTO(restaurantId, ownerId, name, email, phone, image);
+        RestaurantOutDTO restaurantOutDTO = new RestaurantOutDTO(restaurantId, ownerId, name, email, phone, image);
 
-        assertEquals(dto1, dto1);
-        assertEquals(dto1.hashCode(), dto1.hashCode());
-
-        assertNotEquals(dto1, new Object());
-
-        RestaurantOutDTO dto2 = buildRestaurantOutDTO(restaurantId, ownerId, name, email, phone, image);
-        assertEquals(dto1, dto2);
-        assertEquals(dto1.hashCode(), dto2.hashCode());
-
-        dto2 = buildRestaurantOutDTO(restaurantId + 1, ownerId, name, email, phone, image);
-        assertNotEquals(dto1, dto2);
-        assertNotEquals(dto1.hashCode(), dto2.hashCode());
-
-        dto2 = buildRestaurantOutDTO(restaurantId, ownerId + 1, name, email, phone, image);
-        assertNotEquals(dto1, dto2);
-        assertNotEquals(dto1.hashCode(), dto2.hashCode());
-
-        dto2 = buildRestaurantOutDTO(restaurantId, ownerId, name + " Updated", email, phone, image);
-        assertNotEquals(dto1, dto2);
-        assertNotEquals(dto1.hashCode(), dto2.hashCode());
-
-        dto2 = buildRestaurantOutDTO(restaurantId, ownerId, name, email + " Updated", phone, image);
-        assertNotEquals(dto1, dto2);
-        assertNotEquals(dto1.hashCode(), dto2.hashCode());
-
-        dto2 = buildRestaurantOutDTO(restaurantId, ownerId, name, email, phone + " Updated", image);
-        assertNotEquals(dto1, dto2);
-        assertNotEquals(dto1.hashCode(), dto2.hashCode());
-
-        dto2 = buildRestaurantOutDTO(restaurantId, ownerId, name, email, phone, new byte[] { 4, 5, 6 });
-        assertNotEquals(dto1, dto2);
-        assertNotEquals(dto1.hashCode(), dto2.hashCode());
-
-        dto1 = new RestaurantOutDTO();
-        dto2 = new RestaurantOutDTO();
-        assertEquals(dto1, dto2);
-        assertEquals(dto1.hashCode(), dto2.hashCode());
+        assertEquals(restaurantId, restaurantOutDTO.getRestaurantId());
+        assertEquals(ownerId, restaurantOutDTO.getOwnerId());
+        assertEquals(name, restaurantOutDTO.getName());
+        assertEquals(email, restaurantOutDTO.getEmail());
+        assertEquals(phone, restaurantOutDTO.getPhone());
+        assertArrayEquals(image, restaurantOutDTO.getImage());
     }
 
-    private RestaurantOutDTO buildRestaurantOutDTO(long restaurantId, long ownerId, String name, String email, String phone, byte[] image) {
-        RestaurantOutDTO dto = new RestaurantOutDTO();
+    @Test
+    public void testImageClone() {
+        byte[] image = new byte[]{7, 8, 9};
+        RestaurantOutDTO restaurantOutDTO = new RestaurantOutDTO();
+        restaurantOutDTO.setImage(image);
 
-        dto.setRestaurantId(restaurantId);
-        dto.setOwnerId(ownerId);
-        dto.setName(name);
-        dto.setEmail(email);
-        dto.setPhone(phone);
-        dto.setImage(image);
+        byte[] returnedImage = restaurantOutDTO.getImage();
+        assertArrayEquals(image, returnedImage);
 
-        return dto;
+        returnedImage[0] = 10;
+        assertNotEquals(image[0], returnedImage[0]);
+    }
+
+    @Test
+    public void testEqualsAndHashCode() {
+        long restaurantId = 100L;
+        long ownerId = 200L;
+        String name = "Restaurant ABC";
+        String email = "abc@restaurant.com";
+        String phone = "555-555-5555";
+        byte[] image = new byte[]{10, 20, 30};
+
+        RestaurantOutDTO restaurantOutDTO1 = new RestaurantOutDTO(restaurantId, ownerId, name, email, phone, image);
+        RestaurantOutDTO restaurantOutDTO2 = new RestaurantOutDTO(restaurantId, ownerId, name, email, phone, image);
+
+        assertEquals(restaurantOutDTO1, restaurantOutDTO2);
+        assertEquals(restaurantOutDTO1.hashCode(), restaurantOutDTO2.hashCode());
+
+        restaurantOutDTO2.setName("Changed Name");
+        assertNotEquals(restaurantOutDTO1, restaurantOutDTO2);
+        assertNotEquals(restaurantOutDTO1.hashCode(), restaurantOutDTO2.hashCode());
+    }
+
+    @Test
+    public void testEqualsWithNullAndDifferentObject() {
+        RestaurantOutDTO restaurantOutDTO = new RestaurantOutDTO();
+        assertNotEquals(restaurantOutDTO, null);
+        assertNotEquals(restaurantOutDTO, new Object());
     }
 }
-

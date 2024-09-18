@@ -71,6 +71,9 @@ public class CartItemServiceImpl implements CartItemService {
         }
         try {
             FoodItemOutDTO foodItemOutDTO = restaurantFeignClient.getFoodItemById(cartItem.getFoodId()).getBody();
+            if (foodItemOutDTO == null) {
+                throw new ResourceNotFoundException("Food Not Found");
+            }
             cartItem.setPrice(cartItem.getQuantity() * foodItemOutDTO.getPrice());
         } catch (FeignException.NotFound e) {
             throw new ResourceNotFoundException(Constants.FOOD_ITEM_NOT_FOUND);
@@ -81,6 +84,9 @@ public class CartItemServiceImpl implements CartItemService {
             List<FoodItemOutDTO> foodItemOutDTOS = restaurantFeignClient.getFoodItemsByRestaurant(
                     addToCartInDTO.getRestaurantId()
             ).getBody();
+            if (foodItemOutDTOS == null) {
+                throw new ResourceNotFoundException("Food Items Not Found");
+            }
             if (foodItemOutDTOS.isEmpty()) {
                 throw new ResourceNotFoundException(Constants.FOOD_ITEM_NOT_FOUND);
             }
@@ -148,6 +154,12 @@ public class CartItemServiceImpl implements CartItemService {
                 RestaurantOutDTO restaurant = restaurantFeignClient.getRestaurantById(
                         cartItem.getRestaurantId()
                 ).getBody();
+                if (foodItemOutDTO == null) {
+                    throw new ResourceNotFoundException("Food Item Not Found");
+                }
+                if (restaurant == null) {
+                    throw new ResourceNotFoundException("Restaurant Not Found");
+                }
                 CartItemOutDTO cartItemOutDTO = new CartItemOutDTO();
                 cartItemOutDTO.setCartItemId(cartItem.getCartItemId());
                 cartItemOutDTO.setUserId(cartItem.getUserId());
