@@ -35,7 +35,6 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/order")
-@CrossOrigin
 public class OrderController {
 
     /**
