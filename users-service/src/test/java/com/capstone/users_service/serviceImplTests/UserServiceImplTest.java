@@ -242,7 +242,6 @@ public class UserServiceImplTest {
     public void testContactUsSuccess() throws MessagingException {
         ContactUsInDTO contactUsInDTO = new ContactUsInDTO();
         contactUsInDTO.setFromEmail("email@gmail.com");
-        contactUsInDTO.setRestaurantEmail("restaurant@example.com");
         contactUsInDTO.setSubject("Inquiry");
         contactUsInDTO.setMessage("Hello, I would like to inquire about...");
 
