@@ -27,12 +27,14 @@ import com.capstone.users_service.utils.Constants;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Implementation of {@link UserService} for managing user-related operations.
  * This service handles user registration, profile updates, login,
  * and interactions related to user profiles and wallets.
  */
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -68,13 +70,17 @@ public class UserServiceImpl implements UserService {
             User user = userRepository.findById(getUserInfoInDTO.getUserId());
             User loggedInUser = userRepository.findById(getUserInfoInDTO.getLoggedInUserId());
             if (user == null || loggedInUser == null) {
+                log.error("User or logged-in user not found with IDs: {} and {}",
+                        getUserInfoInDTO.getUserId(), getUserInfoInDTO.getLoggedInUserId());
                 throw new ResourceNotFoundException("User not Found");
             }
             if (!user.equals(loggedInUser)) {
+                log.error("User access denied for ID: {}", getUserInfoInDTO.getLoggedInUserId());
                 throw new ResourceNotValidException("You Cannot view this user");
             }
             return user;
         } catch (Exception e) {
+            log.error("Unexpected error while retrieving user by ID: {}", e.getMessage());
             throw new RuntimeException(Constants.UNEXPECTED_ERROR + e.getMessage());
         }
     }
@@ -90,6 +96,7 @@ public class UserServiceImpl implements UserService {
     public ProfileOutDTO getProfileInfo(final long userId) {
         User user = userRepository.findById(userId);
         if (user == null) {
+            log.error("User not found with ID: {}", userId);
             throw new ResourceNotFoundException("User Not Found");
         }
         ProfileOutDTO profileOutDTO = new ProfileOutDTO();
@@ -114,6 +121,7 @@ public class UserServiceImpl implements UserService {
     public User getByIdentity(final long userId) {
         User user = userRepository.findById(userId);
         if (user == null) {
+            log.error("User not found with ID: {}", userId);
             throw new ResourceNotFoundException("User not found");
         }
         return user;
@@ -131,6 +139,7 @@ public class UserServiceImpl implements UserService {
     public String registerUser(final UserInDTO userInDTO) {
         User user = UserConverters.registerUserInDTOToUserEntity(userInDTO);
         if (userRepository.existsByEmail(user.getEmail())) {
+            log.error("Email already in use: {}", user.getEmail());
             throw new ResourceAlreadyExistsException(Constants.EMAIL_ALREADY_IN_USE);
         }
         try {
@@ -145,6 +154,7 @@ public class UserServiceImpl implements UserService {
             }
             return Constants.OWNER_SIGNUP_MESSAGE;
         } catch (Exception e) {
+            log.error("Unexpected error while registering user: {}", e.getMessage());
             throw new RuntimeException(Constants.UNEXPECTED_ERROR + e.getMessage());
         }
     }
@@ -163,13 +173,15 @@ public class UserServiceImpl implements UserService {
                     loginRequestInDTO.getPassword()
             );
             if (user == null) {
-                System.out.println("Hello");
+                log.error("Invalid login credentials for email: {}", loginRequestInDTO.getEmail());
                 throw new ResourceNotValidException("Invalid Credentials");
             }
             return UserConverters.userEntityToLoginResponseOutDTO(user);
         } catch (ResourceNotValidException e) {
+            log.error("Invalid credentials: {}", e.getMessage());
             throw e;
         } catch (Exception e) {
+            log.error("Unexpected error during login: {}", e.getMessage());
             throw new RuntimeException(Constants.UNEXPECTED_ERROR + e.getMessage());
         }
     }
@@ -187,11 +199,13 @@ public class UserServiceImpl implements UserService {
     public String updateUserProfile(final long userId, final UpdateProfileInDTO updateProfileInDTO) {
         User user = userRepository.findById(userId);
         if (user == null) {
+            log.error("User not found with ID: {}", userId);
             throw new ResourceNotFoundException("User Not Found");
         }
         if (!Objects.equals(user.getEmail(), updateProfileInDTO.getEmail())) {
             User emailExists = userRepository.findByEmail(updateProfileInDTO.getEmail());
             if (emailExists != null) {
+                log.error("Email already exists: {}", updateProfileInDTO.getEmail());
                 throw new ResourceAlreadyExistsException("Email Already Exists");
             }
         }
@@ -202,22 +216,25 @@ public class UserServiceImpl implements UserService {
         return "Profile Updated Successfully";
     }
 
-    /**
-     * Sends a contact us message to the specified email address.
-     *
-     * @param contactUsInDTO the DTO containing the contact message details (subject, message, from email, etc.)
-     * @return a {@link String} message indicating the result of the send operation
-     * @throws RuntimeException if an error occurs while sending the email
-     */
-    @Override
-    public String contactUs(final ContactUsInDTO contactUsInDTO) {
-        try {
-            sendEmail(contactUsInDTO);
-            return "Your message has been sent successfully!";
-        } catch (MessagingException e) {
-            throw new RuntimeException("Error while sending email: " + e.getMessage());
-        }
+/**
+ * Sends a contact us message to the specified email address.
+ *
+ * @param contactUsInDTO the DTO containing the contact message details (subject, message,
+ * Sends a contact us message to the specified email address.
+ *
+ * @return a {@link String} message indicating the result of the send operation
+ * @throws RuntimeException if an error occurs while sending the email
+ */
+@Override
+public String contactUs(final ContactUsInDTO contactUsInDTO) {
+    try {
+        sendEmail(contactUsInDTO);
+        return "Your message has been sent successfully!";
+    } catch (MessagingException e) {
+        log.error("Error while sending email: {}", e.getMessage());
+        throw new RuntimeException("Error while sending email: " + e.getMessage());
     }
+}
 
     /**
      * Handles forgot password.
@@ -230,6 +247,7 @@ public class UserServiceImpl implements UserService {
             sendPasswordEmail(email);
             return "Your Password has been sent successfully!";
         } catch (MessagingException e) {
+            log.error("Error while sending password email: {}", e.getMessage());
             throw new RuntimeException("Error while sending email: " + e.getMessage());
         }
     }
@@ -241,19 +259,24 @@ public class UserServiceImpl implements UserService {
      * @throws MessagingException if an error occurs while creating or sending the email
      */
     private void sendEmail(final ContactUsInDTO contactUsDTO) throws MessagingException {
-        MimeMessage message = javaMailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true);
-        String[] recipientsMails = {
-                "akashtiwariofficial2003@gmail.com",
-                "tiwari2003akash@gmail.com",
-                "work.akashtiwari@gmail.com"
-        };
-        helper.setReplyTo(contactUsDTO.getFromEmail());
-        helper.setTo(recipientsMails);
-        helper.setSubject(contactUsDTO.getSubject());
-        helper.setText(contactUsDTO.getMessage(), true);
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            String[] recipientsMails = {
+                    "akashtiwariofficial2003@gmail.com",
+                    "tiwari2003akash@gmail.com",
+                    "work.akashtiwari@gmail.com"
+            };
+            helper.setReplyTo(contactUsDTO.getFromEmail());
+            helper.setTo(recipientsMails);
+            helper.setSubject(contactUsDTO.getSubject());
+            helper.setText(contactUsDTO.getMessage(), true);
 
-        javaMailSender.send(message);
+            javaMailSender.send(message);
+        } catch (MessagingException e) {
+            log.error("Failed to send contact email: {}", e.getMessage());
+            throw e;
+        }
     }
 
     /**
@@ -263,16 +286,22 @@ public class UserServiceImpl implements UserService {
      * @throws MessagingException if an error occurs while creating or sending the email
      */
     private void sendPasswordEmail(final String email) throws MessagingException {
-        MimeMessage message = javaMailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true);
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
-            throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
-        }
-        helper.setTo(email);
-        helper.setSubject(Constants.PASSWORD_RESET);
-        helper.setText(PasswordDecoder.decodeBase64Password(user.getPassword()), true);
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            User user = userRepository.findByEmail(email);
+            if (user == null) {
+                log.error("User not found with email: {}", email);
+                throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
+            }
+            helper.setTo(email);
+            helper.setSubject(Constants.PASSWORD_RESET);
+            helper.setText(PasswordDecoder.decodeBase64Password(user.getPassword()), true);
 
-        javaMailSender.send(message);
+            javaMailSender.send(message);
+        } catch (MessagingException e) {
+            log.error("Failed to send password reset email to: {}", email);
+            throw e;
+        }
     }
 }

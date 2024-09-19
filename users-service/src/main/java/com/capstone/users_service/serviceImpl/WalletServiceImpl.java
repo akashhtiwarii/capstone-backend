@@ -4,6 +4,7 @@ import com.capstone.users_service.entity.Wallet;
 import com.capstone.users_service.exceptions.ResourceNotFoundException;
 import com.capstone.users_service.repository.WalletRepository;
 import com.capstone.users_service.service.WalletService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,8 +13,8 @@ import org.springframework.stereotype.Service;
  * This service provides methods for finding, updating, and recharging user wallets.
  */
 @Service
+@Slf4j
 public class WalletServiceImpl implements WalletService {
-
     /**
      * Repository for accessing the {@link Wallet} table using JPA methods.
      */
@@ -31,6 +32,7 @@ public class WalletServiceImpl implements WalletService {
     public Wallet findByUserId(final long userId) {
         Wallet wallet = walletRepository.findByUserId(userId);
         if (wallet == null) {
+            log.error("Wallet not found for userId: {}", userId);
             throw new ResourceNotFoundException("User not present");
         }
         return wallet;
@@ -49,12 +51,14 @@ public class WalletServiceImpl implements WalletService {
     public String updateWallet(final long userId, final double amount) {
         Wallet wallet = walletRepository.findByUserId(userId);
         if (wallet == null) {
+            log.error("Wallet not found for userId: {}", userId);
             throw new ResourceNotFoundException("User not present");
         }
         wallet.setAmount(amount);
         try {
             walletRepository.save(wallet);
         } catch (Exception e) {
+            log.error("Failed to update wallet for userId: {}. Error: {}", userId, e.getMessage());
             throw new RuntimeException("An Unexpected Error Occurred.");
         }
         return "Wallet Updated Successfully";
@@ -72,11 +76,17 @@ public class WalletServiceImpl implements WalletService {
     public String rechargeWallet(final long userId, final double amount) {
         Wallet wallet = walletRepository.findByUserId(userId);
         if (wallet == null) {
+            log.error("Wallet not found for userId: {}", userId);
             throw new ResourceNotFoundException("No User Present");
         }
         double walletBalance = wallet.getAmount();
         wallet.setAmount(walletBalance + amount);
-        walletRepository.save(wallet);
+        try {
+            walletRepository.save(wallet);
+        } catch (Exception e) {
+            log.error("Failed to recharge wallet for userId: {}. Error: {}", userId, e.getMessage());
+            throw new RuntimeException("An Unexpected Error Occurred.");
+        }
         return "Wallet Recharged";
     }
 }

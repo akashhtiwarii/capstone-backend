@@ -221,4 +221,59 @@ public final class Constants {
      * Error message when service is down.
      */
     public static final String SERVICE_DOWN = "Failed to communicate service";
+
+    /**
+     * Order Endpoint.
+     */
+    public static final String ORDER_ENDPOINT = "/order";
+
+    /**
+     * Restaurant ID.
+     */
+    public static final String RESTAURANT_ID = "/{restaurantId}";
+
+    /**
+     * Owner Endpoint.
+     */
+    public static final String GET_RESTAURANT_BY_OWNER_ID = "/owner";
+
+    /**
+     * Get Food Item By Restaurant Endpoint.
+     */
+    public static final String GET_FOOD_BY_RESTAURANT = "/restaurantfood/{restaurantId}";
+
+    /**
+     * Get Food Item By ID Endpoint.
+     */
+    public static final String GET_FOOD_BY_ID = "/food/id";
+
+    /**
+     * Wallet Not Found Message.
+     */
+    public static final String WALLET_NOT_FOUND = "Wallet Not Found";
+
+    /**
+     * Get User By ID.
+     */
+    public static final String GET_USER_BY_ID_ENDPOINT = "/{id}";
+
+    /**
+     * Get Address By ID.
+     */
+    public static final String GET_ADDRESS_BY_ID = "/address/id";
+
+    /**
+     * Address Endpoint.
+     */
+    public static final String ADDRESS_ENDPOINT = "/address";
+
+    /**
+     * Wallet Endpoint.
+     */
+    public static final String WALLET_ENDPOINT = "/wallet";
+
+    /**
+     * Update Wallet Endpoint.
+     */
+    public static final String WALLET_UPDATE = "/wallet/update";
 }

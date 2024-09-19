@@ -77,7 +77,7 @@ public class CartItemServiceImplTest {
             cartItemService.addToCart(addToCartInDTO);
         });
 
-        assertEquals("Food Not Found", exception.getMessage());
+        assertEquals("Food Item Not Found", exception.getMessage());
     }
 
     @Test
@@ -216,7 +216,7 @@ public class CartItemServiceImplTest {
             cartItemService.updateCartItem(1L, 1);
         });
 
-        assertEquals(Constants.FOOD_ITEM_NOT_FOUND, exception.getMessage());
+        assertEquals(Constants.CART_ITEM_NOT_FOUND, exception.getMessage());
     }
 
     @Test
@@ -233,4 +233,62 @@ public class CartItemServiceImplTest {
 
         verify(cartItemRepository, times(1)).save(cartItem);
     }
+
+    @Test
+    public void testAddToCartUserServiceUnavailable() {
+        AddToCartInDTO addToCartInDTO = new AddToCartInDTO();
+        addToCartInDTO.setUserId(1L);
+        addToCartInDTO.setQuantity(1);
+        addToCartInDTO.setRestaurantId(1L);
+        addToCartInDTO.setFoodId(1L);
+
+        when(usersFeignClient.getUserById(1L)).thenThrow(FeignException.class);
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            cartItemService.addToCart(addToCartInDTO);
+        });
+
+        assertNotNull(exception);
+    }
+
+    @Test
+    public void testAddToCartRestaurantServiceUnavailable() {
+        AddToCartInDTO addToCartInDTO = new AddToCartInDTO();
+        addToCartInDTO.setUserId(1L);
+        addToCartInDTO.setQuantity(1);
+        addToCartInDTO.setRestaurantId(1L);
+        addToCartInDTO.setFoodId(1L);
+
+        UserOutDTO user = new UserOutDTO();
+        when(usersFeignClient.getUserById(1L)).thenReturn(ResponseEntity.ok(user));
+
+        when(restaurantFeignClient.getFoodItemById(1L)).thenThrow(FeignException.class);
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            cartItemService.addToCart(addToCartInDTO);
+        });
+
+        assertNotNull(exception);
+    }
+
+    @Test
+    public void testGetCartItemsFoodServiceUnavailable() {
+        CartItem cartItem = new CartItem();
+        cartItem.setCartItemId(1L);
+        cartItem.setUserId(1L);
+        cartItem.setFoodId(101L);
+        cartItem.setRestaurantId(1001L);
+
+        when(cartItemRepository.findByUserId(1L)).thenReturn(Arrays.asList(cartItem));
+        when(restaurantFeignClient.getFoodItemById(101L)).thenThrow(FeignException.class);
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            cartItemService.getCartItems(1L);
+        });
+
+        assertNotNull(exception);
+    }
+
+
 }
+

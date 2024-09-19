@@ -14,9 +14,11 @@ import com.capstone.restaurants_service.feignClient.UserClient;
 import com.capstone.restaurants_service.repository.RestaurantRepository;
 import com.capstone.restaurants_service.service.RestaurantService;
 import feign.FeignException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
@@ -29,8 +31,8 @@ import java.util.Objects;
  * </p>
  */
 @Service
+@Slf4j
 public class RestaurantServiceImpl implements RestaurantService {
-
     /**
      * Repository for managing {@link Restaurant} entities.
      */
@@ -61,13 +63,16 @@ public class RestaurantServiceImpl implements RestaurantService {
         try {
             UserOutDTO user = userClient.getUserById(restaurantInDTO.getOwnerId()).getBody();
             if (user == null) {
+                log.error("User not found for ID: {}", restaurantInDTO.getOwnerId());
                 throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
             }
             if (user.getRole() == Role.USER) {
+                log.error("User with ID {} cannot add a restaurant", restaurantInDTO.getOwnerId());
                 throw new ResourceNotValidException(Constants.YOU_CANNOT_ADD_RESTAURANT);
             }
             Restaurant restaurantAlreadyExists = restaurantRepository.findByEmail(restaurantInDTO.getEmail());
             if (restaurantAlreadyExists != null) {
+                log.error("Restaurant with email {} already exists", restaurantInDTO.getEmail());
                 throw new ResourceAlreadyExistsException(Constants.EMAIL_ALREADY_EXISTS);
             }
 
@@ -76,6 +81,7 @@ public class RestaurantServiceImpl implements RestaurantService {
                 if (image != null && !image.isEmpty()) {
                     String contentType = image.getContentType();
                     if (contentType == null || !contentType.startsWith("image/")) {
+                        log.error("Invalid image type for file: {}", image.getOriginalFilename());
                         throw new ResourceNotValidException(Constants.INVALID_IMAGE_TYPE);
                     }
                     restaurant.setImage(image.getBytes());
@@ -83,17 +89,20 @@ public class RestaurantServiceImpl implements RestaurantService {
                 restaurantRepository.save(restaurant);
                 return Constants.RESTAURANT_ADDED_SUCCESSFULLY;
             } catch (ResourceNotValidException e) {
+                log.error("Validation failed: {}", e.getMessage());
                 throw e;
             } catch (IOException e) {
+                log.error("Failed to upload image: {}", e.getMessage());
                 throw new RuntimeException(Constants.FAILED_TO_UPLOAD_IMAGE + e.getMessage());
             } catch (Exception e) {
+                log.error("Unexpected error occurred: {}", e.getMessage());
                 throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + e.getMessage());
             }
         } catch (FeignException e) {
+            log.error("User service is down: {}", e.getMessage());
             throw new RuntimeException(Constants.USER_SERVICE_DOWN);
         }
     }
-
 
     /**
      * Updates an existing restaurant.
@@ -114,21 +123,30 @@ public class RestaurantServiceImpl implements RestaurantService {
         try {
             UserOutDTO user = userClient.getUserById(updateRestaurantInDTO.getLoggedInOwnerId()).getBody();
             if (user == null) {
+                log.error("User not found for ID: {}", updateRestaurantInDTO.getLoggedInOwnerId());
                 throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
             }
             if (user.getRole() == Role.USER) {
+                log.error("User with ID {} cannot update a restaurant", updateRestaurantInDTO.getLoggedInOwnerId());
                 throw new ResourceNotValidException(Constants.YOU_CANNOT_UPDATE_RESTAURANT);
             }
             Restaurant restaurant = restaurantRepository.findById(updateRestaurantInDTO.getRestaurantId());
             if (restaurant == null) {
+                log.error("Restaurant not found for ID: {}", updateRestaurantInDTO.getRestaurantId());
                 throw new ResourceNotFoundException(Constants.RESTAURANT_DOES_NOT_EXISTS);
             }
             if (restaurant.getOwnerId() != updateRestaurantInDTO.getLoggedInOwnerId()) {
+                log.error(
+                        "User with ID {} is not authorized to update restaurant ID: {}",
+                        updateRestaurantInDTO.getLoggedInOwnerId(),
+                        updateRestaurantInDTO.getRestaurantId()
+                );
                 throw new ResourceNotValidException(Constants.YOU_CANNOT_UPDATE_RESTAURANT);
             }
             if (!Objects.equals(restaurant.getEmail(), updateRestaurantInDTO.getEmail())) {
                 Restaurant restaurantAlreadyExists = restaurantRepository.findByEmail(updateRestaurantInDTO.getEmail());
                 if (restaurantAlreadyExists != null) {
+                    log.error("Restaurant with email {} already exists", updateRestaurantInDTO.getEmail());
                     throw new ResourceAlreadyExistsException(Constants.EMAIL_ALREADY_EXISTS);
                 }
             }
@@ -140,6 +158,7 @@ public class RestaurantServiceImpl implements RestaurantService {
                 if (image != null && !image.isEmpty()) {
                     String contentType = image.getContentType();
                     if (contentType == null || !contentType.startsWith("image/")) {
+                        log.error("Invalid image type for file: {}", image.getOriginalFilename());
                         throw new ResourceNotValidException(Constants.INVALID_IMAGE_TYPE);
                     }
                     restaurant.setImage(image.getBytes());
@@ -147,13 +166,17 @@ public class RestaurantServiceImpl implements RestaurantService {
                 restaurantRepository.save(restaurant);
                 return Constants.RESTAURANT_UPDATED_SUCCESSFULLY;
             } catch (ResourceNotValidException e) {
+                log.error("Validation failed: {}", e.getMessage());
                 throw e;
             } catch (IOException e) {
+                log.error("Failed to upload image: {}", e.getMessage());
                 throw new RuntimeException(Constants.FAILED_TO_UPLOAD_IMAGE + e.getMessage());
             } catch (Exception e) {
+                log.error("Unexpected error occurred: {}", e.getMessage());
                 throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + e.getMessage());
             }
         } catch (FeignException e) {
+            log.error("User service is down: {}", e.getMessage());
             throw new RuntimeException(Constants.USER_SERVICE_DOWN);
         }
     }
@@ -171,6 +194,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     public List<Restaurant> findAll() {
         List<Restaurant> restaurants = restaurantRepository.findAll();
         if (restaurants.isEmpty()) {
+            log.error("No restaurants found");
             throw new ResourceNotFoundException(Constants.RESTAURANT_DOES_NOT_EXISTS);
         }
         return restaurants;
@@ -183,16 +207,16 @@ public class RestaurantServiceImpl implements RestaurantService {
      * an exception is thrown.
      * </p>
      * @param ownerId the ID of the owner whose restaurants are to be retrieved
-     * @return a list of {@link Restaurant} entities owned by the specified owner
-     * @throws ResourceNotFoundException if no restaurants are found for the given owner ID
+     * @return a list of {@link List} of Restaurants.
      */
     @Override
     public List<Restaurant> findByOwnerId(final long ownerId) {
-        List<Restaurant> restaurant = restaurantRepository.findByOwnerId(ownerId);
-        if (restaurant.isEmpty()) {
+        List<Restaurant> restaurants = restaurantRepository.findByOwnerId(ownerId);
+        if (restaurants.isEmpty()) {
+            log.error("No restaurants found for owner ID: {}", ownerId);
             throw new ResourceNotFoundException(Constants.RESTAURANT_DOES_NOT_EXISTS);
         }
-        return restaurant;
+        return restaurants;
     }
 
     /**
@@ -209,8 +233,10 @@ public class RestaurantServiceImpl implements RestaurantService {
     public Restaurant findById(final long restaurantId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId);
         if (restaurant == null) {
+            log.error("Restaurant not found for ID: {}", restaurantId);
             throw new ResourceNotFoundException(Constants.RESTAURANT_DOES_NOT_EXISTS);
         }
         return restaurant;
     }
 }
+

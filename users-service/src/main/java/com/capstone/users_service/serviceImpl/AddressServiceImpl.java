@@ -9,6 +9,7 @@ import com.capstone.users_service.exceptions.ResourceNotValidException;
 import com.capstone.users_service.repository.AddressRepository;
 import com.capstone.users_service.repository.UserRepository;
 import com.capstone.users_service.service.AddressService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ import java.util.List;
  * This service provides methods for adding, updating, retrieving, and deleting addresses.
  */
 @Service
+@Slf4j
 public class AddressServiceImpl implements AddressService {
 
     /**
@@ -45,6 +47,7 @@ public class AddressServiceImpl implements AddressService {
     public String addAddress(final AddressInDTO addressInDTO) {
         User user = userRepository.findById(addressInDTO.getUserId());
         if (user == null) {
+            log.error("User not found with ID: {}", addressInDTO.getUserId());
             throw new ResourceNotFoundException("User not found with ID: " + addressInDTO.getUserId());
         }
         Address address = new Address();
@@ -57,6 +60,7 @@ public class AddressServiceImpl implements AddressService {
             addressRepository.save(address);
             return "Address added successfully";
         } catch (Exception e) {
+            log.error("Error while adding address: {}", e.getMessage());
             throw new RuntimeException("An unexpected error occurred: " + e.getMessage());
         }
     }
@@ -72,6 +76,7 @@ public class AddressServiceImpl implements AddressService {
     public List<Address> getAddressByUserId(final long userId) {
         List<Address> addresses = addressRepository.findByUserId(userId);
         if (addresses.isEmpty()) {
+            log.error("No addresses found for user ID: {}", userId);
             throw new ResourceNotFoundException("Address Not Found");
         }
         return addresses;
@@ -88,6 +93,7 @@ public class AddressServiceImpl implements AddressService {
     public Address getAddressById(final long addressId) {
         Address address = addressRepository.findById(addressId);
         if (address == null) {
+            log.error("Address not found with ID: {}", addressId);
             throw new ResourceNotFoundException("Address Not Found");
         }
         return address;
@@ -105,13 +111,16 @@ public class AddressServiceImpl implements AddressService {
     public String updateAddress(final UpdateAddressInDTO updateAddressInDTO) {
         User user = userRepository.findById(updateAddressInDTO.getUserId());
         if (user == null) {
+            log.error("User not found with ID: {}", updateAddressInDTO.getUserId());
             throw new ResourceNotFoundException("User Not Found");
         }
         Address address = addressRepository.findById(updateAddressInDTO.getAddressId());
         if (address == null) {
+            log.error("Address not found with ID: {}", updateAddressInDTO.getAddressId());
             throw new ResourceNotFoundException("Address Not Found");
         }
         if (user.getUserId() != address.getUserId()) {
+            log.error("User ID: {} does not match the address owner ID: {}", updateAddressInDTO.getUserId(), address.getUserId());
             throw new ResourceNotValidException("You cannot update this address");
         }
         address.setAddress(updateAddressInDTO.getAddress().trim());
@@ -135,13 +144,16 @@ public class AddressServiceImpl implements AddressService {
     public String deleteAddress(final long userId, final long addressId) {
         User user = userRepository.findById(userId);
         if (user == null) {
+            log.error("User not found with ID: {}", userId);
             throw new ResourceNotFoundException("User Not Found");
         }
         Address address = addressRepository.findById(addressId);
         if (address == null) {
+            log.error("Address not found with ID: {}", addressId);
             throw new ResourceNotFoundException("Address Not Found");
         }
         if (user.getUserId() != address.getUserId()) {
+            log.error("User ID: {} does not match the address owner ID: {}", userId, address.getUserId());
             throw new ResourceNotValidException("You cannot delete this address");
         }
         addressRepository.deleteById(addressId);

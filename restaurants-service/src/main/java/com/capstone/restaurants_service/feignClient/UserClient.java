@@ -27,6 +27,6 @@ public interface UserClient {
      * @param userId the ID of the user to retrieve
      * @return a {@link ResponseEntity} containing the user details encapsulated in a {@link UserOutDTO}
      */
-    @GetMapping("/{id}")
+    @GetMapping(Constants.GET_USER_BY_ID)
     ResponseEntity<UserOutDTO> getUserById(@PathVariable("id") long userId);
 }

@@ -236,4 +236,14 @@ public final class Constants {
      * Invalid type for image.
      */
     public static final String INVALID_IMAGE_TYPE = "Invalid file type. Only image files are allowed.";
+
+    /**
+     * Get Food Item By ID.
+     */
+    public static final String GET_FOOD_ITEM_BY_ID = "food/id";
+
+    /**
+     * Get User By Id.
+     */
+    public static final String GET_USER_BY_ID = "/{id}";
 }

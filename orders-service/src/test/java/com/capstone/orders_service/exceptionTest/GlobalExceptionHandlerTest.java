@@ -2,10 +2,7 @@ package com.capstone.orders_service.exceptionTest;
 
 
 import com.capstone.orders_service.Enum.Status;
-import com.capstone.orders_service.exceptions.ErrorResponse;
-import com.capstone.orders_service.exceptions.GlobalExceptionHandler;
-import com.capstone.orders_service.exceptions.ResourceNotFoundException;
-import com.capstone.orders_service.exceptions.ResourceNotValidException;
+import com.capstone.orders_service.exceptions.*;
 import feign.FeignException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +15,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -132,4 +130,25 @@ class GlobalExceptionHandlerTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertEquals("Runtime error", response.getBody().getMessage());
     }
+
+    @Test
+    void testHandleRestaurantConflictException() {
+        RestaurantConflictException ex = new RestaurantConflictException("Restaurant conflict error");
+        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleRestaurantConflictException(ex);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Restaurant conflict error", response.getBody().getMessage());
+    }
+
+    @Test
+    void testHandleInsufficientAmountException() {
+        InsufficientAmountException ex = new InsufficientAmountException("Insufficient amount");
+        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleInsufficientAmountException(ex);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Insufficient amount", response.getBody().getMessage());
+    }
+
 }

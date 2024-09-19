@@ -16,6 +16,7 @@ import com.capstone.orders_service.repository.CartItemRepository;
 import com.capstone.orders_service.service.CartItemService;
 import com.capstone.orders_service.utils.Constants;
 import feign.FeignException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
  * as well as fetching cart details for a user.
  */
 @Service
+@Slf4j
 public class CartItemServiceImpl implements CartItemService {
 
     /**
@@ -63,22 +65,28 @@ public class CartItemServiceImpl implements CartItemService {
         try {
             UserOutDTO user = usersFeignClient.getUserById(addToCartInDTO.getUserId()).getBody();
             if (user == null) {
-                throw new ResourceNotFoundException("User Not Found");
+                log.error("User Not Found : {}", addToCartInDTO.getUserId());
+                throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
             }
         } catch (FeignException.NotFound e) {
+            log.error("User Not Found : {}", addToCartInDTO.getUserId());
             throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
         } catch (FeignException e) {
+            log.error("User Service Down");
             throw new RuntimeException(Constants.USER_SERVICE_DOWN);
         }
         try {
             FoodItemOutDTO foodItemOutDTO = restaurantFeignClient.getFoodItemById(cartItem.getFoodId()).getBody();
             if (foodItemOutDTO == null) {
-                throw new ResourceNotFoundException("Food Not Found");
+                log.error("Food Not Found : {}", cartItem.getFoodId());
+                throw new ResourceNotFoundException(Constants.FOOD_ITEM_NOT_FOUND);
             }
             cartItem.setPrice(cartItem.getQuantity() * foodItemOutDTO.getPrice());
         } catch (FeignException.NotFound e) {
+            log.error("Food Not Found : {}", cartItem.getFoodId());
             throw new ResourceNotFoundException(Constants.FOOD_ITEM_NOT_FOUND);
         } catch (FeignException e) {
+            log.error("Restaurant Service Down");
             throw new RuntimeException(Constants.RESTAURANT_SERVICE_DOWN);
         }
         try {
@@ -86,23 +94,29 @@ public class CartItemServiceImpl implements CartItemService {
                     addToCartInDTO.getRestaurantId()
             ).getBody();
             if (foodItemOutDTOS == null) {
-                throw new ResourceNotFoundException("Food Items Not Found");
+                log.error("Food Items Not Found");
+                throw new ResourceNotFoundException(Constants.FOOD_ITEM_NOT_FOUND);
             }
             if (foodItemOutDTOS.isEmpty()) {
+                log.error("Food Items Not Found");
                 throw new ResourceNotFoundException(Constants.FOOD_ITEM_NOT_FOUND);
             }
             List<Long> foodIds = foodItemOutDTOS.stream().map(FoodItemOutDTO::getFoodId).collect(Collectors.toList());
             if (!foodIds.contains(addToCartInDTO.getFoodId())) {
+                log.error("Food Not Found : {}", addToCartInDTO.getFoodId());
                 throw new ResourceNotFoundException(Constants.FOOD_ITEM_NOT_FOUND);
             }
         } catch (FeignException.NotFound e) {
+            log.error("Food Not Found : {}", cartItem.getFoodId());
             throw new ResourceNotFoundException(Constants.FOOD_ITEM_NOT_FOUND);
         } catch (FeignException e) {
+            log.error("Restaurant Service Down");
             throw new RuntimeException(Constants.RESTAURANT_SERVICE_DOWN);
         }
         List<CartItem> cartItemList = cartItemRepository.findByUserId(addToCartInDTO.getUserId());
         if (!cartItemList.isEmpty()) {
             if (addToCartInDTO.getRestaurantId() != cartItemList.get(0).getRestaurantId()) {
+                log.error("Restaurant Conflict Exception");
                 throw new RestaurantConflictException(Constants.RESTAURANT_CONFLICT);
             }
             CartItem cartItemItemAlreadyPresent = cartItemRepository.findByRestaurantIdAndUserIdAndFoodId(
@@ -129,6 +143,7 @@ public class CartItemServiceImpl implements CartItemService {
     public String deleteCartItem(final long cartItemId) {
         CartItem cartItem = cartItemRepository.findById(cartItemId);
         if (cartItem == null) {
+            log.error("Cart Item Not Found : {}", cartItemId);
             throw new ResourceNotFoundException(Constants.CART_ITEM_NOT_FOUND);
         }
         cartItemRepository.deleteById(cartItemId);
@@ -146,6 +161,7 @@ public class CartItemServiceImpl implements CartItemService {
     public CartItemsListOutDTO getCartItems(final long userId) {
         List<CartItem> cartItems = cartItemRepository.findByUserId(userId);
         if (cartItems.isEmpty()) {
+            log.error("Cart Items Not Found");
             throw new ResourceNotFoundException(Constants.CART_ITEM_NOT_FOUND);
         }
         List<CartItemOutDTO> cartItemOutDTOS = new ArrayList<>();
@@ -157,10 +173,12 @@ public class CartItemServiceImpl implements CartItemService {
                         cartItem.getRestaurantId()
                 ).getBody();
                 if (foodItemOutDTO == null) {
-                    throw new ResourceNotFoundException("Food Item Not Found");
+                    log.error("Food Not Found : {}", cartItem.getFoodId());
+                    throw new ResourceNotFoundException(Constants.FOOD_ITEM_NOT_FOUND);
                 }
                 if (restaurant == null) {
-                    throw new ResourceNotFoundException("Restaurant Not Found");
+                    log.error("Restaurant Not Found : {}", cartItem.getRestaurantId());
+                    throw new ResourceNotFoundException(Constants.RESTAURANT_NOT_FOUND);
                 }
                 CartItemOutDTO cartItemOutDTO = new CartItemOutDTO();
                 cartItemOutDTO.setCartItemId(cartItem.getCartItemId());
@@ -175,8 +193,10 @@ public class CartItemServiceImpl implements CartItemService {
                 totalAmount += cartItem.getPrice() * cartItem.getQuantity();
                 cartItemOutDTOS.add(cartItemOutDTO);
             } catch (FeignException.NotFound e) {
+                log.error("Food Not Found : {}", cartItem.getFoodId());
                 throw new ResourceNotFoundException(Constants.FOOD_ITEM_NOT_FOUND);
             } catch (FeignException e) {
+                log.error("Restaurant Service Down");
                 throw new RuntimeException(Constants.RESTAURANT_SERVICE_DOWN);
             }
         }
@@ -198,7 +218,8 @@ public class CartItemServiceImpl implements CartItemService {
     public String updateCartItem(final long cartItemId, final int index) {
         CartItem cartItem = cartItemRepository.findById(cartItemId);
         if (cartItem == null) {
-            throw new ResourceNotFoundException(Constants.FOOD_ITEM_NOT_FOUND);
+            log.error("Cart Item Not Found : {}", cartItemId);
+            throw new ResourceNotFoundException(Constants.CART_ITEM_NOT_FOUND);
         }
         cartItem.setQuantity(cartItem.getQuantity() + index);
         cartItemRepository.save(cartItem);

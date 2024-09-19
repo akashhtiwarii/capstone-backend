@@ -2,6 +2,7 @@ package com.capstone.orders_service.feignClient;
 
 import com.capstone.orders_service.dto.FoodItemOutDTO;
 import com.capstone.orders_service.dto.RestaurantOutDTO;
+import com.capstone.orders_service.utils.Constants;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +29,7 @@ public interface RestaurantFeignClient {
      * @return A {@link ResponseEntity} containing the {@link RestaurantOutDTO} object with the restaurant details
      * or an error response if the restaurant is not found.
      */
-    @GetMapping("/{restaurantId}")
+    @GetMapping(Constants.RESTAURANT_ID)
     ResponseEntity<RestaurantOutDTO> getRestaurantById(@PathVariable("restaurantId") long restaurantId);
 
     /**
@@ -39,7 +40,7 @@ public interface RestaurantFeignClient {
      * {@link List} of {@link RestaurantOutDTO} objects with the restaurant
      * details or an error response if no restaurants are found for the owner.
      */
-    @GetMapping("/owner")
+    @GetMapping(Constants.GET_RESTAURANT_BY_OWNER_ID)
     ResponseEntity<List<RestaurantOutDTO>> getRestaurantByOwnerId(@RequestParam long ownerId);
 
     /**
@@ -49,7 +50,7 @@ public interface RestaurantFeignClient {
      * @return A {@link ResponseEntity} containing a {@link List} of {@link FoodItemOutDTO} objects with the food item
      *         details or an error response if no food items are found for the restaurant.
      */
-    @GetMapping("/restaurantfood/{restaurantId}")
+    @GetMapping(Constants.GET_FOOD_BY_RESTAURANT)
     ResponseEntity<List<FoodItemOutDTO>> getFoodItemsByRestaurant(@PathVariable("restaurantId") long restaurantId);
 
     /**
@@ -59,6 +60,6 @@ public interface RestaurantFeignClient {
      * @return A {@link ResponseEntity} containing the {@link FoodItemOutDTO} object with the food item details
      *         or an error response if the food item is not found.
      */
-    @GetMapping("/food/id")
+    @GetMapping(Constants.GET_FOOD_BY_ID)
     ResponseEntity<FoodItemOutDTO> getFoodItemById(@RequestParam long foodId);
 }

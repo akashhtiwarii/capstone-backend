@@ -281,7 +281,7 @@ public class RestaurantController {
      * @param foodId The ID of the food item to retrieve.
      * @return ResponseEntity containing the details of the food item.
      */
-    @GetMapping("food/id")
+    @GetMapping(Constants.GET_FOOD_ITEM_BY_ID)
     public ResponseEntity<FoodItem> getFoodItemById(@RequestParam final long foodId) {
         logger.info("Fetching Food item of ID: {}", foodId);
         FoodItem foodItem = foodItemService.getByFoodId(foodId);

@@ -365,4 +365,37 @@ class OrderServiceImplTest {
 
         assertEquals(Constants.ORDER_NOT_FOUND, exception.getMessage());
     }
+
+    @Test
+    void testUpdateOrderOrderNotFound() {
+        when(orderRepository.findById(1L)).thenReturn(null);
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
+                () -> orderService.updateOrder(1L, 1L, Status.PENDING));
+
+        assertEquals(Constants.ORDER_NOT_FOUND, exception.getMessage());
+        verify(orderRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    void testUpdateOrderSuccess() {
+        Order order = new Order();
+        order.setRestaurantId(1L);
+        when(orderRepository.findById(1L)).thenReturn(order);
+
+        RestaurantOutDTO restaurant = new RestaurantOutDTO();
+        restaurant.setRestaurantId(1L);
+        when(restaurantFeignClient.getRestaurantById(1L)).thenReturn(ResponseEntity.ok(restaurant));
+
+        String result = orderService.updateOrder(1L, 1L, Status.PENDING);
+
+        assertEquals(Constants.ORDER_UPDATED_SUCCESSFULLY, result);
+        verify(orderRepository, times(1)).findById(1L);
+        verify(restaurantFeignClient, times(1)).getRestaurantById(1L);
+        verify(orderRepository, times(1)).save(order);
+        assertEquals(Status.PENDING, order.getStatus());
+    }
+
+
+
 }

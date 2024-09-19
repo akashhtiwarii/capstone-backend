@@ -19,6 +19,7 @@ import com.capstone.restaurants_service.repository.RestaurantRepository;
 import com.capstone.restaurants_service.service.FoodItemService;
 import com.capstone.restaurants_service.utils.StringUtils;
 import feign.FeignException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,6 +38,7 @@ import java.util.List;
  * </p>
  */
 @Service
+@Slf4j
 public class FoodItemServiceImpl implements FoodItemService {
 
     /**
@@ -81,26 +83,34 @@ public class FoodItemServiceImpl implements FoodItemService {
         try {
             UserOutDTO user = userClient.getUserById(foodItemInDTO.getLoggedInOwnerId()).getBody();
             if (user == null) {
+                log.error("User not found for ID: {}", foodItemInDTO.getLoggedInOwnerId());
                 throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
             }
             if (user.getRole() != Role.OWNER) {
+                log.error("User with ID {} does not have OWNER role", foodItemInDTO.getLoggedInOwnerId());
                 throw new ResourceNotValidException(Constants.YOU_CANNOT_ADD_FOOD);
             }
             String foodItemName = StringUtils.capitalizeFirstLetter(foodItemInDTO.getName());
             Category category = categoryRepository.findById(foodItemInDTO.getCategoryId());
             if (category == null) {
+                log.error("Category not found for ID: {}", foodItemInDTO.getCategoryId());
                 throw new ResourceNotFoundException(Constants.CATEGORY_NOT_FOUND);
             }
             Restaurant restaurant = restaurantRepository.findById(category.getRestaurantId());
             if (restaurant == null) {
+                log.error("Restaurant not found for ID: {}", category.getRestaurantId());
                 throw new ResourceNotFoundException(Constants.RESTAURANT_NOT_FOUND);
             }
             if (restaurant.getOwnerId() != user.getUserId()) {
+                log.error(
+                        "Restaurant owner ID {} does not match user ID {}", restaurant.getOwnerId(), user.getUserId()
+                );
                 throw new ResourceNotValidException(Constants.YOU_CANNOT_ADD_FOOD);
             }
             FoodItem foodItemAlreadyExists = foodItemRepository.findByCategoryIdAndName(
                     foodItemInDTO.getCategoryId(), foodItemName);
             if (foodItemAlreadyExists != null) {
+                log.error("Food item {} already exists in category ID {}", foodItemName, foodItemInDTO.getCategoryId());
                 throw new ResourceAlreadyExistsException(Constants.FOOD_ALREADY_PRESENT);
             }
             FoodItem foodItem = FoodItemConverters.foodItemInDTOToFoodItemEntity(foodItemInDTO);
@@ -108,6 +118,7 @@ public class FoodItemServiceImpl implements FoodItemService {
                 if (image != null && !image.isEmpty()) {
                     String contentType = image.getContentType();
                     if (contentType == null || !contentType.startsWith("image/")) {
+                        log.error("Invalid image type for file: {}", image.getOriginalFilename());
                         throw new ResourceNotValidException(Constants.INVALID_IMAGE_TYPE);
                     }
                     foodItem.setImage(image.getBytes());
@@ -115,13 +126,17 @@ public class FoodItemServiceImpl implements FoodItemService {
                 foodItemRepository.save(foodItem);
                 return Constants.FOOD_ADDED_SUCCESSFULLY;
             } catch (ResourceNotValidException e) {
+                log.error("Validation failed: {}", e.getMessage());
                 throw e;
             } catch (IOException e) {
+                log.error("Failed to upload image: {}", e.getMessage());
                 throw new RuntimeException(Constants.FAILED_TO_UPLOAD_IMAGE + e.getMessage());
             } catch (Exception ex) {
+                log.error("Unexpected error occurred: {}", ex.getMessage());
                 throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + ex.getMessage());
             }
         } catch (FeignException e) {
+            log.error("User service is down: {}", e.getMessage());
             throw new RuntimeException(Constants.USER_SERVICE_DOWN);
         }
     }
@@ -143,27 +158,35 @@ public class FoodItemServiceImpl implements FoodItemService {
         try {
             UserOutDTO user = userClient.getUserById(userId).getBody();
             if (user == null) {
+                log.error("User not found for ID: {}", userId);
                 throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
             }
             if (user.getRole() != Role.OWNER) {
+                log.error("User with ID {} does not have OWNER role", userId);
                 throw new ResourceNotValidException(Constants.YOU_CANNOT_DELETE_FOOD);
             }
             FoodItem foodItem = foodItemRepository.findById(foodId);
             if (foodItem == null) {
+                log.error("Food item not found for ID: {}", foodId);
                 throw new ResourceNotFoundException(Constants.FOOD_NOT_FOUND);
             }
             Category category = categoryRepository.findById(foodItem.getCategoryId());
             Restaurant restaurant = restaurantRepository.findById(category.getRestaurantId());
             if (restaurant.getOwnerId() != user.getUserId()) {
+                log.error(
+                        "Restaurant owner ID {} does not match user ID {}", restaurant.getOwnerId(), user.getUserId()
+                );
                 throw new ResourceNotValidException(Constants.YOU_CANNOT_DELETE_FOOD);
             }
             try {
                 foodItemRepository.deleteById(foodId);
                 return Constants.FOOD_DELETED_SUCCESSFULLY;
             } catch (Exception ex) {
+                log.error("Unexpected error occurred: {}", ex.getMessage());
                 throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + ex.getMessage());
             }
         } catch (FeignException e) {
+            log.error("User service is down: {}", e.getMessage());
             throw new RuntimeException(Constants.USER_SERVICE_DOWN);
         }
     }
@@ -189,23 +212,31 @@ public class FoodItemServiceImpl implements FoodItemService {
         try {
             UserOutDTO user = userClient.getUserById(updateFoodItemInDTO.getLoggedInOwnerId()).getBody();
             if (user == null) {
+                log.error("User not found for ID: {}", updateFoodItemInDTO.getLoggedInOwnerId());
                 throw new ResourceNotFoundException(Constants.USER_NOT_FOUND);
             }
             if (user.getRole() != Role.OWNER) {
+                log.error("User with ID {} does not have OWNER role", updateFoodItemInDTO.getLoggedInOwnerId());
                 throw new ResourceNotValidException(Constants.YOU_CANNOT_UPDATE_FOOD);
             }
             FoodItem foodItem = foodItemRepository.findById(foodItemId);
             if (foodItem == null) {
+                log.error("Food item not found for ID: {}", foodItemId);
                 throw new ResourceNotFoundException(Constants.FOOD_NOT_FOUND);
             }
             Category category = categoryRepository.findById(foodItem.getCategoryId());
             Restaurant restaurant = restaurantRepository.findById(category.getRestaurantId());
             if (restaurant.getOwnerId() != user.getUserId()) {
+                log.error(
+                        "Restaurant owner ID {} does not match user ID {}", restaurant.getOwnerId(), user.getUserId()
+                );
                 throw new ResourceNotValidException(Constants.YOU_CANNOT_UPDATE_FOOD);
             }
             Category foodItemCategory = categoryRepository.findById(updateFoodItemInDTO.getCategoryId());
             Restaurant foodItemRestaurant = restaurantRepository.findById(foodItemCategory.getRestaurantId());
             if (foodItemRestaurant != restaurant) {
+                log.error("Invalid category. Restaurant ID {} does not match food item restaurant ID {}",
+                        foodItemRestaurant.getRestaurantId(), restaurant.getRestaurantId());
                 throw new ResourceNotValidException(Constants.INVALID_CATEGORY);
             }
             foodItem.setCategoryId(updateFoodItemInDTO.getCategoryId());
@@ -216,6 +247,7 @@ public class FoodItemServiceImpl implements FoodItemService {
                 if (image != null && !image.isEmpty()) {
                     String contentType = image.getContentType();
                     if (contentType == null || !contentType.startsWith("image/")) {
+                        log.error("Invalid image type for file: {}", image.getOriginalFilename());
                         throw new ResourceNotValidException(Constants.INVALID_IMAGE_TYPE);
                     }
                     foodItem.setImage(image.getBytes());
@@ -223,17 +255,20 @@ public class FoodItemServiceImpl implements FoodItemService {
                 foodItemRepository.save(foodItem);
                 return Constants.FOOD_UPDATED_SUCCESSFULLY;
             } catch (ResourceNotValidException e) {
+                log.error("Validation failed: {}", e.getMessage());
                 throw e;
             } catch (IOException e) {
+                log.error("Failed to upload image: {}", e.getMessage());
                 throw new RuntimeException(Constants.FAILED_TO_UPLOAD_IMAGE + e.getMessage());
             } catch (Exception ex) {
+                log.error("Unexpected error occurred: {}", ex.getMessage());
                 throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + ex.getMessage());
             }
         } catch (FeignException e) {
+            log.error("User service is down: {}", e.getMessage());
             throw new RuntimeException(Constants.USER_SERVICE_DOWN);
         }
     }
-
     /**
      * Retrieves all food items for a specified restaurant.
      * <p>
@@ -247,25 +282,33 @@ public class FoodItemServiceImpl implements FoodItemService {
      */
     @Override
     public List<FoodItem> getAllFoodItemsOfRestaurant(final long restaurantId) {
-        Restaurant restaurant = restaurantRepository.findById(restaurantId);
-        if (restaurant == null) {
-            throw new ResourceNotFoundException(Constants.RESTAURANT_NOT_FOUND);
-        }
-        List<Category> categories = categoryRepository.findByRestaurantId(restaurantId);
-        if (categories.isEmpty()) {
-            throw new ResourceNotFoundException(Constants.CATEGORY_NOT_FOUND);
-        }
-        List<FoodItem> allFoodItems = new ArrayList<>();
-        for (Category category : categories) {
-            List<FoodItem> foodItems = foodItemRepository.findByCategoryId(category.getCategoryId());
-            if (!foodItems.isEmpty()) {
-                allFoodItems.addAll(foodItems);
+        try {
+            Restaurant restaurant = restaurantRepository.findById(restaurantId);
+            if (restaurant == null) {
+                log.error("Restaurant not found for ID: {}", restaurantId);
+                throw new ResourceNotFoundException(Constants.RESTAURANT_NOT_FOUND);
             }
+            List<Category> categories = categoryRepository.findByRestaurantId(restaurantId);
+            if (categories.isEmpty()) {
+                log.error("No categories found for restaurant ID: {}", restaurantId);
+                throw new ResourceNotFoundException(Constants.CATEGORY_NOT_FOUND);
+            }
+            List<FoodItem> allFoodItems = new ArrayList<>();
+            for (Category category : categories) {
+                List<FoodItem> foodItems = foodItemRepository.findByCategoryId(category.getCategoryId());
+                if (!foodItems.isEmpty()) {
+                    allFoodItems.addAll(foodItems);
+                }
+            }
+            if (allFoodItems.isEmpty()) {
+                log.error("No food items found for restaurant ID: {}", restaurantId);
+                throw new ResourceNotFoundException(Constants.FOOD_NOT_FOUND);
+            }
+            return allFoodItems;
+        } catch (Exception ex) {
+            log.error("Unexpected error occurred: {}", ex.getMessage());
+            throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + ex.getMessage());
         }
-        if (allFoodItems.isEmpty()) {
-            throw new ResourceNotFoundException(Constants.FOOD_NOT_FOUND);
-        }
-        return allFoodItems;
     }
 
     /**
@@ -283,10 +326,12 @@ public class FoodItemServiceImpl implements FoodItemService {
         try {
             List<FoodItem> foodItems = foodItemRepository.findByCategoryId(categoryId);
             if (foodItems == null || foodItems.isEmpty()) {
+                log.error("No food items found for category ID: {}", categoryId);
                 throw new ResourceNotFoundException(Constants.FOOD_NOT_FOUND);
             }
             return foodItems;
         } catch (Exception ex) {
+            log.error("Unexpected error occurred: {}", ex.getMessage());
             throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + ex.getMessage());
         }
     }
@@ -303,11 +348,17 @@ public class FoodItemServiceImpl implements FoodItemService {
      */
     @Override
     public FoodItem getByFoodId(final long foodId) {
-        FoodItem foodItem = foodItemRepository.findById(foodId);
-        if (foodItem == null) {
-            throw new ResourceNotFoundException("Food Item Not Found");
+        try {
+            FoodItem foodItem = foodItemRepository.findById(foodId);
+            if (foodItem == null) {
+                log.error("Food item not found for ID: {}", foodId);
+                throw new ResourceNotFoundException("Food Item Not Found");
+            }
+            return foodItem;
+        } catch (Exception ex) {
+            log.error("Unexpected error occurred: {}", ex.getMessage());
+            throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + ex.getMessage());
         }
-        return foodItem;
     }
 }
 

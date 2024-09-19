@@ -33,7 +33,7 @@ import java.util.List;
  * Provides endpoints for retrieving, adding, updating, and deleting orders and cart items.
  */
 @RestController
-@RequestMapping("/order")
+@RequestMapping(Constants.ORDER_ENDPOINT)
 public class OrderController {
 
     /**

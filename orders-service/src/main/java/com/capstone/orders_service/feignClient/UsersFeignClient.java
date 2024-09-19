@@ -3,6 +3,7 @@ package com.capstone.orders_service.feignClient;
 import com.capstone.orders_service.dto.AddressOutDTO;
 import com.capstone.orders_service.dto.UserOutDTO;
 import com.capstone.orders_service.dto.WalletOutDTO;
+import com.capstone.orders_service.utils.Constants;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +31,7 @@ public interface UsersFeignClient {
      * @return A {@link ResponseEntity} containing the {@link UserOutDTO} object with the user details
      * or an error response if the user is not found.
      */
-    @GetMapping("/{id}")
+    @GetMapping(Constants.GET_USER_BY_ID_ENDPOINT)
     ResponseEntity<UserOutDTO> getUserById(@PathVariable("id") long userId);
 
     /**
@@ -40,7 +41,7 @@ public interface UsersFeignClient {
      * @return A {@link ResponseEntity} containing the {@link AddressOutDTO} object with the address details
      * or an error response if the address is not found.
      */
-    @GetMapping("/address/id")
+    @GetMapping(Constants.GET_ADDRESS_BY_ID)
     ResponseEntity<AddressOutDTO> getAddressById(@RequestParam long addressId);
 
     /**
@@ -50,7 +51,7 @@ public interface UsersFeignClient {
      * @return A {@link ResponseEntity} containing a {@link List} of {@link AddressOutDTO} objects with the addresses
      * or an error response if no addresses are found for the user.
      */
-    @GetMapping("/address")
+    @GetMapping(Constants.ADDRESS_ENDPOINT)
     ResponseEntity<List<AddressOutDTO>> getAddressByUserId(@RequestParam long userId);
 
     /**
@@ -60,7 +61,7 @@ public interface UsersFeignClient {
      * @return A {@link ResponseEntity} containing the {@link WalletOutDTO} object with the wallet details
      * or an error response if the wallet is not found for the user.
      */
-    @GetMapping("/wallet")
+    @GetMapping(Constants.WALLET_ENDPOINT)
     ResponseEntity<WalletOutDTO> getUserWallet(@RequestParam long userId);
 
     /**
@@ -71,6 +72,6 @@ public interface UsersFeignClient {
      * @return A {@link ResponseEntity} containing
      * a {@link String} message indicating the result of the update operation.
      */
-    @PutMapping("/wallet/update")
+    @PutMapping(Constants.WALLET_UPDATE)
     ResponseEntity<String> updateUserWallet(@RequestParam long userId, @RequestParam double amount);
 }
