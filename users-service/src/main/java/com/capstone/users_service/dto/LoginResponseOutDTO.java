@@ -8,45 +8,52 @@ import lombok.NoArgsConstructor;
 import java.util.Objects;
 
 /**
- * LoginResponseOutDTO to giver user details after login.
+ * Data Transfer Object (DTO) that represents the response sent after a successful user login.
+ * This DTO provides detailed information about the logged-in user.
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoginResponseOutDTO {
+
     /**
-     * userId of logged-in user.
+     * The unique identifier of the logged-in user.
      */
     private long userId;
+
     /**
-     * email of logged-in user.
+     * The email address of the logged-in user.
      */
     private String email;
+
     /**
-     * name of logged-in user.
+     * The full name of the logged-in user.
      */
     private String name;
+
     /**
-     * phone of logged-in user.
+     * The phone number of the logged-in user.
      */
     private String phone;
 
     /**
-     * role of logged-in user.
+     * The role assigned to the logged-in user.
      */
     private Role role;
+
     /**
-     * Authentication status message.
+     * A message indicating the authentication status or additional information.
      */
     private String message;
 
     /**
-     * Override equals method.
-     * @param o
-     * @return
+     * Compares this object with the specified object for equality.
+     * Returns {@code true} if the specified object is equal to this object.
+     * @param o the object to be compared for equality with this object.
+     * @return {@code true} if the specified object is equal to this object; {@code false} otherwise.
      */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -60,8 +67,9 @@ public class LoginResponseOutDTO {
     }
 
     /**
-     * Override hashcode method.
-     * @return
+     * Returns a hash code value for this object.
+     * This method is supported for the benefit of hash tables.
+     * @return a hash code value for this object.
      */
     @Override
     public int hashCode() {

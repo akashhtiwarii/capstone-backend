@@ -17,7 +17,11 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
- * Represents an order in the system.
+ * Represents an order in the system, mapped to the 'orders' table in the database.
+ * <p>
+ * This class captures the details of an order placed by a user, including identifiers, price, status,
+ * and the time when the order was placed.
+ * </p>
  */
 @Entity
 @Table(name = "orders")
@@ -25,9 +29,12 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Order {
+
     /**
      * Unique identifier for the order.
-     * Mapped to the "order_id" column in the database.
+     * <p>
+     * This field is mapped to the 'order_id' column in the database.
+     * </p>
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,28 +43,37 @@ public class Order {
 
     /**
      * Identifier of the user who placed the order.
-     * Mapped to the "user_id" column in the database.
+     * <p>
+     * This field is mapped to the 'user_id' column in the database.
+     * </p>
      */
     @Column(name = "user_id")
     private long userId;
 
     /**
      * Identifier of the restaurant associated with the order.
-     * Mapped to the "restaurant_id" column in the database.
+     * <p>
+     * This field is mapped to the 'restaurant_id' column in the database.
+     * </p>
      */
     @Column(name = "restaurant_id")
     private long restaurantId;
 
     /**
      * Total price of the order.
-     * Mapped to the "price" column in the database.
+     * <p>
+     * This field is mapped to the 'price' column in the database.
+     * </p>
      */
     @Column(name = "price")
     private double price;
 
     /**
      * Status of the order.
-     * Mapped to the "status" column in the database. Uses {@link Status} enumeration.
+     * <p>
+     * This field is mapped to the 'status' column in the database and uses the {@link Status} enumeration to represent
+     * the current state of the order.
+     * </p>
      */
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
@@ -65,27 +81,34 @@ public class Order {
 
     /**
      * Time when the order was placed.
-     * Mapped to the "order_time" column in the database.
+     * <p>
+     * This field is mapped to the 'order_time' column in the database.
+     * </p>
      */
     @Column(name = "order_time")
     private LocalDateTime orderTime;
 
     /**
      * Identifier of the address associated with the order.
-     * Mapped to the "address_id" column in the database.
+     * <p>
+     * This field is mapped to the 'address_id' column in the database.
+     * </p>
      */
     @Column(name = "address_id")
     private long addressId;
 
     /**
-     * Compares this order to another object.
-     * Two orders are considered equal if they have the same orderId, userId, restaurantId, price, status, orderTime, and addressId.
+     * Compares this order to another object for equality.
+     * <p>
+     * Two orders are considered equal if they have the same orderId, userId, restaurantId, price, status,
+     * orderTime, and addressId.
+     * </p>
      *
      * @param o The object to compare with.
      * @return true if this order is equal to the specified object; false otherwise.
      */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -93,16 +116,20 @@ public class Order {
             return false;
         }
         Order order = (Order) o;
-        return orderId == order.orderId && userId == order.userId
+        return orderId == order.orderId
+                && userId == order.userId
                 && restaurantId == order.restaurantId
                 && Double.compare(price, order.price) == 0
-                && status == order.status && Objects.equals(orderTime, order.orderTime)
+                && status == order.status
+                && Objects.equals(orderTime, order.orderTime)
                 && Objects.equals(addressId, order.addressId);
     }
 
     /**
      * Returns a hash code value for this order.
+     * <p>
      * The hash code is computed based on orderId, userId, restaurantId, price, status, orderTime, and addressId.
+     * </p>
      *
      * @return The hash code value for this order.
      */

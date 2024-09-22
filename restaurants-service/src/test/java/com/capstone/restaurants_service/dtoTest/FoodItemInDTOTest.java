@@ -26,24 +26,24 @@ public class FoodItemInDTOTest {
 
     @Test
     void testEqualsMethod() {
-        FoodItemInDTO foodItem1 = new FoodItemInDTO(1L, 1L, "Pizza", "Delicious cheese pizza", 9.99);
-        FoodItemInDTO foodItem2 = new FoodItemInDTO(1L, 1L, "Pizza", "Delicious cheese pizza", 9.99);
-        FoodItemInDTO foodItem3 = new FoodItemInDTO(2L, 1L, "Burger", "Juicy beef burger", 12.99);
+        FoodItemInDTO foodItem1 = new FoodItemInDTO(1L, 1L, "Food", "Description", 9.99);
+        FoodItemInDTO foodItem2 = new FoodItemInDTO(1L, 1L, "Food", "Description", 9.99);
+        FoodItemInDTO foodItem3 = new FoodItemInDTO(2L, 1L, "Food2", "Description2", 12.99);
         assertEquals(foodItem1, foodItem2, "FoodItemInDTO objects with the same properties should be equal.");
         assertNotEquals(foodItem1, foodItem3, "FoodItemInDTO objects with different properties should not be equal.");
     }
 
     @Test
     void testHashCodeMethod() {
-        FoodItemInDTO foodItem1 = new FoodItemInDTO(1L, 1L, "Pizza", "Delicious cheese pizza", 9.99);
-        FoodItemInDTO foodItem2 = new FoodItemInDTO(1L, 1L, "Pizza", "Delicious cheese pizza", 9.99);
+        FoodItemInDTO foodItem1 = new FoodItemInDTO(1L, 1L, "Food", "Description", 9.99);
+        FoodItemInDTO foodItem2 = new FoodItemInDTO(1L, 1L, "Food", "Description", 9.99);
 
         assertEquals(foodItem1.hashCode(), foodItem2.hashCode(), "FoodItemInDTO objects with the same properties should have the same hash code.");
     }
 
     @Test
     void testValidFoodItemInDTO() {
-        FoodItemInDTO foodItem = new FoodItemInDTO(1L, 1L, "Pizza", "Delicious cheese pizza", 9.99);
+        FoodItemInDTO foodItem = new FoodItemInDTO(1L, 1L, "Food", "Description", 9.99);
 
         Set<ConstraintViolation<FoodItemInDTO>> violations = validator.validate(foodItem);
 

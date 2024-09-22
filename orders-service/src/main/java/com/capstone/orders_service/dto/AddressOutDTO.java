@@ -47,13 +47,13 @@ public class AddressOutDTO {
 
     /**
      * Compares this AddressOutDTO object to the specified object for equality.
-     * Two AddressOutDTO objects are considered equal if they have the same addressId, userId, address, pincode, city, and state.
-     *
+     * Two AddressOutDTO objects are considered equal
+     * if they have the same addressId, userId, address, pincode, city, and state.
      * @param o the object to compare this AddressOutDTO against.
      * @return true if the specified object is equal to this AddressOutDTO; false otherwise.
      */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -61,7 +61,12 @@ public class AddressOutDTO {
             return false;
         }
         AddressOutDTO that = (AddressOutDTO) o;
-        return addressId == that.addressId && userId == that.userId && Objects.equals(address, that.address) && Objects.equals(pincode, that.pincode) && Objects.equals(city, that.city) && Objects.equals(state, that.state);
+        return addressId == that.addressId
+                && userId == that.userId
+                && Objects.equals(address, that.address)
+                && Objects.equals(pincode, that.pincode)
+                && Objects.equals(city, that.city)
+                && Objects.equals(state, that.state);
     }
 
     /**
@@ -83,6 +88,6 @@ public class AddressOutDTO {
      */
     @Override
     public String toString() {
-        return (userId + ", " + address + ", " + city + ", " + state + ", " + pincode);
+        return address + ", " + city + ", " + state + ", " + pincode;
     }
 }

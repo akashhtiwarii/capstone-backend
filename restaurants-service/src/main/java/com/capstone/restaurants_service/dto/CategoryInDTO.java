@@ -8,30 +8,43 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * Restaurant In DTO to add Restaurant.
+ * Data Transfer Object (DTO) for representing category information when adding or updating a category.
+ * This class encapsulates the data required for category operations including user ID, restaurant ID, category name,
+ * and an optional image.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class CategoryInDTO {
     /**
-     * User Id of user.
+     * The ID of the user associated with the category.
+     * <p>
+     * This field is required and must be a positive integer.
+     * </p>
      */
     @NotNull(message = "Valid User ID required")
     @Min(value = 1, message = "Valid User ID required")
     private long userId;
+
     /**
-     * restaurantId to map with restaurantId field of entity.
+     * The ID of the restaurant to which the category belongs.
+     * <p>
+     * This field is required and must be a positive integer.
+     * </p>
      */
     @NotNull(message = "Valid restaurantId required")
     @Min(value = 1, message = "Valid restaurantId required")
     private long restaurantId;
+
     /**
-     * name to map with name field of entity.
+     * The name of the category.
+     * <p>
+     * This field is required and must be a non-blank string that matches the specified pattern:
+     * letters, spaces, apostrophes, and hyphens, with a length between 2 and 50 characters.
+     * </p>
      */
     @NotBlank(message = "Valid name required")
     @Pattern(
@@ -39,18 +52,19 @@ public class CategoryInDTO {
             message = "Valid name required"
     )
     private String name;
-    /**
-     * Image Bytes.
-     */
-    private byte[] image;
 
     /**
-     * Override equals method.
-     * @param o
-     * @return boolean
+     * Compares this CategoryInDTO object with another object for equality.
+     * <p>
+     * Two CategoryInDTO objects are considered equal if their userId, restaurantId, name, and image byte arrays are
+     * equal.
+     * </p>
+     *
+     * @param o the object to compare with
+     * @return {@code true} if the objects are equal; {@code false} otherwise
      */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -59,15 +73,19 @@ public class CategoryInDTO {
         }
         CategoryInDTO that = (CategoryInDTO) o;
         return userId == that.userId && restaurantId == that.restaurantId
-                && Objects.equals(name, that.name) && Objects.deepEquals(image, that.image);
+                && Objects.equals(name, that.name);
     }
 
     /**
-     * Override hashcode method.
-     * @return Hashed object
+     * Returns a hash code value for this CategoryInDTO object.
+     * <p>
+     * The hash code is computed based on the userId, restaurantId, name, and image fields.
+     * </p>
+     *
+     * @return the hash code value
      */
     @Override
     public int hashCode() {
-        return Objects.hash(userId, restaurantId, name, Arrays.hashCode(image));
+        return Objects.hash(userId, restaurantId, name);
     }
 }

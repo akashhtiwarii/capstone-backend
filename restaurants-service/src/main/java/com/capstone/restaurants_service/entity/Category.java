@@ -13,7 +13,11 @@ import javax.persistence.Table;
 import java.util.Objects;
 
 /**
- * FoodItem Entity mapping with food_items table.
+ * Represents a category entity mapped to the 'categories' table in the database.
+ * <p>
+ * This class is used to persist and retrieve category information, including details such as category ID,
+ * restaurant ID, and the name of the category.
+ * </p>
  */
 @Entity
 @Table(name = "categories")
@@ -21,31 +25,40 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Category {
+
     /**
-     * categoryId for pairing with the category_id field in database using ORM.
+     * Unique identifier for the category entity.
+     * This field is mapped to the 'category_id' column in the database.
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "category_id")
     private long categoryId;
+
     /**
-     * restaurantId for pairing with the restaurant_id field in database using ORM.
+     * Identifier for the restaurant associated with this category.
+     * This field is mapped to the 'restaurant_id' column in the database.
      */
     @Column(name = "restaurant_id")
     private long restaurantId;
+
     /**
-     * name for pairing with the name field in database using ORM.
+     * The name of the category.
+     * This field is mapped to the 'name' column in the database.
      */
     @Column(name = "name")
     private String name;
 
     /**
-     * Override equals method for testing.
-     * @param o object
-     * @return true or false based on conditions
+     * Compares this category entity with another object for equality.
+     * <p>
+     * Two category entities are considered equal if they have the same category ID, restaurant ID, and name.
+     * </p>
+     * @param o the object to be compared
+     * @return true if this category is equal to the specified object, false otherwise
      */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -59,8 +72,11 @@ public class Category {
     }
 
     /**
-     * Override hashCode for testing.
-     * @return hashed object
+     * Returns a hash code value for this category entity.
+     * <p>
+     * The hash code is computed based on the category ID, restaurant ID, and name.
+     * </p>
+     * @return a hash code value for this category entity
      */
     @Override
     public int hashCode() {

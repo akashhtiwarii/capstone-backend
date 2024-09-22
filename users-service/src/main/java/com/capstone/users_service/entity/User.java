@@ -18,7 +18,11 @@ import lombok.NoArgsConstructor;
 import java.util.Objects;
 
 /**
- * User Entity mapping with users table.
+ * Represents a user entity mapped to the 'users' table in the database.
+ * <p>
+ * This class is used to persist and retrieve user information, including details such as user ID, name, email,
+ * password, phone number, and role.
+ * </p>
  */
 @Entity
 @Table(name = "users")
@@ -28,51 +32,61 @@ import java.util.Objects;
 public class User {
 
     /**
-    userId for connecting user_id field using ORM.
-    */
+     * Unique identifier for the user entity.
+     * This field is mapped to the 'user_id' column in the database.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private long userId;
 
     /**
-     name for connecting name field in database using ORM.
+     * The name of the user.
+     * This field is mapped to the 'name' column in the database.
      */
     @Column(name = "name")
     private String name;
 
     /**
-     email for connecting email field in database using ORM.
+     * The email address of the user.
+     * This field is mapped to the 'email' column in the database.
      */
     @Column(name = "email")
     private String email;
 
     /**
-     password for connecting password field in database using ORM.
+     * The password of the user.
+     * This field is mapped to the 'password' column in the database.
      */
     @Column(name = "password")
     private String password;
 
     /**
-     phone for connecting phone field in database using ORM.
+     * The phone number of the user.
+     * This field is mapped to the 'phone' column in the database.
      */
     @Column(name = "phone")
     private String phone;
 
     /**
-     role for connecting role field in database using ORM.
+     * The role assigned to the user.
+     * This field is mapped to the 'role' column in the database and uses an enumerated type for role values.
      */
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private Role role;
 
     /**
-     * Override equals method for testing.
-     * @param o object
-     * @return true or false based on conditions
+     * Compares this user entity with another object for equality.
+     * <p>
+     * Two user entities are considered equal if they have the same user ID, name, email, password, phone number,
+     * and role.
+     * </p>
+     * @param o the object to be compared
+     * @return true if this user is equal to the specified object, false otherwise
      */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -86,8 +100,11 @@ public class User {
     }
 
     /**
-     * Override hashCode for testing.
-     * @return hashed object
+     * Returns a hash code value for this user entity.
+     * <p>
+     * The hash code is computed based on the user ID, name, email, password, phone number, and role.
+     * </p>
+     * @return a hash code value for this user entity
      */
     @Override
     public int hashCode() {

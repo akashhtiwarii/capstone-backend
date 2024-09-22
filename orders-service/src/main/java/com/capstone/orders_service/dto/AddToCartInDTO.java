@@ -1,5 +1,6 @@
 package com.capstone.orders_service.dto;
 
+import com.capstone.orders_service.utils.Constants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,32 +23,32 @@ public class AddToCartInDTO {
      * The unique identifier for the user adding the item to the cart.
      * Must be a positive number greater than or equal to 1.
      */
-    @NotNull(message = "Valid User ID required")
-    @Min(value = 1, message = "Valid User ID required")
+    @NotNull(message = Constants.USER_ID_NOT_VALID)
+    @Min(value = 1, message = Constants.USER_ID_NOT_VALID)
     private long userId;
 
     /**
      * The unique identifier for the restaurant where the food item is available.
      * Must be a positive number greater than or equal to 1.
      */
-    @NotNull(message = "Valid Restaurant ID required")
-    @Min(value = 1, message = "Valid Restaurant ID required")
+    @NotNull(message = Constants.RESTAURANT_ID_NOT_VALID)
+    @Min(value = 1, message = Constants.RESTAURANT_ID_NOT_VALID)
     private long restaurantId;
 
     /**
      * The unique identifier for the food item being added to the cart.
      * Must be a positive number greater than or equal to 1.
      */
-    @NotNull(message = "Valid Food ID required")
-    @Min(value = 1, message = "Valid Food ID required")
+    @NotNull(message = Constants.FOOD_ID_NOT_VALID)
+    @Min(value = 1, message = Constants.FOOD_ID_NOT_VALID)
     private long foodId;
 
     /**
      * The quantity of the food item to be added to the cart.
      * Must be a positive number greater than 0.
      */
-    @NotNull(message = "Valid Quantity Required")
-    @Positive(message = "Valid Quantity Required")
+    @NotNull(message = Constants.VALID_QUANTITY_REQUIRED)
+    @Positive(message = Constants.VALID_QUANTITY_REQUIRED)
     private int quantity;
 
     /**
@@ -58,7 +59,7 @@ public class AddToCartInDTO {
      * @return true if the specified object is equal to this AddToCartInDTO; false otherwise.
      */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -66,7 +67,10 @@ public class AddToCartInDTO {
             return false;
         }
         AddToCartInDTO that = (AddToCartInDTO) o;
-        return userId == that.userId && restaurantId == that.restaurantId && foodId == that.foodId && quantity == that.quantity;
+        return userId == that.userId
+                && restaurantId == that.restaurantId
+                && foodId == that.foodId
+                && quantity == that.quantity;
     }
 
     /**

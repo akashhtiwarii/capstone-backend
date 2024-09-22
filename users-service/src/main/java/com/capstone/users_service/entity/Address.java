@@ -12,9 +12,12 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Objects;
 
-
 /**
- * Address Entity mapping with address table.
+ * Represents an address entity mapped to the 'address' table in the database.
+ * <p>
+ * This class is used to persist and retrieve address information including details such as address ID, user ID,
+ * address line, pincode, city, and state.
+ * </p>
  */
 @Entity
 @Table(name = "address")
@@ -24,7 +27,8 @@ import java.util.Objects;
 public class Address {
 
     /**
-     * addressId for pairing with the address_id field in database using ORM.
+     * Unique identifier for the address entity.
+     * This field is mapped to the 'address_id' column in the database.
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,42 +36,51 @@ public class Address {
     private long addressId;
 
     /**
-     * userId for pairing with the user_id field in database using ORM.
+     * Identifier for the user associated with this address.
+     * This field is mapped to the 'user_id' column in the database.
      */
     @Column(name = "user_id")
     private long userId;
 
     /**
-     * address for pairing with the address field in database using ORM.
+     * The address line.
+     * This field is mapped to the 'address' column in the database.
      */
     @Column(name = "address")
     private String address;
 
     /**
-     * pincode for pairing with the pincode field in database using ORM.
+     * The pincode of the address.
+     * This field is mapped to the 'pincode' column in the database.
      */
     @Column(name = "pincode")
     private long pincode;
 
     /**
-     * city for pairing with the city field in database using ORM.
+     * The city of the address.
+     * This field is mapped to the 'city' column in the database.
      */
     @Column(name = "city")
     private String city;
 
     /**
-     * addressId for pairing with the address_id field in database using ORM.
+     * The state of the address.
+     * This field is mapped to the 'state' column in the database.
      */
     @Column(name = "state")
     private String state;
 
     /**
-     * Override equals method for testing.
-     * @param o object
-     * @return true or false based on conditions
+     * Compares this address entity with another object for equality.
+     * <p>
+     * Two address entities are considered equal if they have the same address ID, user ID, pincode, address line,
+     * city, and state.
+     * </p>
+     * @param o the object to be compared
+     * @return true if this address is equal to the specified object, false otherwise
      */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -81,16 +94,26 @@ public class Address {
     }
 
     /**
-     * Override hashCode for testing.
-     * @return hashed object
+     * Returns a hash code value for this address entity.
+     * <p>
+     * The hash code is computed based on the address ID, user ID, pincode, address line, city, and state.
+     * </p>
+     * @return a hash code value for this address entity
      */
     @Override
     public int hashCode() {
         return Objects.hash(addressId, userId, address, pincode, city, state);
     }
 
+    /**
+     * Returns a string representation of this address entity.
+     * <p>
+     * The string representation includes the address line, city, state, and pincode.
+     * </p>
+     * @return a string representation of this address entity
+     */
     @Override
     public String toString() {
-        return (address + ", " + city + ", " + state + ", " + pincode);
+        return address + ", " + city + ", " + state + ", " + pincode;
     }
 }

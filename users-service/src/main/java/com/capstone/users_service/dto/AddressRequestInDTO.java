@@ -8,25 +8,31 @@ import javax.validation.constraints.Email;
 import java.util.Objects;
 
 /**
- * AddressRequestInDTO for providing email to get all addresses for that user.
+ * Data Transfer Object (DTO) for requesting addresses associated with a user by email.
+ * This DTO contains the user's email which is used to fetch all associated addresses.
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class AddressRequestInDTO {
+
     /**
-     * User email Id.
+     * Email address of the user.
+     * This field is used to identify the user for whom addresses need to be retrieved.
+     * The email must be a valid email format.
      */
     @Email(message = "No valid email found")
     private String email;
 
     /**
-     * Override equals method.
-     * @param o
-     * @return
+     * Compares this AddressRequestInDTO to another object.
+     * Two AddressRequestInDTO objects are considered equal if their email fields are the same.
+     *
+     * @param o The object to compare this AddressRequestInDTO with.
+     * @return {@code true} if the objects are equal based on the email field, {@code false} otherwise.
      */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -38,8 +44,10 @@ public class AddressRequestInDTO {
     }
 
     /**
-     * Override hashcode method.
-     * @return
+     * Returns a hash code value for this AddressRequestInDTO.
+     * The hash code is computed based on the email field.
+     *
+     * @return The hash code value for this AddressRequestInDTO.
      */
     @Override
     public int hashCode() {

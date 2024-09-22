@@ -37,7 +37,6 @@ public class OrderOutDTOTest {
         assertEquals(price, orderOutDTO.getPrice(), 0.001);
 
         assertNull(orderOutDTO.getStatus());
-        // Assuming Status is an enum, replace with appropriate enum value
         Status status = Status.PENDING;
         orderOutDTO.setStatus(status);
         assertEquals(status, orderOutDTO.getStatus());

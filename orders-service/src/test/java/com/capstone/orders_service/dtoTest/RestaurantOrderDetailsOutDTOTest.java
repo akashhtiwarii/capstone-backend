@@ -23,7 +23,7 @@ public class RestaurantOrderDetailsOutDTOTest {
         assertEquals(userId, restaurantOrderDetailsOutDTO.getUserId());
 
         assertNull(restaurantOrderDetailsOutDTO.getUserName());
-        String userName = "John Doe";
+        String userName = "name";
         restaurantOrderDetailsOutDTO.setUserName(userName);
         assertEquals(userName, restaurantOrderDetailsOutDTO.getUserName());
 
@@ -43,7 +43,7 @@ public class RestaurantOrderDetailsOutDTOTest {
         assertEquals(status, restaurantOrderDetailsOutDTO.getStatus());
 
         assertNull(restaurantOrderDetailsOutDTO.getAddress());
-        String address = "123 Main St";
+        String address = "address";
         restaurantOrderDetailsOutDTO.setAddress(address);
         assertEquals(address, restaurantOrderDetailsOutDTO.getAddress());
     }
@@ -51,11 +51,11 @@ public class RestaurantOrderDetailsOutDTOTest {
     @Test
     public void testEqualsAndHashcode() {
         long userId = 12345L;
-        String userName = "John Doe";
+        String userName = "name";
         long orderId = 67890L;
         List<OrderDetailOutDTO> orderDetails = new ArrayList<>();
         Status status = Status.PENDING;
-        String address = "123 Main St";
+        String address = "address";
 
         RestaurantOrderDetailsOutDTO dto1 = buildRestaurantOrderDetailsOutDTO(userId, userName, orderId, orderDetails, status, address);
 
@@ -72,7 +72,7 @@ public class RestaurantOrderDetailsOutDTOTest {
         assertNotEquals(dto1, dto2);
         assertNotEquals(dto1.hashCode(), dto2.hashCode());
 
-        dto2 = buildRestaurantOrderDetailsOutDTO(userId, userName + " Smith", orderId, orderDetails, status, address);
+        dto2 = buildRestaurantOrderDetailsOutDTO(userId, userName + " name2", orderId, orderDetails, status, address);
         assertNotEquals(dto1, dto2);
         assertNotEquals(dto1.hashCode(), dto2.hashCode());
 
@@ -88,7 +88,7 @@ public class RestaurantOrderDetailsOutDTOTest {
         assertNotEquals(dto1, dto2);
         assertNotEquals(dto1.hashCode(), dto2.hashCode());
 
-        dto2 = buildRestaurantOrderDetailsOutDTO(userId, userName, orderId, orderDetails, status, "456 Elm St");
+        dto2 = buildRestaurantOrderDetailsOutDTO(userId, userName, orderId, orderDetails, status, "address2");
         assertNotEquals(dto1, dto2);
         assertNotEquals(dto1.hashCode(), dto2.hashCode());
 

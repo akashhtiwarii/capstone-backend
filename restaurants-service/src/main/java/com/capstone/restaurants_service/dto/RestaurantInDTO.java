@@ -15,7 +15,10 @@ import java.util.Objects;
 import static com.capstone.restaurants_service.utils.Constants.PHONE_NUMBER_LENGTH;
 
 /**
- * Restaurant In DTO to add Restaurant.
+ * Data Transfer Object (DTO) for adding a restaurant.
+ * <p>
+ * This class encapsulates the data required to create or update a restaurant record.
+ * </p>
  */
 @Data
 @NoArgsConstructor
@@ -23,20 +26,29 @@ import static com.capstone.restaurants_service.utils.Constants.PHONE_NUMBER_LENG
 public class RestaurantInDTO {
 
     /**
-     * ownerId to link ownerId of Restaurant entity.
+     * The unique identifier of the owner associated with the restaurant.
+     * <p>
+     * This field links the restaurant to its owner by referencing the owner's ID.
+     * </p>
      */
     @NotNull(message = "Valid OwnerID required")
     @Min(value = 1, message = "Valid OwnerID required")
     private long ownerId;
 
     /**
-     * name to link name of Restaurant entity.
+     * The name of the restaurant.
+     * <p>
+     * This field specifies the name of the restaurant and cannot be blank.
+     * </p>
      */
     @NotBlank(message = "Enter a valid name for restaurant")
     private String name;
 
     /**
-     * email to link email of Restaurant entity.
+     * The email address of the restaurant.
+     * <p>
+     * This field must be a valid email address in the format of `example@gmail.com`.
+     * </p>
      */
     @Email(message = "Enter a valid email ID for restaurant")
     @NotBlank(message = "Enter a valid email ID for restaurant")
@@ -47,7 +59,11 @@ public class RestaurantInDTO {
     private String email;
 
     /**
-     * phone to link phone of Restaurant entity.
+     * The phone number of the restaurant.
+     * <p>
+     * This field must be a valid phone number starting with 9, 8, 7, or 6,
+     * followed by the appropriate number of digits.
+     * </p>
      */
     @NotBlank(message = "Phone number should be valid")
     @Pattern(
@@ -57,17 +73,26 @@ public class RestaurantInDTO {
     private String phone;
 
     /**
-     * address to link address of Restaurant entity.
+     * The address of the restaurant.
+     * <p>
+     * This field specifies the restaurant's location and cannot be blank.
+     * </p>
      */
     @NotBlank(message = "Address for restaurant cannot be empty")
     private String address;
+
     /**
-     * Override equals method.
-     * @param o
-     * @return boolean
+     * Compares this RestaurantInDTO object with another object for equality.
+     * <p>
+     * Two RestaurantInDTO objects are considered equal if
+     * their ownerId, name, email, phone, and address fields are equal.
+     * </p>
+     *
+     * @param o the object to compare with
+     * @return {@code true} if the objects are equal; {@code false} otherwise
      */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -79,9 +104,14 @@ public class RestaurantInDTO {
                 && Objects.equals(email, that.email) && Objects.equals(phone, that.phone)
                 && Objects.equals(address, that.address);
     }
+
     /**
-     * Override hashcode method.
-     * @return Hashed object
+     * Returns a hash code value for this RestaurantInDTO object.
+     * <p>
+     * The hash code is computed based on the ownerId, name, email, phone, and address fields.
+     * </p>
+     *
+     * @return the hash code value
      */
     @Override
     public int hashCode() {

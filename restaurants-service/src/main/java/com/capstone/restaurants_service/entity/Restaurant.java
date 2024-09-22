@@ -1,6 +1,5 @@
 package com.capstone.restaurants_service.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
@@ -16,16 +15,21 @@ import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * Restaurant Entity mapping with restaurants table.
+ * Represents a restaurant entity mapped to the 'restaurants' table in the database.
+ * <p>
+ * This class is used to persist and retrieve restaurant information, including details such as restaurant ID,
+ * owner ID, name, email, phone number, address, and image of the restaurant.
+ * </p>
  */
 @Entity
 @Table(name = "restaurants")
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class Restaurant {
+
     /**
-     * restaurantId for pairing with the restaurant_id field in database using ORM.
+     * Unique identifier for the restaurant entity.
+     * This field is mapped to the 'restaurant_id' column in the database.
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,37 +37,43 @@ public class Restaurant {
     private long restaurantId;
 
     /**
-     * ownerId for pairing with the owner_id field in database using ORM.
+     * Identifier for the owner of the restaurant.
+     * This field is mapped to the 'owner_id' column in the database.
      */
     @Column(name = "owner_id")
     private long ownerId;
 
     /**
-     * name for pairing with the name field in database using ORM.
+     * The name of the restaurant.
+     * This field is mapped to the 'name' column in the database.
      */
     @Column(name = "name")
     private String name;
 
     /**
-     * email for pairing with the email field in database using ORM.
+     * The email address of the restaurant.
+     * This field is mapped to the 'email' column in the database.
      */
     @Column(name = "email")
     private String email;
 
     /**
-     * phone for pairing with the phone field in database using ORM.
+     * The phone number of the restaurant.
+     * This field is mapped to the 'phone' column in the database.
      */
     @Column(name = "phone")
     private String phone;
 
     /**
-     * address for pairing with the address field in database using ORM.
+     * The address of the restaurant.
+     * This field is mapped to the 'address' column in the database.
      */
     @Column(name = "address")
     private String address;
 
     /**
-     * image for pairing with the image field in database using ORM.
+     * The image of the restaurant.
+     * This field is mapped to the 'image' column in the database and is stored as a binary large object (BLOB).
      */
     @Lob
     @Column(name = "image")
@@ -71,12 +81,73 @@ public class Restaurant {
     private byte[] image;
 
     /**
-     * Override equals method for testing.
-     * @param o object
-     * @return true or false based on conditions
+     * Constructs a new {@code Restaurant} instance with the specified attributes.
+     *
+     * @param restaurantIdValue the unique identifier for the restaurant
+     * @param ownerIdValue the identifier for the owner of the restaurant
+     * @param nameValue the name of the restaurant
+     * @param emailValue the email address of the restaurant
+     * @param phoneValue the phone number of the restaurant
+     * @param addressValue the address of the restaurant
+     * @param imageValue the image of the restaurant as a byte array.
+     * A copy of this array is stored to prevent external modifications.
+     */
+    public Restaurant(
+            final long restaurantIdValue,
+            final long ownerIdValue,
+            final String nameValue,
+            final String emailValue,
+            final String phoneValue,
+            final String addressValue,
+            final byte[] imageValue
+    ) {
+        this.restaurantId = restaurantIdValue;
+        this.ownerId = ownerIdValue;
+        this.name = nameValue;
+        this.email = emailValue;
+        this.phone = phoneValue;
+        this.address = addressValue;
+        this.image = (imageValue != null) ? imageValue.clone() : null;
+    }
+
+    /**
+     * Returns a copy of the image of the restaurant.
+     *
+     * <p>This method returns a copy of the internal byte array representing the restaurant's image.
+     * This ensures that the internal state of the restaurant object cannot be modified by external code.</p>
+     *
+     * @return a byte array containing the image of the restaurant, or {@code null} if no image is set
+     */
+    public byte[] getImage() {
+        return (image != null) ? image.clone() : null;
+    }
+
+    /**
+     * Sets the image of the restaurant.
+     *
+     * <p>This method sets the restaurant's image to a new byte array. A copy of the provided byte array is made to
+     * ensure that changes to the original array outside of this class
+     * do not affect the internal state of the restaurant.</p>
+     * @param imageValue a byte array containing the new image for the restaurant.
+     * A copy of this array is stored to prevent external modifications.
+     * If {@code null} is provided, the restaurant's image is cleared.
+     */
+    public void setImage(final byte[] imageValue) {
+        this.image = (imageValue != null) ? imageValue.clone() : null;
+    }
+
+
+    /**
+     * Compares this restaurant entity with another object for equality.
+     * <p>
+     * Two restaurant entities are considered equal if they have the same restaurant ID, owner ID, name, email,
+     * phone number, address, and image.
+     * </p>
+     * @param o the object to be compared
+     * @return true if this restaurant is equal to the specified object, false otherwise
      */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -84,14 +155,22 @@ public class Restaurant {
             return false;
         }
         Restaurant that = (Restaurant) o;
-        return restaurantId == that.restaurantId && ownerId == that.ownerId && Objects.equals(name, that.name)
-                && Objects.equals(email, that.email) && Objects.equals(phone, that.phone)
-                && Objects.equals(address, that.address) && Objects.deepEquals(image, that.image);
+        return restaurantId == that.restaurantId
+                && ownerId == that.ownerId
+                && Objects.equals(name, that.name)
+                && Objects.equals(email, that.email)
+                && Objects.equals(phone, that.phone)
+                && Objects.equals(address, that.address)
+                && Objects.deepEquals(image, that.image);
     }
 
     /**
-     * Override hashCode for testing.
-     * @return hashed object
+     * Returns a hash code value for this restaurant entity.
+     * <p>
+     * The hash code is computed based on the restaurant ID, owner ID, name, email, phone number, address,
+     * and image.
+     * </p>
+     * @return a hash code value for this restaurant entity
      */
     @Override
     public int hashCode() {

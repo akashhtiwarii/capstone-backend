@@ -3,7 +3,15 @@ package com.capstone.restaurants_service.utils;
 /**
  * Constants for storing constants used throughout.
  */
-public class Constants {
+public final class Constants {
+
+    /**
+     * Private constructor for CategoryConverters.
+     */
+    private Constants() {
+        throw new UnsupportedOperationException("Utility Class Cannot be instantiated");
+    }
+
     /**
      * Phone number length.
      */
@@ -218,4 +226,24 @@ public class Constants {
      * Message indicating that the category is invalid.
      */
     public static final String INVALID_CATEGORY = "Invalid Category";
+
+    /**
+     * User Service Not Available.
+     */
+    public static final String USER_SERVICE_DOWN = "Unable to communicate with User Service";
+
+    /**
+     * Invalid type for image.
+     */
+    public static final String INVALID_IMAGE_TYPE = "Invalid file type. Only image files are allowed.";
+
+    /**
+     * Get Food Item By ID.
+     */
+    public static final String GET_FOOD_ITEM_BY_ID = "food/id";
+
+    /**
+     * Get User By Id.
+     */
+    public static final String GET_USER_BY_ID = "/{id}";
 }

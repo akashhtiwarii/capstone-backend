@@ -23,7 +23,7 @@ public class AddressOutDTOTest {
         assertEquals(userId, addressOutDTO.getUserId());
 
         assertNull(addressOutDTO.getAddress());
-        String address = "123 Main St";
+        String address = "address";
         addressOutDTO.setAddress(address);
         assertEquals(address, addressOutDTO.getAddress());
 
@@ -38,7 +38,7 @@ public class AddressOutDTOTest {
         assertEquals(city, addressOutDTO.getCity());
 
         assertNull(addressOutDTO.getState());
-        String state = "Stateville";
+        String state = "state";
         addressOutDTO.setState(state);
         assertEquals(state, addressOutDTO.getState());
     }
@@ -53,7 +53,7 @@ public class AddressOutDTOTest {
         long userId = 2L;
         addressOutDTO.setUserId(userId);
 
-        String address = "123 Main St";
+        String address = "address";
         addressOutDTO.setAddress(address);
 
         String pincode = "12345";
@@ -62,20 +62,20 @@ public class AddressOutDTOTest {
         String city = "Anytown";
         addressOutDTO.setCity(city);
 
-        String state = "Stateville";
+        String state = "state";
         addressOutDTO.setState(state);
 
-        assertEquals("2, 123 Main St, Anytown, Stateville, 12345", addressOutDTO.toString());
+        assertEquals("address, Anytown, state, 12345", addressOutDTO.toString());
     }
 
     @Test
     public void testEqualsAndHashcode() {
         long addressId = 1L;
         long userId = 2L;
-        String address = "123 Main St";
+        String address = "address";
         String pincode = "12345";
         String city = "Anytown";
-        String state = "Stateville";
+        String state = "state";
 
         AddressOutDTO addressOutDTO1 = buildAddressOutDTO(addressId, userId, address, pincode, city, state);
 
@@ -96,7 +96,7 @@ public class AddressOutDTOTest {
         assertNotEquals(addressOutDTO1, addressOutDTO2);
         assertNotEquals(addressOutDTO1.hashCode(), addressOutDTO2.hashCode());
 
-        addressOutDTO2 = buildAddressOutDTO(addressId, userId, address + " Apt 2", pincode, city, state);
+        addressOutDTO2 = buildAddressOutDTO(addressId, userId, address + " address2", pincode, city, state);
         assertNotEquals(addressOutDTO1, addressOutDTO2);
         assertNotEquals(addressOutDTO1.hashCode(), addressOutDTO2.hashCode());
 
@@ -104,11 +104,11 @@ public class AddressOutDTOTest {
         assertNotEquals(addressOutDTO1, addressOutDTO2);
         assertNotEquals(addressOutDTO1.hashCode(), addressOutDTO2.hashCode());
 
-        addressOutDTO2 = buildAddressOutDTO(addressId, userId, address, pincode, city + "ville", state);
+        addressOutDTO2 = buildAddressOutDTO(addressId, userId, address, pincode, city + "city2", state);
         assertNotEquals(addressOutDTO1, addressOutDTO2);
         assertNotEquals(addressOutDTO1.hashCode(), addressOutDTO2.hashCode());
 
-        addressOutDTO2 = buildAddressOutDTO(addressId, userId, address, pincode, city, state + "land");
+        addressOutDTO2 = buildAddressOutDTO(addressId, userId, address, pincode, city, state + "state2");
         assertNotEquals(addressOutDTO1, addressOutDTO2);
         assertNotEquals(addressOutDTO1.hashCode(), addressOutDTO2.hashCode());
 

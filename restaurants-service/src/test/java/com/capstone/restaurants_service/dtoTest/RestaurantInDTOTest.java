@@ -26,9 +26,9 @@ public class RestaurantInDTOTest {
 
     @Test
     void testEqualsMethod() {
-        RestaurantInDTO dto1 = new RestaurantInDTO(1L, "Restaurant A", "example@gmail.com", "9876543210", "123 Street");
-        RestaurantInDTO dto2 = new RestaurantInDTO(1L, "Restaurant A", "example@gmail.com", "9876543210", "123 Street");
-        RestaurantInDTO dto3 = new RestaurantInDTO(2L, "Restaurant B", "test@gmail.com", "8765432109", "456 Avenue");
+        RestaurantInDTO dto1 = new RestaurantInDTO(1L, "Restaurant A", "example@gmail.com", "9876543210", "address");
+        RestaurantInDTO dto2 = new RestaurantInDTO(1L, "Restaurant A", "example@gmail.com", "9876543210", "address");
+        RestaurantInDTO dto3 = new RestaurantInDTO(2L, "Restaurant B", "test@gmail.com", "8765432109", "address2");
 
         assertEquals(dto1, dto2);
         assertNotEquals(dto1, dto3);
@@ -36,15 +36,15 @@ public class RestaurantInDTOTest {
 
     @Test
     void testHashCodeMethod() {
-        RestaurantInDTO dto1 = new RestaurantInDTO(1L, "Restaurant A", "example@gmail.com", "9876543210", "123 Street");
-        RestaurantInDTO dto2 = new RestaurantInDTO(1L, "Restaurant A", "example@gmail.com", "9876543210", "123 Street");
+        RestaurantInDTO dto1 = new RestaurantInDTO(1L, "Restaurant A", "example@gmail.com", "9876543210", "address");
+        RestaurantInDTO dto2 = new RestaurantInDTO(1L, "Restaurant A", "example@gmail.com", "9876543210", "address");
 
         assertEquals(dto1.hashCode(), dto2.hashCode());
     }
 
     @Test
     void testValidRestaurantInDTO() {
-        RestaurantInDTO dto = new RestaurantInDTO(1L, "Restaurant A", "example@gmail.com", "9876543210", "123 Street");
+        RestaurantInDTO dto = new RestaurantInDTO(1L, "Restaurant A", "example@gmail.com", "9876543210", "address");
 
         Set<ConstraintViolation<RestaurantInDTO>> violations = validator.validate(dto);
 

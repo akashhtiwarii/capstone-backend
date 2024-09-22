@@ -1,33 +1,39 @@
 package com.capstone.restaurants_service.serviceImplTest;
 
+
 import com.capstone.restaurants_service.ENUM.Role;
-import com.capstone.restaurants_service.dto.GetOwnerRestaurantsInDTO;
+import com.capstone.restaurants_service.exceptions.ResourceAlreadyExistsException;
+import com.capstone.restaurants_service.exceptions.ResourceNotFoundException;
+import com.capstone.restaurants_service.exceptions.ResourceNotValidException;
+import com.capstone.restaurants_service.serviceImpl.RestaurantServiceImpl;
+import com.capstone.restaurants_service.utils.Constants;
 import com.capstone.restaurants_service.dto.RestaurantInDTO;
 import com.capstone.restaurants_service.dto.UpdateRestaurantInDTO;
 import com.capstone.restaurants_service.dto.UserOutDTO;
 import com.capstone.restaurants_service.entity.Restaurant;
 import com.capstone.restaurants_service.feignClient.UserClient;
 import com.capstone.restaurants_service.repository.RestaurantRepository;
-import com.capstone.restaurants_service.serviceImpl.RestaurantServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
+import feign.FeignException;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.openMocks;
 
 public class RestaurantServiceImplTest {
+
+    @InjectMocks
+    private RestaurantServiceImpl restaurantService;
 
     @Mock
     private RestaurantRepository restaurantRepository;
@@ -35,123 +41,304 @@ public class RestaurantServiceImplTest {
     @Mock
     private UserClient userClient;
 
-    @InjectMocks
-    private RestaurantServiceImpl restaurantService;
+    @Mock
+    private MultipartFile image;
 
-    @BeforeEach
-    public void setUp() {
-        openMocks(this);
+    public RestaurantServiceImplTest() {
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    public void testSaveRestaurantSuccess() throws IOException {
-        RestaurantInDTO restaurantInDTO = new RestaurantInDTO(1L, "Test Restaurant", "test@gmail.com", "1234567890", "Test Address");
-        MultipartFile image = mock(MultipartFile.class);
-        UserOutDTO userOutDTO = new UserOutDTO(1L,"test@gmail.com","test","9876543210", Role.OWNER);
+    public void testSaveUserNotFound() {
+        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(null));
 
-        when(userClient.getUserById(restaurantInDTO.getOwnerId())).thenReturn(ResponseEntity.ok(userOutDTO));
-        when(restaurantRepository.findByEmail(restaurantInDTO.getEmail())).thenReturn(null);
-        when(restaurantRepository.save(any(Restaurant.class))).thenReturn(new Restaurant());
+        RestaurantInDTO restaurantInDTO = new RestaurantInDTO();
+        restaurantInDTO.setOwnerId(1L);
+
+        ResourceNotFoundException thrown = assertThrows(
+                ResourceNotFoundException.class,
+                () -> restaurantService.save(restaurantInDTO, null)
+        );
+        assertEquals(Constants.USER_NOT_FOUND, thrown.getMessage());
+    }
+
+    @Test
+    public void testSaveUserNotOwner() {
+        UserOutDTO user = new UserOutDTO();
+        user.setRole(Role.USER);
+        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(user));
+
+        RestaurantInDTO restaurantInDTO = new RestaurantInDTO();
+        restaurantInDTO.setOwnerId(1L);
+
+        ResourceNotValidException thrown = assertThrows(
+                ResourceNotValidException.class,
+                () -> restaurantService.save(restaurantInDTO, null)
+        );
+        assertEquals(Constants.YOU_CANNOT_ADD_RESTAURANT, thrown.getMessage());
+    }
+
+    @Test
+    public void testSaveRestaurantAlreadyExists() {
+        UserOutDTO user = new UserOutDTO();
+        user.setRole(Role.OWNER);
+        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(user));
+        when(restaurantRepository.findByEmail(anyString())).thenReturn(new Restaurant());
+
+        RestaurantInDTO restaurantInDTO = new RestaurantInDTO();
+        restaurantInDTO.setOwnerId(1L);
+        restaurantInDTO.setEmail("test@example.com");
+
+        ResourceAlreadyExistsException thrown = assertThrows(
+                ResourceAlreadyExistsException.class,
+                () -> restaurantService.save(restaurantInDTO, null)
+        );
+        assertEquals(Constants.EMAIL_ALREADY_EXISTS, thrown.getMessage());
+    }
+
+    @Test
+    public void testSaveSuccess() throws IOException {
+        UserOutDTO user = new UserOutDTO();
+        user.setRole(Role.OWNER);
+        user.setUserId(1L);
+        user.setName("name");
+        user.setEmail("email@gmail.com");
+        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(user));
+        when(restaurantRepository.findByEmail(anyString())).thenReturn(null);
+        when(restaurantRepository.save(any())).thenReturn(new Restaurant());
+        when(image.getContentType()).thenReturn("image/jpeg");
+        when(image.getBytes()).thenReturn(new byte[]{1, 2, 3});
+        when(image.isEmpty()).thenReturn(false);
+
+        RestaurantInDTO restaurantInDTO = new RestaurantInDTO();
+        restaurantInDTO.setOwnerId(1L);
+        restaurantInDTO.setEmail("test@example.com");
+        restaurantInDTO.setPhone("9876654321");
+        restaurantInDTO.setName("name");
+        restaurantInDTO.setAddress("Address");
 
         String result = restaurantService.save(restaurantInDTO, image);
-        assertEquals("Restaurant added successfully", result);
+        assertEquals(Constants.RESTAURANT_ADDED_SUCCESSFULLY, result);
     }
 
     @Test
-    public void testSaveRestaurantUserNotFound() {
-        RestaurantInDTO restaurantInDTO = new RestaurantInDTO(1L, "Test Restaurant", "test@gmail.com", "1234567890", "Test Address");
+    public void testSaveEmptyImage() throws IOException {
+        UserOutDTO user = new UserOutDTO();
+        user.setRole(Role.OWNER);
+        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(user));
+        when(restaurantRepository.findByEmail(anyString())).thenReturn(null);
+        when(restaurantRepository.save(any())).thenReturn(new Restaurant());
+        when(image.isEmpty()).thenReturn(true);
 
-        when(userClient.getUserById(restaurantInDTO.getOwnerId())).thenReturn(ResponseEntity.of(Optional.empty()));
+        RestaurantInDTO restaurantInDTO = new RestaurantInDTO();
+        restaurantInDTO.setOwnerId(1L);
+        restaurantInDTO.setEmail("test@example.com");
+        restaurantInDTO.setName("name");
+        restaurantInDTO.setAddress("address");
+        restaurantInDTO.setPhone("1223456789");
 
-        assertThrows(UserNotFoundException.class, () -> restaurantService.save(restaurantInDTO, null));
+        String result = restaurantService.save(restaurantInDTO, image);
+        assertEquals(Constants.RESTAURANT_ADDED_SUCCESSFULLY, result);
+
+        verify(restaurantRepository, times(1)).save(any(Restaurant.class));
+    }
+
+
+    @Test
+    public void testSaveNoImage() throws IOException {
+        UserOutDTO user = new UserOutDTO();
+        user.setRole(Role.OWNER);
+        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(user));
+        when(restaurantRepository.findByEmail(anyString())).thenReturn(null);
+        when(restaurantRepository.save(any())).thenReturn(new Restaurant());
+
+        RestaurantInDTO restaurantInDTO = new RestaurantInDTO();
+        restaurantInDTO.setOwnerId(1L);
+        restaurantInDTO.setEmail("test@example.com");
+        restaurantInDTO.setName("name");
+        restaurantInDTO.setAddress("address");
+        restaurantInDTO.setPhone("1223456789");
+
+        String result = restaurantService.save(restaurantInDTO, null);
+        assertEquals(Constants.RESTAURANT_ADDED_SUCCESSFULLY, result);
+
+        verify(restaurantRepository, times(1)).save(any(Restaurant.class));
     }
 
     @Test
-    public void testSaveRestaurantInvalidUser() {
-        RestaurantInDTO restaurantInDTO = new RestaurantInDTO(1L, "Test Restaurant", "test@gmail.com", "1234567890", "Test Address");
-        UserOutDTO userOutDTO = new UserOutDTO(2L,"test@gmail.com","test","9876543210", Role.USER);
+    public void testSaveFeignException() {
+        when(userClient.getUserById(anyLong())).thenThrow(FeignException.class);
 
-        when(userClient.getUserById(restaurantInDTO.getOwnerId())).thenReturn(ResponseEntity.ok(userOutDTO));
+        RestaurantInDTO restaurantInDTO = new RestaurantInDTO();
+        restaurantInDTO.setOwnerId(1L);
 
-        assertThrows(UserNotValidException.class, () -> restaurantService.save(restaurantInDTO, null));
+        RuntimeException thrown = assertThrows(
+                RuntimeException.class,
+                () -> restaurantService.save(restaurantInDTO, null)
+        );
+        assertEquals(Constants.USER_SERVICE_DOWN, thrown.getMessage());
+    }
+
+
+    @Test
+    public void testUpdateRestaurantUserNotFound() {
+        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(null));
+
+        UpdateRestaurantInDTO updateRestaurantInDTO = new UpdateRestaurantInDTO();
+        updateRestaurantInDTO.setLoggedInOwnerId(1L);
+
+        ResourceNotFoundException thrown = assertThrows(
+                ResourceNotFoundException.class,
+                () -> restaurantService.updateRestaurant(updateRestaurantInDTO, null)
+        );
+        assertEquals(Constants.USER_NOT_FOUND, thrown.getMessage());
     }
 
     @Test
-    public void testSaveRestaurantEmailAlreadyExists() {
-        RestaurantInDTO restaurantInDTO = new RestaurantInDTO(1L, "Test Restaurant", "test@gmail.com", "1234567890", "Test Address");
-        UserOutDTO userOutDTO = new UserOutDTO(1L,"test@gmail.com","test","9876543210", Role.OWNER);
+    public void testUpdateRestaurantUserNotOwner() {
+        UserOutDTO user = new UserOutDTO();
+        user.setRole(Role.USER);
+        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(user));
 
-        when(userClient.getUserById(restaurantInDTO.getOwnerId())).thenReturn(ResponseEntity.ok(userOutDTO));
-        when(restaurantRepository.findByEmail(restaurantInDTO.getEmail())).thenReturn(new Restaurant());
+        UpdateRestaurantInDTO updateRestaurantInDTO = new UpdateRestaurantInDTO();
+        updateRestaurantInDTO.setLoggedInOwnerId(1L);
 
-        assertThrows(EmailAlreadyExistsException.class, () -> restaurantService.save(restaurantInDTO, null));
+        ResourceNotValidException thrown = assertThrows(
+                ResourceNotValidException.class,
+                () -> restaurantService.updateRestaurant(updateRestaurantInDTO, null)
+        );
+        assertEquals(Constants.YOU_CANNOT_UPDATE_RESTAURANT, thrown.getMessage());
     }
 
     @Test
-    public void testFindAllRestaurantsSuccess() {
-        List<Restaurant> restaurants = new ArrayList<>();
-        restaurants.add(new Restaurant());
-        when(restaurantRepository.findAll()).thenReturn(restaurants);
+    public void testUpdateRestaurantRestaurantNotFound() {
+        UserOutDTO user = new UserOutDTO();
+        user.setRole(Role.OWNER);
+        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(user));
+        when(restaurantRepository.findById(anyLong())).thenReturn(null);
+
+        UpdateRestaurantInDTO updateRestaurantInDTO = new UpdateRestaurantInDTO();
+        updateRestaurantInDTO.setLoggedInOwnerId(1L);
+        updateRestaurantInDTO.setRestaurantId(1L);
+
+        ResourceNotFoundException thrown = assertThrows(
+                ResourceNotFoundException.class,
+                () -> restaurantService.updateRestaurant(updateRestaurantInDTO, null)
+        );
+        assertEquals(Constants.RESTAURANT_DOES_NOT_EXISTS, thrown.getMessage());
+    }
+
+    @Test
+    public void testUpdateRestaurantRestaurantNotOwner() {
+        UserOutDTO user = new UserOutDTO();
+        user.setRole(Role.OWNER);
+        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(user));
+
+        Restaurant restaurant = new Restaurant();
+        restaurant.setOwnerId(2L);
+        when(restaurantRepository.findById(anyLong())).thenReturn(restaurant);
+
+        UpdateRestaurantInDTO updateRestaurantInDTO = new UpdateRestaurantInDTO();
+        updateRestaurantInDTO.setLoggedInOwnerId(1L);
+        updateRestaurantInDTO.setRestaurantId(1L);
+
+        ResourceNotValidException thrown = assertThrows(
+                ResourceNotValidException.class,
+                () -> restaurantService.updateRestaurant(updateRestaurantInDTO, null)
+        );
+        assertEquals(Constants.YOU_CANNOT_UPDATE_RESTAURANT, thrown.getMessage());
+    }
+
+    @Test
+    public void testUpdateRestaurantSuccess() throws IOException {
+        UserOutDTO user = new UserOutDTO();
+        user.setRole(Role.OWNER);
+        user.setUserId(1L);
+        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(user));
+
+        Restaurant existingRestaurant = new Restaurant();
+        existingRestaurant.setOwnerId(1L);
+        when(restaurantRepository.findById(anyLong())).thenReturn(existingRestaurant);
+        when(restaurantRepository.findByEmail(anyString())).thenReturn(null);
+        when(restaurantRepository.save(any())).thenReturn(new Restaurant());
+
+        when(image.getContentType()).thenReturn("image/jpeg");
+        when(image.getBytes()).thenReturn(new byte[]{1, 2, 3});
+        when(image.isEmpty()).thenReturn(false);
+
+        UpdateRestaurantInDTO updateRestaurantInDTO = new UpdateRestaurantInDTO();
+        updateRestaurantInDTO.setLoggedInOwnerId(1L);
+        updateRestaurantInDTO.setRestaurantId(1L);
+        updateRestaurantInDTO.setName("Updated Name");
+        updateRestaurantInDTO.setEmail("updated@example.com");
+        updateRestaurantInDTO.setPhone("1234567890");
+        updateRestaurantInDTO.setAddress("Updated Address");
+
+        // Call the method under test
+        String result = restaurantService.updateRestaurant(updateRestaurantInDTO, image);
+
+        // Verify the result and interactions
+        assertEquals(Constants.RESTAURANT_UPDATED_SUCCESSFULLY, result);
+        verify(restaurantRepository, times(1)).save(any(Restaurant.class));
+    }
+
+
+    @Test
+    public void testFindAllNoRestaurants() {
+        when(restaurantRepository.findAll()).thenReturn(Collections.emptyList());
+
+        ResourceNotFoundException thrown = assertThrows(
+                ResourceNotFoundException.class,
+                () -> restaurantService.findAll()
+        );
+        assertEquals(Constants.RESTAURANT_DOES_NOT_EXISTS, thrown.getMessage());
+    }
+
+    @Test
+    public void testFindAllSuccess() {
+        when(restaurantRepository.findAll()).thenReturn(Collections.singletonList(new Restaurant()));
 
         List<Restaurant> result = restaurantService.findAll();
         assertEquals(1, result.size());
     }
 
     @Test
-    public void testFindAllRestaurantsNotFound() {
-        when(restaurantRepository.findAll()).thenReturn(new ArrayList<>());
+    public void testFindByOwnerIdNoRestaurants() {
+        when(restaurantRepository.findByOwnerId(anyLong())).thenReturn(Collections.emptyList());
 
-        assertThrows(RestaurantsNotFoundException.class, () -> restaurantService.findAll());
+        ResourceNotFoundException thrown = assertThrows(
+                ResourceNotFoundException.class,
+                () -> restaurantService.findByOwnerId(1L)
+        );
+        assertEquals(Constants.RESTAURANT_DOES_NOT_EXISTS, thrown.getMessage());
     }
 
     @Test
-    public void testUpdateRestaurantSuccess() throws IOException {
-        UpdateRestaurantInDTO updateRestaurantInDTO = new UpdateRestaurantInDTO(1L, 1L, "Updated Restaurant", "updated@gmail.com", "0987654321", "Updated Address", null);
-        UserOutDTO userOutDTO = new UserOutDTO(1L,"test@gmail.com","test","9876543210", Role.OWNER);
-        Restaurant restaurant = new Restaurant(1L, 1L,"Old Restaurant", "old@gmail.com", "1234567890", "Address", null);
+    public void testFindByOwnerIdSuccess() {
+        when(restaurantRepository.findByOwnerId(anyLong())).thenReturn(Collections.singletonList(new Restaurant()));
 
-        when(userClient.getUserById(updateRestaurantInDTO.getLoggedInOwnerId())).thenReturn(ResponseEntity.ok(userOutDTO));
-        when(restaurantRepository.findById(updateRestaurantInDTO.getRestaurantId())).thenReturn(restaurant);
-        when(restaurantRepository.save(any(Restaurant.class))).thenReturn(restaurant);
-
-        String result = restaurantService.updateRestaurant(updateRestaurantInDTO);
-        assertEquals("Restaurant updated successfully", result);
-    }
-
-    @Test
-    public void testFindRestaurantByIdSuccess() {
-        Restaurant restaurant = new Restaurant();
-        when(restaurantRepository.findById(anyLong())).thenReturn(restaurant);
-
-        Restaurant result = restaurantService.findById(1L);
-        assertNotNull(result);
-    }
-
-    @Test
-    public void testFindRestaurantByIdNotFound() {
-        when(restaurantRepository.findById(anyLong())).thenReturn(null);
-
-        assertThrows(RestaurantsNotFoundException.class, () -> restaurantService.findById(1L));
-    }
-
-    @Test
-    public void testFindRestaurantsByOwnerIdSuccess() {
-        List<Restaurant> restaurants = new ArrayList<>();
-        restaurants.add(new Restaurant());
-        GetOwnerRestaurantsInDTO dto = new GetOwnerRestaurantsInDTO(1L);
-
-        when(restaurantRepository.findByOwnerId(dto.getOwnerId())).thenReturn(restaurants);
-
-        List<Restaurant> result = restaurantService.findByOwnerId(dto);
+        List<Restaurant> result = restaurantService.findByOwnerId(1L);
         assertEquals(1, result.size());
     }
 
     @Test
-    public void testFindRestaurantsByOwnerIdNotFound() {
-        GetOwnerRestaurantsInDTO dto = new GetOwnerRestaurantsInDTO(1L);
+    public void testFindByIdRestaurantNotFound() {
+        when(restaurantRepository.findById(anyLong())).thenReturn(null);
 
-        when(restaurantRepository.findByOwnerId(dto.getOwnerId())).thenReturn(new ArrayList<>());
+        ResourceNotFoundException thrown = assertThrows(
+                ResourceNotFoundException.class,
+                () -> restaurantService.findById(1L)
+        );
+        assertEquals(Constants.RESTAURANT_DOES_NOT_EXISTS, thrown.getMessage());
+    }
 
-        assertThrows(RestaurantsNotFoundException.class, () -> restaurantService.findByOwnerId(dto));
+    @Test
+    public void testFindByIdSuccess() {
+        Restaurant restaurant = new Restaurant();
+        when(restaurantRepository.findById(anyLong())).thenReturn(restaurant);
+
+        Restaurant result = restaurantService.findById(1L);
+        assertEquals(restaurant, result);
     }
 }
+

@@ -50,46 +50,52 @@ public class OrderControllerTest {
     @Test
     void testAddOrder() {
         String responseMessage = "Order added successfully";
-        when(orderService.addOrder(anyLong())).thenReturn(responseMessage);
+        RequestSuccessOutDTO responseDTO = new RequestSuccessOutDTO(responseMessage);
+        when(orderService.addOrder(anyLong(), anyLong())).thenReturn(responseMessage);
 
-        ResponseEntity<String> response = orderController.addOrder(1L);
+        ResponseEntity<RequestSuccessOutDTO> response = orderController.addOrder(1L, 1L);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(responseMessage, response.getBody());
+        assertEquals(responseDTO, response.getBody());
     }
 
     @Test
     void testGetMyCart() {
         List<CartItemOutDTO> cartItems = Collections.singletonList(new CartItemOutDTO());
-        when(cartItemService.getCartItems(anyLong())).thenReturn(cartItems);
+        CartItemsListOutDTO cartItemsListOutDTO = new CartItemsListOutDTO();
+        cartItemsListOutDTO.setCartItemOutDTOList(cartItems);
+        cartItemsListOutDTO.setTotalAmount(100.0);
+        when(cartItemService.getCartItems(anyLong())).thenReturn(cartItemsListOutDTO);
 
-        ResponseEntity<List<CartItemOutDTO>> response = orderController.getMyCart(1L);
+        ResponseEntity<CartItemsListOutDTO> response = orderController.getMyCart(1L);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(cartItems, response.getBody());
+        assertEquals(cartItemsListOutDTO, response.getBody());
     }
 
     @Test
     void testAddToCart() {
         String responseMessage = "Item added to cart";
+        RequestSuccessOutDTO responseDTO = new RequestSuccessOutDTO(responseMessage);
         AddToCartInDTO addToCartInDTO = new AddToCartInDTO();
         when(cartItemService.addToCart(any(AddToCartInDTO.class))).thenReturn(responseMessage);
 
-        ResponseEntity<String> response = orderController.addToCart(addToCartInDTO);
+        ResponseEntity<RequestSuccessOutDTO> response = orderController.addToCart(addToCartInDTO);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(responseMessage, response.getBody());
+        assertEquals(responseDTO, response.getBody());
     }
 
     @Test
     void testUpdateOrder() {
         String responseMessage = "Order updated successfully";
+        RequestSuccessOutDTO responseDTO = new RequestSuccessOutDTO(responseMessage);
         when(orderService.updateOrder(anyLong(), anyLong(), any(Status.class))).thenReturn(responseMessage);
 
-        ResponseEntity<String> response = orderController.updateOrder(1L, 1L, Status.PENDING);
+        ResponseEntity<RequestSuccessOutDTO> response = orderController.updateOrder(1L, 1L, Status.PENDING);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(responseMessage, response.getBody());
+        assertEquals(responseDTO, response.getBody());
     }
 
     @Test
@@ -117,33 +123,36 @@ public class OrderControllerTest {
     @Test
     void testUpdateCartItem() {
         String responseMessage = "Cart item updated";
+        RequestSuccessOutDTO responseDTO = new RequestSuccessOutDTO(responseMessage);
         when(cartItemService.updateCartItem(anyLong(), anyInt())).thenReturn(responseMessage);
 
-        ResponseEntity<String> response = orderController.updateCartItem(1L, 5);
+        ResponseEntity<RequestSuccessOutDTO> response = orderController.updateCartItem(1L, 5);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(responseMessage, response.getBody());
+        assertEquals(responseDTO, response.getBody());
     }
 
     @Test
     void testDeleteCartItem() {
         String responseMessage = "Cart item deleted";
+        RequestSuccessOutDTO responseDTO = new RequestSuccessOutDTO(responseMessage);
         when(cartItemService.deleteCartItem(anyLong())).thenReturn(responseMessage);
 
-        ResponseEntity<String> response = orderController.deleteCartItem(1L);
+        ResponseEntity<RequestSuccessOutDTO> response = orderController.deleteCartItem(1L);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(responseMessage, response.getBody());
+        assertEquals(responseDTO, response.getBody());
     }
 
     @Test
     void testCancelOrder() {
         String responseMessage = "Order canceled";
+        RequestSuccessOutDTO responseDTO = new RequestSuccessOutDTO(responseMessage);
         when(orderService.cancelOrder(anyLong())).thenReturn(responseMessage);
 
-        ResponseEntity<String> response = orderController.cancelOrder(1L);
+        ResponseEntity<RequestSuccessOutDTO> response = orderController.cancelOrder(1L);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(responseMessage, response.getBody());
+        assertEquals(responseDTO, response.getBody());
     }
 }

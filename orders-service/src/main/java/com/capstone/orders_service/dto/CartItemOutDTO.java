@@ -41,19 +41,19 @@ public class CartItemOutDTO {
     private int quantity;
 
     /**
-     * The price of the food item in the cart.
+     * The price of the food item with quantity in the cart.
      */
-    private double price;
+    private String priceQuantity;
 
     /**
      * Compares this CartItemOutDTO object to the specified object for equality.
-     * Two CartItemOutDTO objects are considered equal if they have the same cartItemId, userId, restaurantName, foodName, quantity, and price.
-     *
+     * Two CartItemOutDTO objects are considered equal
+     * if they have the same cartItemId, userId, restaurantName, foodName, quantity, and price.
      * @param o the object to compare this CartItemOutDTO against.
      * @return true if the specified object is equal to this CartItemOutDTO; false otherwise.
      */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -61,7 +61,12 @@ public class CartItemOutDTO {
             return false;
         }
         CartItemOutDTO that = (CartItemOutDTO) o;
-        return cartItemId == that.cartItemId && userId == that.userId && quantity == that.quantity && Double.compare(price, that.price) == 0 && Objects.equals(restaurantName, that.restaurantName) && Objects.equals(foodName, that.foodName);
+        return cartItemId == that.cartItemId
+                && userId == that.userId
+                && quantity == that.quantity
+                && Objects.equals(restaurantName, that.restaurantName)
+                && Objects.equals(foodName, that.foodName)
+                && Objects.equals(priceQuantity, that.priceQuantity);
     }
 
     /**
@@ -72,6 +77,6 @@ public class CartItemOutDTO {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(cartItemId, userId, restaurantName, foodName, quantity, price);
+        return Objects.hash(cartItemId, userId, restaurantName, foodName, quantity, priceQuantity);
     }
 }

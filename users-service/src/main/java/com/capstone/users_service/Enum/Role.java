@@ -1,15 +1,16 @@
 package com.capstone.users_service.Enum;
 
 /**
- * Role ENUM for user roles.
+ * Enum representing the roles that a user can have in the system.
  */
 public enum Role {
     /**
-     * USER enum for creating a user role.
+     * Represents a standard user role.
      */
     USER,
+
     /**
-     * USER enum for creating a user role.
+     * Represents an owner role.
      */
     OWNER
 }

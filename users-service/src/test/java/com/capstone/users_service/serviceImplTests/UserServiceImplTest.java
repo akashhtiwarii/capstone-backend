@@ -1,29 +1,34 @@
 package com.capstone.users_service.serviceImplTests;
 
 import com.capstone.users_service.Enum.Role;
-import com.capstone.users_service.dto.LoginRequestInDTO;
-import com.capstone.users_service.dto.UserInDTO;
-import com.capstone.users_service.dto.LoginResponseOutDTO;
+import com.capstone.users_service.dto.*;
 import com.capstone.users_service.entity.User;
 import com.capstone.users_service.entity.Wallet;
+import com.capstone.users_service.exceptions.ResourceAlreadyExistsException;
+import com.capstone.users_service.exceptions.ResourceNotFoundException;
+import com.capstone.users_service.exceptions.ResourceNotValidException;
 import com.capstone.users_service.repository.UserRepository;
 import com.capstone.users_service.repository.WalletRepository;
 import com.capstone.users_service.serviceImpl.UserServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
+import com.capstone.users_service.utils.Constants;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 
-import static com.capstone.users_service.utils.Constants.EMAIL_ALREADY_IN_USE;
-import static com.capstone.users_service.utils.Constants.INVALID_CREDENTIALS;
-import static com.capstone.users_service.utils.Constants.OWNER_SIGNUP_MESSAGE;
-import static com.capstone.users_service.utils.Constants.USER_SIGNUP_MESSAGE;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class UserServiceImplTest {
+
+    @Mock
+    private JavaMailSender javaMailSender;
 
     @Mock
     private UserRepository userRepository;
@@ -32,102 +37,263 @@ public class UserServiceImplTest {
     private WalletRepository walletRepository;
 
     @InjectMocks
-    private UserServiceImpl userServiceImpl;
+    private UserServiceImpl userService;
 
-    @BeforeEach
-    void setUp() {
+    public UserServiceImplTest() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    public void testAddRestaurantUserExistsThrowsEmailAlreadyExistsException() {
-        UserInDTO userInDTO = new UserInDTO();
-        userInDTO.setEmail("test@gmail.com");
-        when(userRepository.existsByEmail(anyString())).thenReturn(true);
+    public void testGetByIdSuccess() {
+        GetUserInfoInDTO getUserInfoInDTO = new GetUserInfoInDTO();
+        getUserInfoInDTO.setUserId(1L);
+        getUserInfoInDTO.setLoggedInUserId(1L);
 
-        EmailAlreadyExistsException exception = assertThrows(
-                EmailAlreadyExistsException.class,
-                () -> userServiceImpl.addRestaurant(userInDTO)
-        );
-        assertEquals(EMAIL_ALREADY_IN_USE, exception.getMessage());
-        verify(userRepository, times(1)).existsByEmail(anyString());
+        User user = new User();
+        user.setUserId(1L);
+
+        Mockito.when(userRepository.findById(1L)).thenReturn(user);
+        Mockito.when(userRepository.findById(1L)).thenReturn(user);
+
+        User result = userService.getById(getUserInfoInDTO);
+
+        assertEquals(user, result);
     }
 
     @Test
-    public void testAddRestaurantNewUserSuccessUserRole() {
+    public void testGetProfileInfoSuccess() {
+        long userId = 1L;
+        User user = new User();
+        user.setUserId(userId);
+        user.setName("name");
+        user.setEmail("email@gmail.com");
+        user.setPhone("1234567890");
+        user.setRole(Role.USER);
+
+        Wallet wallet = new Wallet();
+        wallet.setAmount(100.0);
+
+        Mockito.when(userRepository.findById(userId)).thenReturn(user);
+        Mockito.when(walletRepository.findByUserId(userId)).thenReturn(wallet);
+
+        ProfileOutDTO result = userService.getProfileInfo(userId);
+
+        assertEquals(user.getName(), result.getName());
+        assertEquals(user.getEmail(), result.getEmail());
+        assertEquals(user.getPhone(), result.getPhone());
+        assertEquals(wallet.getAmount(), result.getWalletAmount());
+    }
+
+    @Test
+    public void testGetProfileInfoUserNotFound() {
+        long userId = 1L;
+
+        Mockito.when(userRepository.findById(userId)).thenReturn(null);
+
+        assertThrows(ResourceNotFoundException.class, () -> userService.getProfileInfo(userId));
+    }
+
+    @Test
+    public void testGetByIdentitySuccess() {
+        long userId = 1L;
+        User user = new User();
+        user.setUserId(userId);
+
+        Mockito.when(userRepository.findById(userId)).thenReturn(user);
+
+        User result = userService.getByIdentity(userId);
+
+        assertEquals(user, result);
+    }
+
+    @Test
+    public void testGetByIdentityNotFound() {
+        long userId = 1L;
+
+        Mockito.when(userRepository.findById(userId)).thenReturn(null);
+
+        assertThrows(ResourceNotFoundException.class, () -> userService.getByIdentity(userId));
+    }
+
+    @Test
+    public void testRegisterUserSuccess() {
         UserInDTO userInDTO = new UserInDTO();
-        userInDTO.setEmail("test@gmail.com");
+        userInDTO.setEmail("email@gmail.com");
         userInDTO.setRole(Role.USER);
+        userInDTO.setName("name ");
+        userInDTO.setPassword("password123 ");
+        userInDTO.setPhone("1234567890 ");
+
 
         User user = new User();
-        user.setUserId(1L);
-        user.setEmail("test@gmail.com");
+        user.setEmail("email@gmail.com");
 
-        when(userRepository.existsByEmail(anyString())).thenReturn(false);
-        when(userRepository.save(any(User.class))).thenReturn(user);
-        when(userRepository.findByEmail(anyString())).thenReturn(user);
+        Mockito.when(userRepository.existsByEmail(userInDTO.getEmail())).thenReturn(false);
+        Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(user);
+        Mockito.when(userRepository.findByEmail(userInDTO.getEmail())).thenReturn(user);
 
-        String result = userServiceImpl.addRestaurant(userInDTO);
+        String result = userService.registerUser(userInDTO);
 
-        assertEquals(USER_SIGNUP_MESSAGE, result);
-        verify(userRepository, times(1)).existsByEmail(anyString());
-        verify(userRepository, times(1)).save(any(User.class));
-        verify(walletRepository, times(1)).save(any(Wallet.class));
+        assertEquals(Constants.USER_SIGNUP_MESSAGE, result);
     }
 
     @Test
-    public void testAddRestaurantNewUserSuccessOwnerRole() {
+    public void testRegisterUserEmailAlreadyExists() {
         UserInDTO userInDTO = new UserInDTO();
-        userInDTO.setEmail("owner@gmail.com");
-        userInDTO.setRole(Role.OWNER);
+        userInDTO.setEmail("email@gmail.com");
+        userInDTO.setName("name ");
+        userInDTO.setPassword("password123 ");
+        userInDTO.setRole(Role.USER);
+        userInDTO.setPhone("1234567890 ");
 
-        User user = new User();
-        user.setUserId(1L);
-        user.setEmail("owner@gmail.com");
+        Mockito.when(userRepository.existsByEmail(userInDTO.getEmail())).thenReturn(true);
 
-        when(userRepository.existsByEmail(anyString())).thenReturn(false);
-        when(userRepository.save(any(User.class))).thenReturn(user);
-
-        String result = userServiceImpl.addRestaurant(userInDTO);
-
-        assertEquals(OWNER_SIGNUP_MESSAGE, result);
-        verify(userRepository, times(1)).existsByEmail(anyString());
-        verify(userRepository, times(1)).save(any(User.class));
-        verify(walletRepository, never()).save(any(Wallet.class));
+        assertThrows(ResourceAlreadyExistsException.class, () -> userService.registerUser(userInDTO));
     }
 
     @Test
     public void testLoginUserSuccess() {
         LoginRequestInDTO loginRequestInDTO = new LoginRequestInDTO();
-        loginRequestInDTO.setEmail("test@gmail.com");
+        loginRequestInDTO.setEmail("email@gmail.com");
         loginRequestInDTO.setPassword("password");
 
         User user = new User();
-        user.setEmail("test@gmail.com");
+        user.setEmail("email@gmail.com");
         user.setPassword("password");
+        user.setName("John Doe");
+        user.setPhone("1234567890");
 
-        when(userRepository.findByEmailAndPassword(anyString(), anyString())).thenReturn(user);
+        Mockito.when(userRepository.findByEmailAndPassword(
+                loginRequestInDTO.getEmail(), loginRequestInDTO.getPassword()
+        )).thenReturn(user);
 
-        LoginResponseOutDTO result = userServiceImpl.loginUser(loginRequestInDTO);
+        LoginResponseOutDTO result = userService.loginUser(loginRequestInDTO);
 
-        assertNotNull(result);
-        assertEquals("test@gmail.com", result.getEmail());
-        verify(userRepository, times(1)).findByEmailAndPassword(anyString(), anyString());
+        assertEquals(user.getEmail(), result.getEmail());
+        assertEquals(user.getName(), result.getName());
+        assertEquals(user.getPhone(), result.getPhone());
     }
 
     @Test
-    public void testLoginUserFailureInvalidCredentials() {
+    public void testLoginUserInvalidCredentials() {
         LoginRequestInDTO loginRequestInDTO = new LoginRequestInDTO();
-        loginRequestInDTO.setEmail("wrong@example.com");
+        loginRequestInDTO.setEmail("email@gmail.com");
         loginRequestInDTO.setPassword("wrongpassword");
 
-        when(userRepository.findByEmailAndPassword(anyString(), anyString())).thenReturn(null);
+        Mockito.when(userRepository.findByEmailAndPassword(
+                loginRequestInDTO.getEmail(), loginRequestInDTO.getPassword()
+        )).thenReturn(null);
 
-        LoginResponseOutDTO result = userServiceImpl.loginUser(loginRequestInDTO);
+        assertThrows(ResourceNotValidException.class, () -> {
+            userService.loginUser(loginRequestInDTO);
+        });
+    }
 
-        assertNotNull(result);
-        assertEquals(INVALID_CREDENTIALS, result.getMessage());
-        verify(userRepository, times(1)).findByEmailAndPassword(anyString(), anyString());
+
+    @Test
+    public void testUpdateUserProfileSuccess() {
+        long userId = 1L;
+        UpdateProfileInDTO updateProfileInDTO = new UpdateProfileInDTO();
+        updateProfileInDTO.setEmail("new.email@example.com");
+        updateProfileInDTO.setName("New Name");
+        updateProfileInDTO.setPhone("0987654321");
+
+        User user = new User();
+        user.setUserId(userId);
+        user.setEmail("old.email@example.com");
+
+        Mockito.when(userRepository.findById(userId)).thenReturn(user);
+        Mockito.when(userRepository.findByEmail(updateProfileInDTO.getEmail())).thenReturn(null);
+
+        String result = userService.updateUserProfile(userId, updateProfileInDTO);
+
+        assertEquals("Profile Updated Successfully", result);
+        assertEquals(updateProfileInDTO.getEmail(), user.getEmail());
+        assertEquals(updateProfileInDTO.getName(), user.getName());
+        assertEquals(updateProfileInDTO.getPhone(), user.getPhone());
+    }
+
+    @Test
+    public void testUpdateUserProfileUserNotFound() {
+        long userId = 1L;
+        UpdateProfileInDTO updateProfileInDTO = new UpdateProfileInDTO();
+
+        Mockito.when(userRepository.findById(userId)).thenReturn(null);
+
+        assertThrows(ResourceNotFoundException.class, () -> userService.updateUserProfile(userId, updateProfileInDTO));
+    }
+
+    @Test
+    public void testUpdateUserProfileEmailAlreadyExists() {
+        long userId = 1L;
+        UpdateProfileInDTO updateProfileInDTO = new UpdateProfileInDTO();
+        updateProfileInDTO.setEmail("existing.email@example.com");
+
+        User user = new User();
+        user.setUserId(userId);
+        user.setEmail("old.email@example.com");
+
+        Mockito.when(userRepository.findById(userId)).thenReturn(user);
+        Mockito.when(userRepository.findByEmail(updateProfileInDTO.getEmail())).thenReturn(new User());
+        assertThrows(ResourceAlreadyExistsException.class, () -> userService.updateUserProfile(userId, updateProfileInDTO));
+    }
+
+    @Test
+    public void testContactUsSuccess() throws MessagingException {
+        ContactUsInDTO contactUsInDTO = new ContactUsInDTO();
+        contactUsInDTO.setFromEmail("email@gmail.com");
+        contactUsInDTO.setSubject("Inquiry");
+        contactUsInDTO.setMessage("Hello, I would like to inquire about...");
+
+        MimeMessage mimeMessage = Mockito.mock(MimeMessage.class);
+        Mockito.when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
+
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+        Mockito.when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
+
+        userService.contactUs(contactUsInDTO);
+
+        Mockito.verify(javaMailSender).send(mimeMessage);
+    }
+
+    @Test
+    public void testForgotPasswordSuccess() throws MessagingException {
+        String email = "email@gmail.com";
+
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword("encodedPassword");
+
+        Mockito.when(userRepository.findByEmail(email)).thenReturn(user);
+
+        MimeMessage mimeMessage = Mockito.mock(MimeMessage.class);
+        Mockito.when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
+
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+        Mockito.when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
+
+        userService.forgotPassword(email);
+
+        Mockito.verify(javaMailSender).send(mimeMessage);
+    }
+
+    @Test
+    public void testSendPasswordEmailSuccess() throws MessagingException {
+        String email = "email@gmail.com";
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword("cGFzc3dvcmQ=");
+
+        Mockito.when(userRepository.findByEmail(email)).thenReturn(user);
+
+        MimeMessage mimeMessage = Mockito.mock(MimeMessage.class);
+        Mockito.when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
+
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+        Mockito.when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
+
+        userService.forgotPassword(email);
+
+        Mockito.verify(javaMailSender).send(mimeMessage);
     }
 }
-

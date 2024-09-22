@@ -3,7 +3,14 @@ package com.capstone.users_service.utils;
 /**
  * Constants for storing constants used throughout.
  */
-public class Constants {
+public final class Constants {
+
+    /**
+     * Private Constructor.
+     */
+    private Constants() {
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
     /**
      * Minimum password length.
      */
@@ -73,5 +80,20 @@ public class Constants {
      * Unexpected Error.
      */
     public static final String UNEXPECTED_ERROR = "An unexpected error occured: ";
+
+    /**
+     * User Not Found.
+     */
+    public static final String USER_NOT_FOUND = "User Not Found";
+
+    /**
+     * Password Reset.
+     */
+    public static final String PASSWORD_RESET = "PASSWORD RESET";
+
+    /**
+     * Forgot Password.
+     */
+    public static final String FORGOT_PASSWORD = "/forgotpassword";
 
 }

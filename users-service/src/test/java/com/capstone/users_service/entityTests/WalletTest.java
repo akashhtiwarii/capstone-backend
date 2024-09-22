@@ -7,48 +7,52 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class WalletTest {
-    private Wallet wallet1;
-    private Wallet wallet2;
 
-    @BeforeEach
-    void setUp() {
-        wallet1 = new Wallet(1L, 1L, 1000.0);
-        wallet2 = new Wallet(1L, 1L, 1000.0);
+    @Test
+    public void testGetterAndSetter() {
+        Wallet wallet = new Wallet();
+
+        assertEquals(0L, wallet.getWalletId());
+        long walletId = 1L;
+        wallet.setWalletId(walletId);
+        assertEquals(walletId, wallet.getWalletId());
+
+        assertEquals(0L, wallet.getUserId());
+        long userId = 101L;
+        wallet.setUserId(userId);
+        assertEquals(userId, wallet.getUserId());
+
+        assertEquals(0.0, wallet.getAmount());
+        double amount = 500.75;
+        wallet.setAmount(amount);
+        assertEquals(amount, wallet.getAmount());
     }
 
     @Test
-    public void testHashCode() {
+    public void testEqualsAndHashCode() {
+        Wallet wallet1 = buildWallet(1L, 101L, 500.75);
+        Wallet wallet2 = buildWallet(1L, 101L, 500.75);
+
+        assertEquals(wallet1, wallet2);
         assertEquals(wallet1.hashCode(), wallet2.hashCode());
-        wallet2.setUserId(2L);
+
+        wallet2.setWalletId(2L);
+        assertNotEquals(wallet1, wallet2);
         assertNotEquals(wallet1.hashCode(), wallet2.hashCode());
+
+        wallet2 = buildWallet(1L, 102L, 500.75);
+        assertNotEquals(wallet1, wallet2);
+
+        wallet2 = buildWallet(1L, 101L, 600.50);
+        assertNotEquals(wallet1, wallet2);
+
+        Wallet wallet3 = new Wallet();
+        Wallet wallet4 = new Wallet();
+        assertEquals(wallet3, wallet4);
+        assertEquals(wallet3.hashCode(), wallet4.hashCode());
     }
 
-    @Test
-    public void testGettersAndSetter() {
-        assertEquals(1L, wallet1.getWalletId());
-        assertEquals(1L, wallet1.getUserId());
-        assertEquals(1000.0, wallet1.getAmount());
-
-        wallet1.setWalletId(2L);
-        assertEquals(2L, wallet1.getWalletId());
-        wallet1.setUserId(2L);
-        assertEquals(2L, wallet1.getUserId());
-        wallet1.setAmount(2000.0);
-        assertEquals(2000.0, wallet1.getAmount());
+    private Wallet buildWallet(long walletId, long userId, double amount) {
+        return new Wallet(walletId, userId, amount);
     }
-
-    @Test
-    public void testEquals() {
-        Wallet wallet1 = new Wallet(1L, 1001L, 250.75);
-        Wallet wallet2 = new Wallet(1L, 1001L, 250.75);
-        Wallet wallet3 = new Wallet(2L, 1001L, 250.75);
-        Wallet wallet4 = new Wallet(1L, 1002L, 250.75);
-        Wallet wallet5 = new Wallet(1L, 1001L, 300.00);
-        assertTrue(wallet1.equals(wallet1));
-        assertFalse(wallet1.equals(wallet3));
-        assertFalse(wallet1.equals(wallet4));
-        assertFalse(wallet1.equals(wallet5));
-        assertTrue(wallet1.equals(wallet2));
-    }
-
 }

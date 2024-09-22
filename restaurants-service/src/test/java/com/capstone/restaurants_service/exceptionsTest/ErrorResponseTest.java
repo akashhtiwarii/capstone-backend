@@ -2,31 +2,73 @@ package com.capstone.restaurants_service.exceptionsTest;
 
 import com.capstone.restaurants_service.exceptions.ErrorResponse;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-class ErrorResponseTest {
+public class ErrorResponseTest {
 
     @Test
-    void testGettersAndSetters() {
+    public void testGetterAndSetter() {
         ErrorResponse errorResponse = new ErrorResponse();
 
-        errorResponse.setStatus(404);
-        errorResponse.setMessage("Not Found");
+        assertEquals(0, errorResponse.getStatus());
+        int status = 400;
+        errorResponse.setStatus(status);
+        assertEquals(status, errorResponse.getStatus());
 
-        assertEquals(404, errorResponse.getStatus());
-        assertEquals("Not Found", errorResponse.getMessage());
+        assertNull(errorResponse.getMessage());
+        String message = "Bad Request";
+        errorResponse.setMessage(message);
+        assertEquals(message, errorResponse.getMessage());
     }
 
     @Test
-    void testEqualsAndHashCode() {
-        ErrorResponse errorResponse1 = new ErrorResponse(404, "Not Found");
-        ErrorResponse errorResponse2 = new ErrorResponse(404, "Not Found");
-        ErrorResponse errorResponse3 = new ErrorResponse(500, "Internal Server Error");
+    public void testToString() {
+        ErrorResponse errorResponse = new ErrorResponse();
 
+        int status = 500;
+        errorResponse.setStatus(status);
+
+        String message = "Internal Server Error";
+        errorResponse.setMessage(message);
+
+        assertEquals("ErrorResponse(status=500, message=Internal Server Error)", errorResponse.toString());
+    }
+
+    @Test
+    public void testEqualsAndHashCode() {
+        int status = 404;
+        String message = "Not Found";
+
+        ErrorResponse errorResponse1 = buildErrorResponse(status, message);
+
+        assertEquals(errorResponse1, errorResponse1);
+        assertEquals(errorResponse1.hashCode(), errorResponse1.hashCode());
+
+        assertNotEquals(errorResponse1, new Object());
+
+        ErrorResponse errorResponse2 = buildErrorResponse(status, message);
         assertEquals(errorResponse1, errorResponse2);
-        assertNotEquals(errorResponse1, errorResponse3);
-
         assertEquals(errorResponse1.hashCode(), errorResponse2.hashCode());
-        assertNotEquals(errorResponse1.hashCode(), errorResponse3.hashCode());
+
+        errorResponse2 = buildErrorResponse(status + 1, message);
+        assertNotEquals(errorResponse1, errorResponse2);
+        assertNotEquals(errorResponse1.hashCode(), errorResponse2.hashCode());
+
+        errorResponse2 = buildErrorResponse(status, message + " Updated");
+        assertNotEquals(errorResponse1, errorResponse2);
+        assertNotEquals(errorResponse1.hashCode(), errorResponse2.hashCode());
+
+        errorResponse1 = new ErrorResponse();
+        errorResponse2 = new ErrorResponse();
+        assertEquals(errorResponse1, errorResponse2);
+        assertEquals(errorResponse1.hashCode(), errorResponse2.hashCode());
+    }
+
+    private ErrorResponse buildErrorResponse(int status, String message) {
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setStatus(status);
+        errorResponse.setMessage(message);
+        return errorResponse;
     }
 }

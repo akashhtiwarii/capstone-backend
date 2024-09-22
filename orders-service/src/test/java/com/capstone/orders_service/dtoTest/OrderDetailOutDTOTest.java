@@ -15,7 +15,7 @@ public class OrderDetailOutDTOTest {
         OrderDetailOutDTO orderDetailOutDTO = new OrderDetailOutDTO();
 
         assertNull(orderDetailOutDTO.getFoodName());
-        String foodName = "Pizza";
+        String foodName = "Food";
         orderDetailOutDTO.setFoodName(foodName);
         assertEquals(foodName, orderDetailOutDTO.getFoodName());
 
@@ -32,7 +32,7 @@ public class OrderDetailOutDTOTest {
 
     @Test
     public void testEqualsAndHashcode() {
-        String foodName = "Pizza";
+        String foodName = "Food";
         int quantity = 3;
         double price = 15.99;
 
@@ -47,7 +47,7 @@ public class OrderDetailOutDTOTest {
         assertEquals(orderDetailOutDTO1, orderDetailOutDTO2);
         assertEquals(orderDetailOutDTO1.hashCode(), orderDetailOutDTO2.hashCode());
 
-        orderDetailOutDTO2 = buildOrderDetailOutDTO("Burger", quantity, price);
+        orderDetailOutDTO2 = buildOrderDetailOutDTO("Food2", quantity, price);
         assertNotEquals(orderDetailOutDTO1, orderDetailOutDTO2);
         assertNotEquals(orderDetailOutDTO1.hashCode(), orderDetailOutDTO2.hashCode());
 
