@@ -209,8 +209,8 @@ public class UserServiceImpl implements UserService {
                 throw new ResourceAlreadyExistsException("Email Already Exists");
             }
         }
-        user.setEmail(updateProfileInDTO.getEmail().trim().toLowerCase());
-        user.setName(updateProfileInDTO.getName().trim());
+        user.setEmail(updateProfileInDTO.getEmail().trim().toLowerCase().replaceAll("\\s+", " "));
+        user.setName(updateProfileInDTO.getName().trim().replaceAll("\\s+", " "));
         user.setPhone(updateProfileInDTO.getPhone().trim());
         userRepository.save(user);
         return "Profile Updated Successfully";

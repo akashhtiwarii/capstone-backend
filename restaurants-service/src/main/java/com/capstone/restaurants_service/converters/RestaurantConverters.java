@@ -34,11 +34,17 @@ public final class RestaurantConverters {
     public static Restaurant restaurantInDTOTORestaurant(final RestaurantInDTO restaurantInDTO) {
         Restaurant restaurant = new Restaurant();
         restaurant.setOwnerId(restaurantInDTO.getOwnerId());
-        restaurant.setName(restaurantInDTO.getName() != null ? restaurantInDTO.getName().trim() : null);
+        restaurant.setName(
+                restaurantInDTO.getName() != null ? restaurantInDTO.getName().trim().replaceAll("\\s+", " ") : null
+        );
         restaurant.setEmail(restaurantInDTO.getEmail() != null
-                ? restaurantInDTO.getEmail().trim().toLowerCase() : null);
+                ? restaurantInDTO.getEmail().trim().toLowerCase().replaceAll("\\s+", " ") : null);
         restaurant.setPhone(restaurantInDTO.getPhone());
-        restaurant.setAddress(restaurantInDTO.getAddress() != null ? restaurantInDTO.getAddress().trim() : null);
+        restaurant.setAddress(
+                restaurantInDTO.getAddress() != null
+                        ? restaurantInDTO.getAddress().trim().replaceAll("\\s+", " ")
+                        : null
+        );
         return restaurant;
     }
 }

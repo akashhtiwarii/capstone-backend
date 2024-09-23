@@ -41,7 +41,6 @@ import java.util.List;
  */
 @RestController
 @RequestMapping(Constants.RESTAURANT_ENDPOINT)
-@CrossOrigin
 public class RestaurantController {
 
     /**

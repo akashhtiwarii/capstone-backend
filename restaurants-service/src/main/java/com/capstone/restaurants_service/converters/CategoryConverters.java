@@ -24,7 +24,7 @@ public final class CategoryConverters {
     public static Category categoryInDTOToCategoryEntity(final CategoryInDTO categoryInDTO) {
         Category category = new Category();
         category.setRestaurantId(categoryInDTO.getRestaurantId());
-        category.setName(categoryInDTO.getName().trim().toUpperCase());
+        category.setName(categoryInDTO.getName().trim().toUpperCase().replaceAll("\\s+", " "));
         return category;
     }
 }

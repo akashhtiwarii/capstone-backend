@@ -25,9 +25,9 @@ public final class UserConverters {
      */
     public static User registerUserInDTOToUserEntity(final UserInDTO userInDTO) {
         User user = new User();
-        user.setName(userInDTO.getName().trim());
+        user.setName(userInDTO.getName().trim().replaceAll("\\s+", " "));
         user.setPassword(userInDTO.getPassword().trim());
-        user.setEmail(userInDTO.getEmail().trim().toLowerCase());
+        user.setEmail(userInDTO.getEmail().trim().toLowerCase().replaceAll("\\s+", " "));
         user.setRole(userInDTO.getRole());
         user.setPhone(userInDTO.getPhone().trim());
         return user;

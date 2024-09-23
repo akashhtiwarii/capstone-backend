@@ -38,10 +38,10 @@ public final class FoodItemConverters {
     public static FoodItem foodItemInDTOToFoodItemEntity(final FoodItemInDTO foodItemInDTO) {
         FoodItem foodItem = new FoodItem();
         foodItem.setCategoryId(foodItemInDTO.getCategoryId());
-        foodItem.setName(StringUtils.capitalizeFirstLetter(foodItemInDTO.getName().trim()));
+        foodItem.setName(StringUtils.capitalizeFirstLetter(foodItemInDTO.getName().trim().replaceAll("\\s+", " ")));
         foodItem.setDescription(
                 foodItemInDTO.getDescription() == null || Objects.equals(foodItemInDTO.getDescription(), "")
-                        ? "" : foodItemInDTO.getDescription());
+                        ? "" : foodItemInDTO.getDescription().trim().replaceAll("\\s+", " "));
         foodItem.setPrice(foodItemInDTO.getPrice());
         return foodItem;
     }

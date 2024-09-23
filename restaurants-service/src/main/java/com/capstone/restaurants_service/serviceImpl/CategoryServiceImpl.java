@@ -184,7 +184,7 @@ public class CategoryServiceImpl implements CategoryService {
                 }
             }
             try {
-                category.setName(updateCategoryDTO.getName().trim().toUpperCase());
+                category.setName(updateCategoryDTO.getName().trim().toUpperCase().replaceAll("\\s+", " "));
                 categoryRepository.save(category);
                 return Constants.CATEGORY_UPDATED_SUCCESSFULLY;
             } catch (Exception ex) {

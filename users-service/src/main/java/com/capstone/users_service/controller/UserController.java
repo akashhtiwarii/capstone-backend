@@ -50,7 +50,6 @@ import java.util.List;
  */
 @RestController
 @RequestMapping(Constants.USER_ENDPOINT)
-@CrossOrigin
 public class UserController {
 
     /**
