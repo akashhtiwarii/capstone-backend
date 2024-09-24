@@ -150,10 +150,10 @@ public class RestaurantServiceImpl implements RestaurantService {
                     throw new ResourceAlreadyExistsException(Constants.EMAIL_ALREADY_EXISTS);
                 }
             }
-            restaurant.setName(updateRestaurantInDTO.getName());
-            restaurant.setEmail(updateRestaurantInDTO.getEmail());
+            restaurant.setName(updateRestaurantInDTO.getName().trim().replaceAll("\\s+", " "));
+            restaurant.setEmail(updateRestaurantInDTO.getEmail().trim().toLowerCase().replaceAll("\\s+", " "));
             restaurant.setPhone(updateRestaurantInDTO.getPhone());
-            restaurant.setAddress(updateRestaurantInDTO.getAddress());
+            restaurant.setAddress(updateRestaurantInDTO.getAddress().trim().replaceAll("\\s+", " "));
             try {
                 if (image != null && !image.isEmpty()) {
                     String contentType = image.getContentType();

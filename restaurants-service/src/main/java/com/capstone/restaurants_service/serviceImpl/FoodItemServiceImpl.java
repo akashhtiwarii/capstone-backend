@@ -240,8 +240,10 @@ public class FoodItemServiceImpl implements FoodItemService {
                 throw new ResourceNotValidException(Constants.INVALID_CATEGORY);
             }
             foodItem.setCategoryId(updateFoodItemInDTO.getCategoryId());
-            foodItem.setName(StringUtils.capitalizeFirstLetter(updateFoodItemInDTO.getName().trim()));
-            foodItem.setDescription(updateFoodItemInDTO.getDescription());
+            foodItem.setName(StringUtils.capitalizeFirstLetter(
+                    updateFoodItemInDTO.getName().trim().replaceAll("\\s+", " "))
+            );
+            foodItem.setDescription(updateFoodItemInDTO.getDescription().trim().replaceAll("\\s+", " "));
             foodItem.setPrice(updateFoodItemInDTO.getPrice());
             try {
                 if (image != null && !image.isEmpty()) {
