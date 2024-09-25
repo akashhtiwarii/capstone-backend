@@ -8,6 +8,8 @@ import com.capstone.restaurants_service.entity.Category;
 import com.capstone.restaurants_service.entity.FoodItem;
 import com.capstone.restaurants_service.entity.Restaurant;
 import com.capstone.restaurants_service.exceptions.ResourceAlreadyExistsException;
+import com.capstone.restaurants_service.exceptions.ResourceNotFoundException;
+import com.capstone.restaurants_service.exceptions.ResourceNotValidException;
 import com.capstone.restaurants_service.feignClient.UserClient;
 import com.capstone.restaurants_service.repository.CategoryRepository;
 import com.capstone.restaurants_service.repository.FoodItemRepository;
@@ -232,6 +234,176 @@ class FoodItemServiceImplTest {
         assertNotNull(result);
         assertEquals(2, result.size());
         verify(foodItemRepository, times(1)).findByCategoryId(categoryId);
+    }
+
+    @Test
+    void addFoodItemNotOwnerThrowsException() throws Exception {
+        FoodItemInDTO foodItemInDTO = new FoodItemInDTO();
+        foodItemInDTO.setLoggedInOwnerId(1L);
+        foodItemInDTO.setCategoryId(1L);
+        foodItemInDTO.setName("food");
+
+        UserOutDTO user = new UserOutDTO();
+        user.setUserId(1L);
+        user.setRole(Role.USER);
+
+        Category category = new Category();
+        category.setCategoryId(1L);
+        category.setRestaurantId(1L);
+
+        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(user));
+        when(categoryRepository.findById(anyLong())).thenReturn(category);
+
+        Exception exception = assertThrows(ResourceNotValidException.class, () ->
+                foodItemServiceImpl.addFoodItem(foodItemInDTO, image)
+        );
+
+        assertEquals("You cannot Add a food item", exception.getMessage());
+    }
+
+    @Test
+    void addFoodItemCategoryNotFoundThrowsException() throws Exception {
+        FoodItemInDTO foodItemInDTO = new FoodItemInDTO();
+        foodItemInDTO.setLoggedInOwnerId(1L);
+        foodItemInDTO.setCategoryId(1L);
+        foodItemInDTO.setName("food");
+
+        UserOutDTO user = new UserOutDTO();
+        user.setUserId(1L);
+        user.setRole(Role.OWNER);
+
+        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(user));
+        when(categoryRepository.findById(anyLong())).thenReturn(null);
+
+        Exception exception = assertThrows(ResourceNotFoundException.class, () ->
+                foodItemServiceImpl.addFoodItem(foodItemInDTO, image)
+        );
+
+        assertEquals("Category Not Found", exception.getMessage());
+    }
+
+    @Test
+    void addFoodItemRestaurantNotFoundThrowsException() throws Exception {
+        FoodItemInDTO foodItemInDTO = new FoodItemInDTO();
+        foodItemInDTO.setLoggedInOwnerId(1L);
+        foodItemInDTO.setCategoryId(1L);
+        foodItemInDTO.setName("food");
+
+        UserOutDTO user = new UserOutDTO();
+        user.setUserId(1L);
+        user.setRole(Role.OWNER);
+
+        Category category = new Category();
+        category.setCategoryId(1L);
+        category.setRestaurantId(1L);
+
+        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(user));
+        when(categoryRepository.findById(anyLong())).thenReturn(category);
+        when(restaurantRepository.findById(anyLong())).thenReturn(null);
+
+        Exception exception = assertThrows(ResourceNotFoundException.class, () ->
+                foodItemServiceImpl.addFoodItem(foodItemInDTO, image)
+        );
+
+        assertEquals("Restaurant Not Found", exception.getMessage());
+    }
+
+    @Test
+    void deleteFoodItemFoodItemNotFoundThrowsException() {
+        UserOutDTO user = new UserOutDTO();
+        user.setUserId(1L);
+        user.setRole(Role.OWNER);
+
+        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(user));
+        when(foodItemRepository.findById(anyLong())).thenReturn(null);
+
+        Exception exception = assertThrows(ResourceNotFoundException.class, () ->
+                foodItemServiceImpl.deleteFoodItem(1L, 1L)
+        );
+
+        assertEquals("Food Item Not Found", exception.getMessage());
+        verify(foodItemRepository, never()).deleteById(anyLong());
+    }
+
+    @Test
+    void addFoodItemInvalidImageFormatThrowsException() throws Exception {
+        FoodItemInDTO foodItemInDTO = new FoodItemInDTO();
+        foodItemInDTO.setLoggedInOwnerId(1L);
+        foodItemInDTO.setCategoryId(1L);
+        foodItemInDTO.setName("food");
+
+        UserOutDTO user = new UserOutDTO();
+        user.setUserId(1L);
+        user.setRole(Role.OWNER);
+
+        Category category = new Category();
+        category.setCategoryId(1L);
+        category.setRestaurantId(1L);
+
+        Restaurant restaurant = new Restaurant();
+        restaurant.setOwnerId(1L);
+
+        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(user));
+        when(categoryRepository.findById(anyLong())).thenReturn(category);
+        when(restaurantRepository.findById(anyLong())).thenReturn(restaurant);
+        when(image.getContentType()).thenReturn("text/plain");
+
+        Exception exception = assertThrows(ResourceNotValidException.class, () ->
+                foodItemServiceImpl.addFoodItem(foodItemInDTO, image)
+        );
+
+        assertEquals("Invalid file type. Only image files are allowed.", exception.getMessage());
+    }
+
+    @Test
+    void deleteFoodItemUnauthorizedUserThrowsException() {
+        UserOutDTO user = new UserOutDTO();
+        user.setUserId(2L);
+        user.setRole(Role.USER);
+
+        FoodItem foodItem = new FoodItem();
+        foodItem.setCategoryId(1L);
+
+        Category category = new Category();
+        category.setCategoryId(1L);
+        category.setRestaurantId(1L);
+
+        Restaurant restaurant = new Restaurant();
+        restaurant.setOwnerId(1L);
+
+        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(user));
+        when(foodItemRepository.findById(anyLong())).thenReturn(foodItem);
+        when(categoryRepository.findById(anyLong())).thenReturn(category);
+        when(restaurantRepository.findById(anyLong())).thenReturn(restaurant);
+
+        Exception exception = assertThrows(ResourceNotValidException.class, () ->
+                foodItemServiceImpl.deleteFoodItem(1L, 2L)
+        );
+
+        assertEquals("You cannot delete a food item", exception.getMessage());
+        verify(foodItemRepository, never()).deleteById(anyLong());
+    }
+
+    @Test
+    void getByFoodIdFoodItemNotFoundThrowsException() {
+        when(foodItemRepository.findById(anyLong())).thenReturn(null);
+
+        Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
+            foodItemServiceImpl.getByFoodId(1L);
+        });
+
+        assertEquals("Food Item Not Found", exception.getMessage());
+    }
+
+    @Test
+    void getFoodByCategoryFoodItemNotFoundThrowsException() {
+        when(foodItemRepository.findById(anyLong())).thenReturn(null);
+
+        Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
+            foodItemServiceImpl.getFoodItemsByCategory(1L);
+        });
+
+        assertEquals("Food Item Not Found", exception.getMessage());
     }
 
 }
