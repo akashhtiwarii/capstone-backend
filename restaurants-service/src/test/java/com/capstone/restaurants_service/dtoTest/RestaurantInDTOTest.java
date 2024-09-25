@@ -59,4 +59,19 @@ public class RestaurantInDTOTest {
 
         assertTrue(violations.size() > 0);
     }
+
+    @Test
+    void testToString() {
+        RestaurantInDTO restaurantInDTO = new RestaurantInDTO(
+                1L,
+                "Pasta Palace",
+                "contact@pasta.com",
+                "9876543210",
+                "123 Noodle St"
+        );
+
+        String expected = "RestaurantInDTO(ownerId=1, name=Pasta Palace, email=contact@pasta.com, phone=9876543210, address=123 Noodle St)";
+
+        assertEquals(expected, restaurantInDTO.toString());
+    }
 }

@@ -2,6 +2,7 @@ package com.capstone.restaurants_service.dtoTest;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -77,5 +78,28 @@ public class UpdateRestaurantInDTOTest {
 
         assertThat(dto1.hashCode()).isEqualTo(dto2.hashCode());
         assertThat(dto1.hashCode()).isNotEqualTo(dto3.hashCode());
+    }
+
+    @Test
+    void testToString() {
+        UpdateRestaurantInDTO updateRestaurantInDTO = new UpdateRestaurantInDTO(
+                1L,
+                2L,
+                "Test Restaurant",
+                "test@gmail.com",
+                "9876543210",
+                "123 Test Street"
+        );
+
+        String expected = "UpdateRestaurantInDTO(" +
+                "loggedInOwnerId=1, " +
+                "restaurantId=2, " +
+                "name=Test Restaurant, " +
+                "email=test@gmail.com, " +
+                "phone=9876543210, " +
+                "address=123 Test Street" +
+                ")";
+
+        assertEquals(expected, updateRestaurantInDTO.toString());
     }
 }
