@@ -58,4 +58,19 @@ public class FoodItemInDTOTest {
 
         assertTrue(violations.size() > 0, "There should be validation errors for an invalid FoodItemInDTO.");
     }
+
+    @Test
+    void testToString() {
+        FoodItemInDTO foodItemInDTO = new FoodItemInDTO(
+                1L,
+                2L,
+                "Pizza",
+                "Delicious cheese pizza",
+                9.99
+        );
+
+        String expected = "FoodItemInDTO(loggedInOwnerId=1, categoryId=2, name=Pizza, description=Delicious cheese pizza, price=9.99)";
+
+        assertEquals(expected, foodItemInDTO.toString());
+    }
 }

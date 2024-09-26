@@ -36,4 +36,19 @@ class UserOutDTOTest {
         assertNotEquals(dto1, dto3);
         assertNotEquals(dto1.hashCode(), dto3.hashCode());
     }
+
+    @Test
+    void testToString() {
+        UserOutDTO userOutDTO = new UserOutDTO(
+                1L,
+                "user@example.com",
+                "John Doe",
+                "9876543210",
+                Role.USER
+        );
+
+        String expected = "UserOutDTO(userId=1, email=user@example.com, name=John Doe, phone=9876543210, role=USER)";
+
+        assertEquals(expected, userOutDTO.toString());
+    }
 }

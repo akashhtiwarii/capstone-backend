@@ -334,6 +334,8 @@ public class FoodItemServiceImpl implements FoodItemService {
                 throw new ResourceNotFoundException(Constants.FOOD_NOT_FOUND);
             }
             return foodItems;
+        } catch (ResourceNotFoundException ex) {
+            throw ex;
         } catch (Exception ex) {
             log.error("Unexpected error occurred: {}", ex.getMessage());
             throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + ex.getMessage());
@@ -359,6 +361,8 @@ public class FoodItemServiceImpl implements FoodItemService {
                 throw new ResourceNotFoundException("Food Item Not Found");
             }
             return foodItem;
+        } catch (ResourceNotFoundException ex) {
+            throw ex;
         } catch (Exception ex) {
             log.error("Unexpected error occurred: {}", ex.getMessage());
             throw new RuntimeException(Constants.UNEXPECTED_ERROR_OCCURRED + ex.getMessage());

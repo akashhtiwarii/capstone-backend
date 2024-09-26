@@ -4,9 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import com.capstone.restaurants_service.ENUM.Role;
 import com.capstone.restaurants_service.exceptions.ResourceAlreadyExistsException;
@@ -22,6 +20,7 @@ import com.capstone.restaurants_service.feignClient.UserClient;
 import com.capstone.restaurants_service.repository.CategoryRepository;
 import com.capstone.restaurants_service.repository.RestaurantRepository;
 import com.capstone.restaurants_service.serviceImpl.CategoryServiceImpl;
+import feign.FeignException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -183,4 +182,89 @@ public class CategoryServiceImplTest {
         String result = categoryService.deleteCategory(1L, 1L);
         assertEquals(Constants.CATEGORY_DELETED, result);
     }
+
+    @Test
+    public void testAddCategoryUnexpectedError() {
+        UserOutDTO user = new UserOutDTO();
+        user.setRole(Role.OWNER);
+        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(user));
+
+        Restaurant restaurant = new Restaurant();
+        restaurant.setOwnerId(1L);
+        when(restaurantRepository.findById(anyLong())).thenReturn(restaurant);
+        when(categoryRepository.findByNameAndRestaurantId(any(), anyLong())).thenReturn(null);
+
+        when(categoryRepository.save(any())).thenThrow(new RuntimeException("Database error"));
+
+        CategoryInDTO dto = new CategoryInDTO();
+        dto.setName("Test Category");
+        dto.setRestaurantId(1L);
+        dto.setUserId(1L);
+
+        RuntimeException thrown = assertThrows(
+                RuntimeException.class,
+                () -> categoryService.addCategory(dto)
+        );
+        assertEquals(Constants.UNEXPECTED_ERROR_OCCURRED + "Database error", thrown.getMessage());
+    }
+
+    @Test
+    public void testAddCategoryUserServiceDown() {
+        when(userClient.getUserById(anyLong())).thenThrow(mock(FeignException.class));
+
+        RuntimeException thrown = assertThrows(
+                RuntimeException.class,
+                () -> categoryService.addCategory(new CategoryInDTO())
+        );
+        assertEquals(Constants.USER_SERVICE_DOWN, thrown.getMessage());
+    }
+
+    @Test
+    public void testAddCategoryAlreadyExists() {
+        UserOutDTO user = new UserOutDTO();
+        user.setRole(Role.OWNER);
+        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(user));
+
+        Restaurant restaurant = new Restaurant();
+        restaurant.setOwnerId(1L);
+        when(restaurantRepository.findById(anyLong())).thenReturn(restaurant);
+
+        Category existingCategory = new Category();
+        when(categoryRepository.findByNameAndRestaurantId(any(), anyLong())).thenReturn(existingCategory);
+
+        CategoryInDTO dto = new CategoryInDTO();
+        dto.setName("Test Category");
+        dto.setRestaurantId(1L);
+        dto.setUserId(1L);
+
+        ResourceAlreadyExistsException thrown = assertThrows(
+                ResourceAlreadyExistsException.class,
+                () -> categoryService.addCategory(dto)
+        );
+        assertEquals(Constants.CATEGORY_ALREADY_PRESENT, thrown.getMessage());
+    }
+
+    @Test
+    public void testDeleteCategoryUnexpectedError() {
+        UserOutDTO user = new UserOutDTO();
+        user.setRole(Role.OWNER);
+        when(userClient.getUserById(anyLong())).thenReturn(ResponseEntity.ok(user));
+
+        Category category = new Category();
+        category.setRestaurantId(1L);
+        Restaurant restaurant = new Restaurant();
+        restaurant.setOwnerId(1L);
+        when(categoryRepository.findById(anyLong())).thenReturn(category);
+        when(restaurantRepository.findById(anyLong())).thenReturn(restaurant);
+
+        doNothing().when(categoryRepository).deleteById(anyLong());
+        doThrow(new RuntimeException("Database error")).when(categoryRepository).deleteById(anyLong());
+
+        RuntimeException thrown = assertThrows(
+                RuntimeException.class,
+                () -> categoryService.deleteCategory(1L, 1L)
+        );
+        assertEquals(Constants.UNEXPECTED_ERROR_OCCURRED + "Database error", thrown.getMessage());
+    }
+
 }
