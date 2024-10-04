@@ -61,4 +61,18 @@ public class UpdateFoodItemInDTOTest {
         assertNull(dto.getDescription());
     }
 
+    @Test
+    public void testToString() {
+        UpdateFoodItemInDTO dto = new UpdateFoodItemInDTO();
+        dto.setLoggedInOwnerId(1L);
+        dto.setCategoryId(2L);
+        dto.setName("Pizza");
+        dto.setDescription("Delicious cheese pizza");
+        dto.setPrice(10.99);
+
+        String expectedString = "UpdateFoodItemInDTO(loggedInOwnerId=1, categoryId=2, name=Pizza, description=Delicious cheese pizza, price=10.99)";
+
+        assertEquals(expectedString, dto.toString());
+    }
+
 }

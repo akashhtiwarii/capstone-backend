@@ -296,4 +296,18 @@ public class UserServiceImplTest {
 
         Mockito.verify(javaMailSender).send(mimeMessage);
     }
+
+    @Test
+    public void testForgotPasswordUserNotFound() throws MessagingException {
+        String email = "nonexistentemail@gmail.com";
+
+        Mockito.when(userRepository.findByEmail(email)).thenReturn(null);
+        MimeMessage mimeMessage = Mockito.mock(MimeMessage.class);
+        Mockito.when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
+
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+        Mockito.when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
+
+        assertThrows(ResourceNotFoundException.class, () -> userService.forgotPassword(email));
+    }
 }

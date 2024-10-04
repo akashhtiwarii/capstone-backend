@@ -1,6 +1,7 @@
 package com.capstone.restaurants_service.dtoTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.capstone.restaurants_service.dto.GetOwnerRestaurantsInDTO;
 import org.junit.jupiter.api.Test;
@@ -27,5 +28,15 @@ class GetOwnerRestaurantsInDTOTest {
         assertThat(getOwnerRestaurantsInDTO).isNotEqualTo(getOwnerRestaurantsInDTO2);
         assertThat(getOwnerRestaurantsInDTO.hashCode()).isEqualTo(getOwnerRestaurantsInDTO1.hashCode());
         assertThat(getOwnerRestaurantsInDTO.hashCode()).isNotEqualTo(getOwnerRestaurantsInDTO2.hashCode());
+    }
+
+    @Test
+    public void testToString() {
+        GetOwnerRestaurantsInDTO dto = new GetOwnerRestaurantsInDTO();
+        dto.setOwnerId(1L);
+
+        String expectedString = "GetOwnerRestaurantsInDTO(ownerId=1)";
+
+        assertEquals(expectedString, dto.toString());
     }
 }

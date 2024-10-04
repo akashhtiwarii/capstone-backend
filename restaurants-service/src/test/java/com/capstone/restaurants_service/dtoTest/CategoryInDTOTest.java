@@ -30,5 +30,17 @@ class CategoryInDTOTest {
         assertNotEquals(category1, category3);
         assertNotEquals(category1.hashCode(), category3.hashCode());
     }
+
+    @Test
+    public void testToString() {
+        CategoryInDTO dto = new CategoryInDTO();
+        dto.setUserId(1L);
+        dto.setRestaurantId(2L);
+        dto.setName("Beverages");
+
+        String expectedString = "CategoryInDTO(userId=1, restaurantId=2, name=Beverages)";
+
+        assertEquals(expectedString, dto.toString());
+    }
 }
 

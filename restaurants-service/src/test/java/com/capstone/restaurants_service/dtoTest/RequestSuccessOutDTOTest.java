@@ -35,4 +35,14 @@ public class RequestSuccessOutDTOTest {
         assertEquals(dto1.hashCode(), dto2.hashCode());
         assertNotEquals(dto1.hashCode(), dto3.hashCode());
     }
+
+    @Test
+    public void testToString() {
+        RequestSuccessOutDTO dto = new RequestSuccessOutDTO();
+        dto.setMessage("Request completed successfully");
+
+        String expectedString = "RequestSuccessOutDTO(message=Request completed successfully)";
+
+        assertEquals(expectedString, dto.toString());
+    }
 }
